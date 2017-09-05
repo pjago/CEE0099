@@ -11,7 +11,7 @@
 # All addresses and the length are given in unqualified hexadecimal
 # in delta units.  Any other numeric values are decimal.
 %PSECTS
-$/tmp/xcXGc87VA.obj
+$/tmp/xcXNaKBhn.obj
 reset_vec CODE 0 255 255 3 2
 end_init CODE 0 267 267 3 2
 $dist/default/production/fan.X.production.obj
@@ -77,21 +77,21 @@ STRING 57F-1FFF 2
 # All other numeric values are in decimal.
 %LINETAB
 $dist/default/production/fan.X.production.obj
-26A cinit CODE >227:/tmp/xcXyhMxCa
-26A cinit CODE >230:/tmp/xcXyhMxCa
-26A cinit CODE >271:/tmp/xcXyhMxCa
-26B cinit CODE >272:/tmp/xcXyhMxCa
-26C cinit CODE >273:/tmp/xcXyhMxCa
-26D cinit CODE >274:/tmp/xcXyhMxCa
-26E cinit CODE >275:/tmp/xcXyhMxCa
-26F cinit CODE >276:/tmp/xcXyhMxCa
-270 cinit CODE >277:/tmp/xcXyhMxCa
-271 cinit CODE >278:/tmp/xcXyhMxCa
-272 cinit CODE >279:/tmp/xcXyhMxCa
-273 cinit CODE >280:/tmp/xcXyhMxCa
-276 cinit CODE >286:/tmp/xcXyhMxCa
-276 cinit CODE >288:/tmp/xcXyhMxCa
-277 cinit CODE >289:/tmp/xcXyhMxCa
+26A cinit CODE >227:/tmp/xcXlqtftQ
+26A cinit CODE >230:/tmp/xcXlqtftQ
+26A cinit CODE >271:/tmp/xcXlqtftQ
+26B cinit CODE >272:/tmp/xcXlqtftQ
+26C cinit CODE >273:/tmp/xcXlqtftQ
+26D cinit CODE >274:/tmp/xcXlqtftQ
+26E cinit CODE >275:/tmp/xcXlqtftQ
+26F cinit CODE >276:/tmp/xcXlqtftQ
+270 cinit CODE >277:/tmp/xcXlqtftQ
+271 cinit CODE >278:/tmp/xcXlqtftQ
+272 cinit CODE >279:/tmp/xcXlqtftQ
+273 cinit CODE >280:/tmp/xcXlqtftQ
+276 cinit CODE >286:/tmp/xcXlqtftQ
+276 cinit CODE >288:/tmp/xcXlqtftQ
+277 cinit CODE >289:/tmp/xcXlqtftQ
 259 intentry CODE >20:/home/pjago/MPLABXProjects/fan.X/main.c
 53D text7 CODE >20:/home/pjago/MPLABXProjects/fan.X/main.c
 53D text7 CODE >21:/home/pjago/MPLABXProjects/fan.X/main.c
@@ -211,23 +211,23 @@ $dist/default/production/fan.X.production.obj
 41E maintext CODE >78:/home/pjago/MPLABXProjects/fan.X/main.c
 454 maintext CODE >79:/home/pjago/MPLABXProjects/fan.X/main.c
 47F maintext CODE >77:/home/pjago/MPLABXProjects/fan.X/main.c
-564 inittext CODE >245:/tmp/xcXyhMxCa
-564 inittext CODE >246:/tmp/xcXyhMxCa
-565 inittext CODE >247:/tmp/xcXyhMxCa
-566 inittext CODE >248:/tmp/xcXyhMxCa
-567 inittext CODE >249:/tmp/xcXyhMxCa
-568 inittext CODE >256:/tmp/xcXyhMxCa
-568 inittext CODE >257:/tmp/xcXyhMxCa
-56B inittext CODE >258:/tmp/xcXyhMxCa
-56C inittext CODE >259:/tmp/xcXyhMxCa
-56D inittext CODE >260:/tmp/xcXyhMxCa
-56E inittext CODE >261:/tmp/xcXyhMxCa
-56F inittext CODE >262:/tmp/xcXyhMxCa
-570 inittext CODE >263:/tmp/xcXyhMxCa
-571 inittext CODE >264:/tmp/xcXyhMxCa
-572 inittext CODE >265:/tmp/xcXyhMxCa
-573 inittext CODE >266:/tmp/xcXyhMxCa
-574 inittext CODE >267:/tmp/xcXyhMxCa
+564 inittext CODE >245:/tmp/xcXlqtftQ
+564 inittext CODE >246:/tmp/xcXlqtftQ
+565 inittext CODE >247:/tmp/xcXlqtftQ
+566 inittext CODE >248:/tmp/xcXlqtftQ
+567 inittext CODE >249:/tmp/xcXlqtftQ
+568 inittext CODE >256:/tmp/xcXlqtftQ
+568 inittext CODE >257:/tmp/xcXlqtftQ
+56B inittext CODE >258:/tmp/xcXlqtftQ
+56C inittext CODE >259:/tmp/xcXlqtftQ
+56D inittext CODE >260:/tmp/xcXlqtftQ
+56E inittext CODE >261:/tmp/xcXlqtftQ
+56F inittext CODE >262:/tmp/xcXlqtftQ
+570 inittext CODE >263:/tmp/xcXlqtftQ
+571 inittext CODE >264:/tmp/xcXlqtftQ
+572 inittext CODE >265:/tmp/xcXlqtftQ
+573 inittext CODE >266:/tmp/xcXlqtftQ
+574 inittext CODE >267:/tmp/xcXlqtftQ
 # %SYMTAB Section
 # An enumeration of all symbols in the program.
 # The beginning of the section is indicated by %SYMTAB.
@@ -253,10 +253,10 @@ __Hstrings 0 0 ABS 0 strings -
 _INTE 5C 0 ABS 0 - dist/default/production/fan.X.production.obj
 _INTF 59 0 ABS 0 - dist/default/production/fan.X.production.obj
 _TMR1 E 0 ABS 0 - dist/default/production/fan.X.production.obj
-___sp 0 0 STACK 2 stack /tmp/xcXGc87VA.obj
+___sp 0 0 STACK 2 stack /tmp/xcXNaKBhn.obj
 _main 7FE 0 CODE 0 maintext dist/default/production/fan.X.production.obj
 btemp 7E 0 ABS 0 - dist/default/production/fan.X.production.obj
-start 4CE 0 CODE 0 init /tmp/xcXGc87VA.obj
+start 4CE 0 CODE 0 init /tmp/xcXNaKBhn.obj
 __size_of___aldiv 0 0 ABS 0 - dist/default/production/fan.X.production.obj
 __size_of___awdiv 0 0 ABS 0 - dist/default/production/fan.X.production.obj
 __size_of_main 0 0 ABS 0 - dist/default/production/fan.X.production.obj
@@ -265,12 +265,12 @@ __size_of_main 0 0 ABS 0 - dist/default/production/fan.X.production.obj
 rpm_timer@in 36 0 BANK0 1 cstackBANK0 dist/default/production/fan.X.production.obj
 __LidataBANK0 0 0 ABS 0 idataBANK0 -
 __Hpowerup 0 0 CODE 0 powerup -
-intlevel0 0 0 ENTRY 0 functab /tmp/xcXGc87VA.obj
-intlevel1 0 0 ENTRY 0 functab /tmp/xcXGc87VA.obj
-intlevel2 0 0 ENTRY 0 functab /tmp/xcXGc87VA.obj
-intlevel3 0 0 ENTRY 0 functab /tmp/xcXGc87VA.obj
-intlevel4 0 0 ENTRY 0 functab /tmp/xcXGc87VA.obj
-intlevel5 0 0 ENTRY 0 functab /tmp/xcXGc87VA.obj
+intlevel0 0 0 ENTRY 0 functab /tmp/xcXNaKBhn.obj
+intlevel1 0 0 ENTRY 0 functab /tmp/xcXNaKBhn.obj
+intlevel2 0 0 ENTRY 0 functab /tmp/xcXNaKBhn.obj
+intlevel3 0 0 ENTRY 0 functab /tmp/xcXNaKBhn.obj
+intlevel4 0 0 ENTRY 0 functab /tmp/xcXNaKBhn.obj
+intlevel5 0 0 ENTRY 0 functab /tmp/xcXNaKBhn.obj
 ___bmul@multiplicand 29 0 BANK0 1 cstackBANK0 dist/default/production/fan.X.production.obj
 ___aldiv@divisor 20 0 BANK0 1 cstackBANK0 dist/default/production/fan.X.production.obj
 wtemp0 7E 0 ABS 0 - dist/default/production/fan.X.production.obj
@@ -304,7 +304,7 @@ _TMR2ON 92 0 ABS 0 - dist/default/production/fan.X.production.obj
 _TRISB0 430 0 ABS 0 - dist/default/production/fan.X.production.obj
 _TRISB7 437 0 ABS 0 - dist/default/production/fan.X.production.obj
 _TRISC2 43A 0 ABS 0 - dist/default/production/fan.X.production.obj
-___int_sp 0 0 STACK 2 stack /tmp/xcXGc87VA.obj
+___int_sp 0 0 STACK 2 stack /tmp/xcXNaKBhn.obj
 __Hbank0 0 0 ABS 0 bank0 -
 __Hbank1 0 0 ABS 0 bank1 -
 __Hbank2 0 0 ABS 0 bank2 -
@@ -356,7 +356,7 @@ _rpm_timer$469 46 0 BANK0 1 cstackBANK0 dist/default/production/fan.X.production
 saved_w 7E 0 ABS 0 - dist/default/production/fan.X.production.obj
 __Lintentry 4B2 0 CODE 0 intentry -
 __end_of_rpm_timer 6E0 0 CODE 0 text1 dist/default/production/fan.X.production.obj
-reset_vec 4AA 0 CODE 0 reset_vec /tmp/xcXGc87VA.obj
+reset_vec 4AA 0 CODE 0 reset_vec /tmp/xcXNaKBhn.obj
 __size_of_rpm_timer 0 0 ABS 0 - dist/default/production/fan.X.production.obj
 __pdataBANK0 5C 0 BANK0 1 dataBANK0 dist/default/production/fan.X.production.obj
 __size_of___bmul 0 0 ABS 0 - dist/default/production/fan.X.production.obj
@@ -373,8 +373,8 @@ __Lconfig 0 0 CONFIG 0 config -
 __end_of_raycast_intersection_cleared AA2 0 CODE 0 text7 dist/default/production/fan.X.production.obj
 __Hinittext 0 0 ABS 0 inittext -
 ___wmul@multiplier 74 0 COMMON 1 cstackCOMMON dist/default/production/fan.X.production.obj
-stackhi 0 0 ABS 0 - /tmp/xcXGc87VA.obj
-stacklo 0 0 ABS 0 - /tmp/xcXGc87VA.obj
+stackhi 0 0 ABS 0 - /tmp/xcXNaKBhn.obj
+stacklo 0 0 ABS 0 - /tmp/xcXNaKBhn.obj
 __Lspace_0 0 0 ABS 0 - -
 __Lspace_1 0 0 ABS 0 - -
 __Lspace_2 0 0 ABS 0 - -

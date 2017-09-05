@@ -1,7 +1,7 @@
 
 
 Microchip Technology PIC LITE Macro Assembler V1.43 build -156212558 
-                                                                                               Mon Sep  4 23:44:31 2017
+                                                                                               Tue Sep  5 02:20:53 2017
 
 Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250354
      1                           	processor	16F877A
@@ -479,7 +479,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    465                           
    466                           ;main.c: 74: GIE = 1;
    467  041D  178B               	bsf	11,7	;volatile
-   468  041E                     l921:	
+   468  041E                     l917:	
    469                           ;main.c: 77: while (1) {
    470                           
    471                           
@@ -546,9 +546,9 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    532  0459  00F6               	movwf	___wmul@multiplicand
    533  045A  3000               	movlw	0
    534  045B  00F7               	movwf	___wmul@multiplicand+1
-   535  045C  085F               	movf	_FAN+3,w
+   535  045C  085F               	movf	_FAN+3,w	;volatile
    536  045D  00F5               	movwf	___wmul@multiplier+1
-   537  045E  085E               	movf	_FAN+2,w
+   537  045E  085E               	movf	_FAN+2,w	;volatile
    538  045F  00F4               	movwf	___wmul@multiplier
    539  0460  120A  118A  251C  120A  118A  	fcall	___wmul
    540  0465  0875               	movf	?___wmul+1,w
@@ -557,9 +557,9 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    543  0468  00A3               	movwf	___awdiv@dividend+1
    544  0469  0874               	movf	?___wmul,w
    545  046A  00A2               	movwf	___awdiv@dividend
-   546  046B  0865               	movf	_FAN+9,w
+   546  046B  0865               	movf	_FAN+9,w	;volatile
    547  046C  00A1               	movwf	___awdiv@divisor+1
-   548  046D  0864               	movf	_FAN+8,w
+   548  046D  0864               	movf	_FAN+8,w	;volatile
    549  046E  00A0               	movwf	___awdiv@divisor
    550  046F  120A  118A  2480  120A  118A  	fcall	___awdiv
    551  0474  1283               	bcf	3,5	;RP0=0, select bank0
@@ -569,7 +569,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    555  047C  1283               	bcf	3,5	;RP0=0, select bank0
    556  047D  1303               	bcf	3,6	;RP1=0, select bank0
    557  047E  0095               	movwf	21	;volatile
-   558  047F  2C1E               	goto	l921
+   558  047F  2C1E               	goto	l917
    559  0480                     __end_of_main:	
    560                           ;main.c: 80: }
    561                           ;main.c: 81: return 0;
@@ -582,10 +582,10 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    568 ;; Defined at:
    569 ;;		line 27 in file "main.c"
    570 ;; Parameters:    Size  Location     Type
-   571 ;;  in             10   22[BANK0 ] struct .
+   571 ;;  in             10   22[BANK0 ] volatile struct .
    572 ;;  t               2   32[BANK0 ] unsigned int 
    573 ;; Auto vars:     Size  Location     Type
-   574 ;;  out            10   42[BANK0 ] struct .
+   574 ;;  out            10   42[BANK0 ] volatile struct .
    575 ;; Return value:  Size  Location     Type
    576 ;;                  10   22[BANK0 ] struct .
    577 ;; Registers used:
@@ -621,34 +621,34 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    607                           ; Regs used in _rpm_timer: [wreg-fsr0h+status,2+status,0+btemp+1+pclath+cstack]
    608  027A  1283               	bcf	3,5	;RP0=0, select bank0
    609  027B  1303               	bcf	3,6	;RP1=0, select bank0
-   610  027C  084B               	movf	rpm_timer@out+1,w
+   610  027C  084B               	movf	rpm_timer@out+1,w	;volatile
    611  027D  0241               	subwf	rpm_timer@t+1,w
    612  027E  1D03               	skipz
    613  027F  2A82               	goto	u555
-   614  0280  084A               	movf	rpm_timer@out,w
+   614  0280  084A               	movf	rpm_timer@out,w	;volatile
    615  0281  0240               	subwf	rpm_timer@t,w
    616  0282                     u555:	
    617  0282  1803               	skipnc
-   618  0283  2A8B               	goto	l791
+   618  0283  2A8B               	goto	l787
    619                           
    620                           ;main.c: 31: out.count = 0;
-   621  0284  01CE               	clrf	rpm_timer@out+4
-   622  0285  01CF               	clrf	rpm_timer@out+5
+   621  0284  01CE               	clrf	rpm_timer@out+4	;volatile
+   622  0285  01CF               	clrf	rpm_timer@out+5	;volatile
    623                           
    624                           ;main.c: 32: out.value = in.value;
-   625  0286  0839               	movf	rpm_timer@in+3,w
-   626  0287  00CD               	movwf	rpm_timer@out+3
-   627  0288  0838               	movf	rpm_timer@in+2,w
-   628  0289  00CC               	movwf	rpm_timer@out+2
-   629  028A  2B40               	goto	l809
-   630  028B                     l791:	
+   625  0286  0839               	movf	rpm_timer@in+3,w	;volatile
+   626  0287  00CD               	movwf	rpm_timer@out+3	;volatile
+   627  0288  0838               	movf	rpm_timer@in+2,w	;volatile
+   628  0289  00CC               	movwf	rpm_timer@out+2	;volatile
+   629  028A  2B40               	goto	l805
+   630  028B                     l787:	
    631                           ;main.c: 34: }
    632                           
    633                           ;main.c: 33: out.time = t;
    634                           
    635                           
    636                           ;main.c: 35: else if (in.count > 0) {
-   637  028B  083B               	movf	rpm_timer@in+5,w
+   637  028B  083B               	movf	rpm_timer@in+5,w	;volatile
    638  028C  3A80               	xorlw	128
    639  028D  00FF               	movwf	127
    640  028E  3080               	movlw	128
@@ -656,21 +656,21 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    642  0290  1D03               	skipz
    643  0291  2A94               	goto	u565
    644  0292  3001               	movlw	1
-   645  0293  023A               	subwf	rpm_timer@in+4,w
+   645  0293  023A               	subwf	rpm_timer@in+4,w	;volatile
    646  0294                     u565:	
    647  0294  1C03               	skipc
-   648  0295  2B22               	goto	l803
+   648  0295  2B22               	goto	l799
    649                           
    650                           ;main.c: 36: out.count = 0;
    651  0296  1283               	bcf	3,5	;RP0=0, select bank0
    652  0297  1303               	bcf	3,6	;RP1=0, select bank0
-   653  0298  01CE               	clrf	rpm_timer@out+4
-   654  0299  01CF               	clrf	rpm_timer@out+5
+   653  0298  01CE               	clrf	rpm_timer@out+4	;volatile
+   654  0299  01CF               	clrf	rpm_timer@out+5	;volatile
    655                           
    656                           ;main.c: 37: out.value = 37500 / (t - in.time) * 1000 * in.count / in.div;
-   657  029A  0936               	comf	rpm_timer@in,w
+   657  029A  0936               	comf	rpm_timer@in,w	;volatile
    658  029B  00C2               	movwf	??_rpm_timer
-   659  029C  0937               	comf	rpm_timer@in+1,w
+   659  029C  0937               	comf	rpm_timer@in+1,w	;volatile
    660  029D  00C3               	movwf	??_rpm_timer+1
    661  029E  0AC2               	incf	??_rpm_timer,f
    662  029F  1903               	skipnz
@@ -704,9 +704,9 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    690  02BF  00AF               	movwf	___lmul@multiplier+1
    691  02C0  0820               	movf	?___aldiv,w
    692  02C1  00AE               	movwf	___lmul@multiplier
-   693  02C2  083A               	movf	rpm_timer@in+4,w
+   693  02C2  083A               	movf	rpm_timer@in+4,w	;volatile
    694  02C3  00B2               	movwf	___lmul@multiplicand
-   695  02C4  083B               	movf	rpm_timer@in+5,w
+   695  02C4  083B               	movf	rpm_timer@in+5,w	;volatile
    696  02C5  00B3               	movwf	___lmul@multiplicand+1
    697  02C6  3000               	movlw	0
    698  02C7  1BB3               	btfsc	___lmul@multiplicand+1,7
@@ -726,9 +726,9 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    712  02D9  00C6               	movwf	_rpm_timer$469
    713                           
    714                           ;main.c: 37: out.value = 37500 / (t - in.time) * 1000 * in.count / in.div;
-   715  02DA  083C               	movf	rpm_timer@in+6,w
+   715  02DA  083C               	movf	rpm_timer@in+6,w	;volatile
    716  02DB  00A0               	movwf	___aldiv@divisor
-   717  02DC  083D               	movf	rpm_timer@in+7,w
+   717  02DC  083D               	movf	rpm_timer@in+7,w	;volatile
    718  02DD  00A1               	movwf	___aldiv@divisor+1
    719  02DE  3000               	movlw	0
    720  02DF  1BA1               	btfsc	___aldiv@divisor+1,7
@@ -766,46 +766,46 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    752  0307  1283               	bcf	3,5	;RP0=0, select bank0
    753  0308  1303               	bcf	3,6	;RP1=0, select bank0
    754  0309  0821               	movf	?___aldiv+1,w
-   755  030A  00CD               	movwf	rpm_timer@out+3
+   755  030A  00CD               	movwf	rpm_timer@out+3	;volatile
    756  030B  0820               	movf	?___aldiv,w
-   757  030C  00CC               	movwf	rpm_timer@out+2
+   757  030C  00CC               	movwf	rpm_timer@out+2	;volatile
    758                           
    759                           ;main.c: 38: if (out.value > in.max) out.max = out.value;
-   760  030D  083F               	movf	rpm_timer@in+9,w
+   760  030D  083F               	movf	rpm_timer@in+9,w	;volatile
    761  030E  3A80               	xorlw	128
    762  030F  00C2               	movwf	??_rpm_timer
-   763  0310  084D               	movf	rpm_timer@out+3,w
+   763  0310  084D               	movf	rpm_timer@out+3,w	;volatile
    764  0311  3A80               	xorlw	128
    765  0312  0242               	subwf	??_rpm_timer,w
    766  0313  1D03               	skipz
    767  0314  2B17               	goto	u575
-   768  0315  084C               	movf	rpm_timer@out+2,w
-   769  0316  023E               	subwf	rpm_timer@in+8,w
+   768  0315  084C               	movf	rpm_timer@out+2,w	;volatile
+   769  0316  023E               	subwf	rpm_timer@in+8,w	;volatile
    770  0317                     u575:	
    771  0317  1803               	skipnc
    772  0318  2B1F               	goto	l57
    773  0319  1283               	bcf	3,5	;RP0=0, select bank0
    774  031A  1303               	bcf	3,6	;RP1=0, select bank0
-   775  031B  084D               	movf	rpm_timer@out+3,w
-   776  031C  00D3               	movwf	rpm_timer@out+9
-   777  031D  084C               	movf	rpm_timer@out+2,w
-   778  031E  00D2               	movwf	rpm_timer@out+8
+   775  031B  084D               	movf	rpm_timer@out+3,w	;volatile
+   776  031C  00D3               	movwf	rpm_timer@out+9	;volatile
+   777  031D  084C               	movf	rpm_timer@out+2,w	;volatile
+   778  031E  00D2               	movwf	rpm_timer@out+8	;volatile
    779  031F                     l57:	
    780                           
    781                           ;main.c: 39: out.time = t;
    782  031F  1283               	bcf	3,5	;RP0=0, select bank0
    783  0320  1303               	bcf	3,6	;RP1=0, select bank0
-   784  0321  2B40               	goto	l809
-   785  0322                     l803:	
+   784  0321  2B40               	goto	l805
+   785  0322                     l799:	
    786                           ;main.c: 40: }
    787                           
    788                           
    789                           ;main.c: 41: else if (t - in.time > 37500) {
    790  0322  1283               	bcf	3,5	;RP0=0, select bank0
    791  0323  1303               	bcf	3,6	;RP1=0, select bank0
-   792  0324  0936               	comf	rpm_timer@in,w
+   792  0324  0936               	comf	rpm_timer@in,w	;volatile
    793  0325  00C2               	movwf	??_rpm_timer
-   794  0326  0937               	comf	rpm_timer@in+1,w
+   794  0326  0937               	comf	rpm_timer@in+1,w	;volatile
    795  0327  00C3               	movwf	??_rpm_timer+1
    796  0328  0AC2               	incf	??_rpm_timer,f
    797  0329  1903               	skipnz
@@ -824,28 +824,28 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    810  0336  1903               	skipnz
    811  0337  0244               	subwf	??_rpm_timer+2,w
    812  0338  1C03               	skipc
-   813  0339  2B45               	goto	l811
+   813  0339  2B45               	goto	l807
    814                           
    815                           ;main.c: 42: out.count = -1;
    816  033A  30FF               	movlw	255
-   817  033B  00CE               	movwf	rpm_timer@out+4
+   817  033B  00CF               	movwf	rpm_timer@out+5	;volatile
    818  033C  30FF               	movlw	255
-   819  033D  00CF               	movwf	rpm_timer@out+5
+   819  033D  00CE               	movwf	rpm_timer@out+4	;volatile
    820                           
    821                           ;main.c: 43: out.value = 0;
-   822  033E  01CC               	clrf	rpm_timer@out+2
-   823  033F  01CD               	clrf	rpm_timer@out+3
-   824  0340                     l809:	
+   822  033E  01CC               	clrf	rpm_timer@out+2	;volatile
+   823  033F  01CD               	clrf	rpm_timer@out+3	;volatile
+   824  0340                     l805:	
    825                           
    826                           ;main.c: 44: out.time = t;
    827  0340  0841               	movf	rpm_timer@t+1,w
-   828  0341  00CB               	movwf	rpm_timer@out+1
+   828  0341  00CB               	movwf	rpm_timer@out+1	;volatile
    829  0342  0840               	movf	rpm_timer@t,w
-   830  0343  00CA               	movwf	rpm_timer@out
+   830  0343  00CA               	movwf	rpm_timer@out	;volatile
    831                           
    832                           ;main.c: 45: }
    833  0344  2B5A               	goto	l55
-   834  0345                     l811:	
+   834  0345                     l807:	
    835                           
    836                           ;main.c: 46: else {
    837                           ;main.c: 47: out = in;
@@ -947,11 +947,11 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    933  04E0  00F7               	movwf	___lmul@product+1
    934  04E1  3000               	movlw	0
    935  04E2  00F6               	movwf	___lmul@product
-   936  04E3                     l731:	
+   936  04E3                     l727:	
    937  04E3  1283               	bcf	3,5	;RP0=0, select bank0
    938  04E4  1303               	bcf	3,6	;RP1=0, select bank0
    939  04E5  1C2E               	btfss	___lmul@multiplier,0
-   940  04E6  2CFB               	goto	l735
+   940  04E6  2CFB               	goto	l731
    941  04E7  0832               	movf	___lmul@multiplicand,w
    942  04E8  07F6               	addwf	___lmul@product,f
    943  04E9  0833               	movf	___lmul@multiplicand+1,w
@@ -972,7 +972,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    958  04F8  3E01               	addlw	1
    959  04F9  1D03               	btfss	3,2
    960  04FA  07F9               	addwf	___lmul@product+3,f
-   961  04FB                     l735:	
+   961  04FB                     l731:	
    962  04FB  3001               	movlw	1
    963  04FC  00F5               	movwf	??___lmul
    964  04FD                     u425:	
@@ -998,7 +998,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
    984  050F  042F               	iorwf	___lmul@multiplier+1,w
    985  0510  042E               	iorwf	___lmul@multiplier,w
    986  0511  1D03               	skipz
-   987  0512  2CE3               	goto	l731
+   987  0512  2CE3               	goto	l727
    988  0513  0879               	movf	___lmul@product+3,w
    989  0514  00B1               	movwf	?___lmul+3
    990  0515  0878               	movf	___lmul@product+2,w
@@ -1071,7 +1071,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1057  0381  0AA9               	incf	___aldiv@sign,f
   1058  0382                     l208:	
   1059  0382  1FA7               	btfss	___aldiv@dividend+3,7
-  1060  0383  2B93               	goto	l753
+  1060  0383  2B93               	goto	l749
   1061  0384  09A4               	comf	___aldiv@dividend,f
   1062  0385  09A5               	comf	___aldiv@dividend+1,f
   1063  0386  09A6               	comf	___aldiv@dividend+2,f
@@ -1087,7 +1087,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1073  0390  00F4               	movwf	??___aldiv
   1074  0391  0874               	movf	??___aldiv,w
   1075  0392  06A9               	xorwf	___aldiv@sign,f
-  1076  0393                     l753:	
+  1076  0393                     l749:	
   1077  0393  3000               	movlw	0
   1078  0394  00AD               	movwf	___aldiv@quotient+3
   1079  0395  3000               	movlw	0
@@ -1101,12 +1101,12 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1087  039D  0421               	iorwf	___aldiv@divisor+1,w
   1088  039E  0420               	iorwf	___aldiv@divisor,w
   1089  039F  1903               	skipnz
-  1090  03A0  2BE8               	goto	l775
+  1090  03A0  2BE8               	goto	l771
   1091  03A1  01A8               	clrf	___aldiv@counter
   1092  03A2  0AA8               	incf	___aldiv@counter,f
-  1093  03A3                     l761:	
+  1093  03A3                     l757:	
   1094  03A3  1BA3               	btfsc	___aldiv@divisor+3,7
-  1095  03A4  2BB3               	goto	l763
+  1095  03A4  2BB3               	goto	l759
   1096  03A5  3001               	movlw	1
   1097  03A6  00F4               	movwf	??___aldiv
   1098  03A7                     u485:	
@@ -1121,8 +1121,8 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1107  03AF  00F4               	movwf	??___aldiv
   1108  03B0  0874               	movf	??___aldiv,w
   1109  03B1  07A8               	addwf	___aldiv@counter,f
-  1110  03B2  2BA3               	goto	l761
-  1111  03B3                     l763:	
+  1110  03B2  2BA3               	goto	l757
+  1111  03B3                     l759:	
   1112  03B3  3001               	movlw	1
   1113  03B4  00F4               	movwf	??___aldiv
   1114  03B5                     u505:	
@@ -1149,7 +1149,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1135  03C9  0224               	subwf	___aldiv@dividend,w
   1136  03CA                     u515:	
   1137  03CA  1C03               	skipc
-  1138  03CB  2BDB               	goto	l771
+  1138  03CB  2BDB               	goto	l767
   1139  03CC  0820               	movf	___aldiv@divisor,w
   1140  03CD  02A4               	subwf	___aldiv@dividend,f
   1141  03CE  0821               	movf	___aldiv@divisor+1,w
@@ -1165,7 +1165,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1151  03D8  0F23               	incfsz	___aldiv@divisor+3,w
   1152  03D9  02A7               	subwf	___aldiv@dividend+3,f
   1153  03DA  142A               	bsf	___aldiv@quotient,0
-  1154  03DB                     l771:	
+  1154  03DB                     l767:	
   1155  03DB  3001               	movlw	1
   1156  03DC                     u525:	
   1157  03DC  1003               	clrc
@@ -1179,11 +1179,11 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1165  03E4  3001               	movlw	1
   1166  03E5  02A8               	subwf	___aldiv@counter,f
   1167  03E6  1D03               	btfss	3,2
-  1168  03E7  2BB3               	goto	l763
-  1169  03E8                     l775:	
+  1168  03E7  2BB3               	goto	l759
+  1169  03E8                     l771:	
   1170  03E8  0829               	movf	___aldiv@sign,w
   1171  03E9  1903               	btfsc	3,2
-  1172  03EA  2BF6               	goto	l779
+  1172  03EA  2BF6               	goto	l775
   1173  03EB  09AA               	comf	___aldiv@quotient,f
   1174  03EC  09AB               	comf	___aldiv@quotient+1,f
   1175  03ED  09AC               	comf	___aldiv@quotient+2,f
@@ -1195,7 +1195,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1181  03F3  0AAC               	incf	___aldiv@quotient+2,f
   1182  03F4  1903               	skipnz
   1183  03F5  0AAD               	incf	___aldiv@quotient+3,f
-  1184  03F6                     l779:	
+  1184  03F6                     l775:	
   1185  03F6  082D               	movf	___aldiv@quotient+3,w
   1186  03F7  00A3               	movwf	?___aldiv+3
   1187  03F8  082C               	movf	___aldiv@quotient+2,w
@@ -1248,7 +1248,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1234                           ; Regs used in ___wmul: [wreg+status,2+status,0]
   1235  051C  01F8               	clrf	___wmul@product
   1236  051D  01F9               	clrf	___wmul@product+1
-  1237  051E                     l817:	
+  1237  051E                     l813:	
   1238  051E  1C74               	btfss	___wmul@multiplier,0
   1239  051F  2D26               	goto	l153
   1240  0520  0876               	movf	___wmul@multiplicand,w
@@ -1277,7 +1277,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1263  0534  0874               	movf	___wmul@multiplier,w
   1264  0535  0475               	iorwf	___wmul@multiplier+1,w
   1265  0536  1D03               	btfss	3,2
-  1266  0537  2D1E               	goto	l817
+  1266  0537  2D1E               	goto	l813
   1267  0538  0879               	movf	___wmul@product+1,w
   1268  0539  00F5               	movwf	?___wmul+1
   1269  053A  0878               	movf	___wmul@product,w
@@ -1330,21 +1330,21 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1316  0552  1303               	bcf	3,6	;RP1=0, select bank0
   1317  0553  00AC               	movwf	___bmul@multiplier
   1318  0554  01AB               	clrf	___bmul@product
-  1319  0555                     l831:	
+  1319  0555                     l827:	
   1320  0555  1C2C               	btfss	___bmul@multiplier,0
-  1321  0556  2D5B               	goto	l835
+  1321  0556  2D5B               	goto	l831
   1322  0557  0829               	movf	___bmul@multiplicand,w
   1323  0558  00AA               	movwf	??___bmul
   1324  0559  082A               	movf	??___bmul,w
   1325  055A  07AB               	addwf	___bmul@product,f
-  1326  055B                     l835:	
+  1326  055B                     l831:	
   1327  055B  1003               	clrc
   1328  055C  0DA9               	rlf	___bmul@multiplicand,f
   1329  055D  1003               	clrc
   1330  055E  0CAC               	rrf	___bmul@multiplier,f
   1331  055F  082C               	movf	___bmul@multiplier,w
   1332  0560  1D03               	btfss	3,2
-  1333  0561  2D55               	goto	l831
+  1333  0561  2D55               	goto	l827
   1334  0562  082B               	movf	___bmul@product,w
   1335  0563  0008               	return
   1336  0564                     __end_of___bmul:	
@@ -1394,7 +1394,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1380  0481  1303               	bcf	3,6	;RP1=0, select bank0
   1381  0482  01A6               	clrf	___awdiv@sign
   1382  0483  1FA1               	btfss	___awdiv@divisor+1,7
-  1383  0484  2C8C               	goto	l851
+  1383  0484  2C8C               	goto	l847
   1384  0485  09A0               	comf	___awdiv@divisor,f
   1385  0486  09A1               	comf	___awdiv@divisor+1,f
   1386  0487  0AA0               	incf	___awdiv@divisor,f
@@ -1402,9 +1402,9 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1388  0489  0AA1               	incf	___awdiv@divisor+1,f
   1389  048A  01A6               	clrf	___awdiv@sign
   1390  048B  0AA6               	incf	___awdiv@sign,f
-  1391  048C                     l851:	
+  1391  048C                     l847:	
   1392  048C  1FA3               	btfss	___awdiv@dividend+1,7
-  1393  048D  2C97               	goto	l857
+  1393  048D  2C97               	goto	l853
   1394  048E  09A2               	comf	___awdiv@dividend,f
   1395  048F  09A3               	comf	___awdiv@dividend+1,f
   1396  0490  0AA2               	incf	___awdiv@dividend,f
@@ -1414,18 +1414,18 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1400  0494  00A4               	movwf	??___awdiv
   1401  0495  0824               	movf	??___awdiv,w
   1402  0496  06A6               	xorwf	___awdiv@sign,f
-  1403  0497                     l857:	
+  1403  0497                     l853:	
   1404  0497  01A7               	clrf	___awdiv@quotient
   1405  0498  01A8               	clrf	___awdiv@quotient+1
   1406  0499  0820               	movf	___awdiv@divisor,w
   1407  049A  0421               	iorwf	___awdiv@divisor+1,w
   1408  049B  1903               	btfsc	3,2
-  1409  049C  2CCE               	goto	l879
+  1409  049C  2CCE               	goto	l875
   1410  049D  01A5               	clrf	___awdiv@counter
   1411  049E  0AA5               	incf	___awdiv@counter,f
-  1412  049F                     l867:	
+  1412  049F                     l863:	
   1413  049F  1BA1               	btfsc	___awdiv@divisor+1,7
-  1414  04A0  2CAD               	goto	l869
+  1414  04A0  2CAD               	goto	l865
   1415  04A1  3001               	movlw	1
   1416  04A2                     u705:	
   1417  04A2  1003               	clrc
@@ -1438,8 +1438,8 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1424  04A9  00A4               	movwf	??___awdiv
   1425  04AA  0824               	movf	??___awdiv,w
   1426  04AB  07A5               	addwf	___awdiv@counter,f
-  1427  04AC  2C9F               	goto	l867
-  1428  04AD                     l869:	
+  1427  04AC  2C9F               	goto	l863
+  1428  04AD                     l865:	
   1429  04AD  3001               	movlw	1
   1430  04AE                     u725:	
   1431  04AE  1003               	clrc
@@ -1456,7 +1456,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1442  04B9  0222               	subwf	___awdiv@dividend,w
   1443  04BA                     u735:	
   1444  04BA  1C03               	skipc
-  1445  04BB  2CC3               	goto	l875
+  1445  04BB  2CC3               	goto	l871
   1446  04BC  0820               	movf	___awdiv@divisor,w
   1447  04BD  02A2               	subwf	___awdiv@dividend,f
   1448  04BE  0821               	movf	___awdiv@divisor+1,w
@@ -1464,7 +1464,7 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1450  04C0  03A3               	decf	___awdiv@dividend+1,f
   1451  04C1  02A3               	subwf	___awdiv@dividend+1,f
   1452  04C2  1427               	bsf	___awdiv@quotient,0
-  1453  04C3                     l875:	
+  1453  04C3                     l871:	
   1454  04C3  3001               	movlw	1
   1455  04C4                     u745:	
   1456  04C4  1003               	clrc
@@ -1476,17 +1476,17 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1462  04CA  3001               	movlw	1
   1463  04CB  02A5               	subwf	___awdiv@counter,f
   1464  04CC  1D03               	btfss	3,2
-  1465  04CD  2CAD               	goto	l869
-  1466  04CE                     l879:	
+  1465  04CD  2CAD               	goto	l865
+  1466  04CE                     l875:	
   1467  04CE  0826               	movf	___awdiv@sign,w
   1468  04CF  1903               	btfsc	3,2
-  1469  04D0  2CD6               	goto	l883
+  1469  04D0  2CD6               	goto	l879
   1470  04D1  09A7               	comf	___awdiv@quotient,f
   1471  04D2  09A8               	comf	___awdiv@quotient+1,f
   1472  04D3  0AA7               	incf	___awdiv@quotient,f
   1473  04D4  1903               	skipnz
   1474  04D5  0AA8               	incf	___awdiv@quotient+1,f
-  1475  04D6                     l883:	
+  1475  04D6                     l879:	
   1476  04D6  0828               	movf	___awdiv@quotient+1,w
   1477  04D7  00A1               	movwf	?___awdiv+1
   1478  04D8  0827               	movf	___awdiv@quotient,w
@@ -1535,11 +1535,11 @@ Microchip Technology Omniscient Code Generator v1.43 (Free mode) build 201707250
   1521                           
   1522                           ;main.c: 22: FAN.count++;
   1523  053F  3001               	movlw	1
-  1524  0540  07E0               	addwf	_FAN+4,f
+  1524  0540  07E0               	addwf	_FAN+4,f	;volatile
   1525  0541  1803               	skipnc
-  1526  0542  0AE1               	incf	_FAN+5,f
+  1526  0542  0AE1               	incf	_FAN+5,f	;volatile
   1527  0543  3000               	movlw	0
-  1528  0544  07E1               	addwf	_FAN+5,f
+  1528  0544  07E1               	addwf	_FAN+5,f	;volatile
   1529                           
   1530                           ;main.c: 23: INTF = 0;
   1531  0545  108B               	bcf	11,1	;volatile
@@ -1653,36 +1653,36 @@ Call Graph Tables:
  ---------------------------------------------------------------------------------
  (Depth) Function   	        Calls       Base Space   Used Autos Params    Refs
  ---------------------------------------------------------------------------------
- (0) _main                                                 8     8      0    2434
+ (0) _main                                                 8     8      0    2269
                                              52 BANK0      8     8      0
                             ___awdiv
                              ___bmul
                              ___wmul
                           _rpm_timer
  ---------------------------------------------------------------------------------
- (1) _rpm_timer                                           30    18     12    1630
+ (1) _rpm_timer                                           30    18     12    1520
                                              22 BANK0     30    18     12
                             ___aldiv
                              ___lmul
  ---------------------------------------------------------------------------------
- (2) ___lmul                                              13     5      8     348
+ (2) ___lmul                                              13     5      8     304
                                               5 COMMON     5     5      0
                                              14 BANK0      8     0      8
                             ___aldiv (ARG)
  ---------------------------------------------------------------------------------
- (2) ___aldiv                                             15     7      8     556
+ (2) ___aldiv                                             15     7      8     512
                                               4 COMMON     1     1      0
                                               0 BANK0     14     6      8
  ---------------------------------------------------------------------------------
- (1) ___wmul                                               6     2      4     220
+ (1) ___wmul                                               6     2      4     198
                                               4 COMMON     6     2      4
  ---------------------------------------------------------------------------------
- (1) ___bmul                                               4     3      1     156
+ (1) ___bmul                                               4     3      1     145
                                               9 BANK0      4     3      1
                             ___awdiv (ARG)
                              ___wmul (ARG)
  ---------------------------------------------------------------------------------
- (1) ___awdiv                                              9     5      4     428
+ (1) ___awdiv                                              9     5      4     406
                                               0 BANK0      9     5      4
                              ___wmul (ARG)
  ---------------------------------------------------------------------------------
@@ -1742,25 +1742,25 @@ EEDATA             100      0       0       0        0.0%
 
 
 Microchip Technology PIC Macro Assembler V1.43 build -156212558 
-Symbol Table                                                                                   Mon Sep  4 23:44:31 2017
+Symbol Table                                                                                   Tue Sep  5 02:20:53 2017
 
                                     pc 0002                         ___bmul@product 002B  
                                    l55 035A                                     l57 031F  
                          ___awdiv@sign 0026                                     fsr 0004  
                   ___wmul@multiplicand 0076                                    l208 0382  
-                                  l153 0526                                    l731 04E3  
-                                  l811 0345                                    l803 0322  
-                                  l831 0555                                    l735 04FB  
-                                  l817 051E                                    l761 03A3  
-                                  l753 0393                                    l809 0340  
-                                  l921 041E                                    l851 048C  
-                                  l835 055B                                    l771 03DB  
-                                  l763 03B3                                    l775 03E8  
-                                  l791 028B                                    _FAN 005C  
-                                  l857 0497                                    l883 04D6  
-                                  l875 04C3                                    l867 049F  
-                                  l779 03F6                                    l869 04AD  
-                                  l879 04CE                                    _GIE 005F  
+                                  l153 0526                                    l731 04FB  
+                                  l813 051E                                    l805 0340  
+                                  l831 055B                                    l727 04E3  
+                                  l807 0345                                    l827 0555  
+                                  l771 03E8                                    l853 0497  
+                                  l757 03A3                                    l749 0393  
+                                  l917 041E                                    l871 04C3  
+                                  l863 049F                                    l847 048C  
+                                  l775 03F6                                    l767 03DB  
+                                  l759 03B3                                    _FAN 005C  
+                                  l865 04AD                                    l875 04CE  
+                                  l787 028B                                    l879 04D6  
+                                  l799 0322                                    _GIE 005F  
                                   _RB7 0037                                    _PR2 0092  
                                   u600 0362                                    u505 03B5  
                                   u425 04FD                                    u515 03CA  

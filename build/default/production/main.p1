@@ -1,6 +1,6 @@
 Version 3.2 HI-TECH Software Intermediate Code
 "10 main.c
-[s S95 `ui 1 `i 1 `i 1 `i 1 `i 1 ]
+[s S95 `ui 1 `i 1 `Vi 1 `i 1 `i 1 ]
 [n S95 . time value count div max ]
 "2585 /opt/microchip/xc8/v1.43/include/pic16f877a.h
 [v _RB7 `Vb ~T0 @X0 0 e@55 ]
@@ -1066,7 +1066,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 10: typedef struct {
 [; ;main.c: 11: unsigned int time;
 [; ;main.c: 12: int value;
-[; ;main.c: 13: int count;
+[; ;main.c: 13: volatile int count;
 [; ;main.c: 14: int div;
 [; ;main.c: 15: int max;
 [; ;main.c: 16: } rpm;

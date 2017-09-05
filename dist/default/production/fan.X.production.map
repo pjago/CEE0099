@@ -5,7 +5,7 @@ Linker command line:
 -W-3 --edf=/opt/microchip/xc8/v1.43/dat/en_msgs.txt -cs \
   -h+dist/default/production/fan.X.production.sym \
   --cmf=dist/default/production/fan.X.production.cmf -z -Q16F877A \
-  -o/tmp/xcXCXybxg -Mdist/default/production/fan.X.production.map -E1 \
+  -o/tmp/xcXgmYJ2C -Mdist/default/production/fan.X.production.map -E1 \
   -ver=XC8 -ASTACK=0110h-016fh -pstack=STACK \
   -ACODE=0255h-07FFh,0800h-0FFFhx3 -ASTRCODE=0255h-01FFFh \
   -ASTRING=0255h-02FFh,0300h-03FFhx29 -ACONST=0255h-02FFh,0300h-03FFhx29 \
@@ -18,7 +18,7 @@ Linker command line:
   -pcinit=CODE -pfunctab=ENTRY -ACONFIG=02007h-02007h -pconfig=CONFIG \
   -DCONFIG=2 -AIDLOC=02000h-02003h -pidloc=IDLOC -DIDLOC=2 \
   -AEEDATA=00h-0FFh/02100h -peeprom_data=EEDATA -DEEDATA=2 -DCODE=2 \
-  -DSTRCODE=2 -DSTRING=2 -DCONST=2 -DENTRY=2 -k /tmp/xcXGc87VA.obj \
+  -DSTRCODE=2 -DSTRING=2 -DCONST=2 -DENTRY=2 -k /tmp/xcXNaKBhn.obj \
   dist/default/production/fan.X.production.obj 
 
 Object code version is 3.11
@@ -28,7 +28,7 @@ Machine type is 16F877A
 
 
                 Name                               Link     Load   Length Selector   Space Scale
-/tmp/xcXGc87VA.obj
+/tmp/xcXNaKBhn.obj
                 end_init                            267      267        3      4B2       0
                 reset_vec                           255      255        3      4AA       0
 dist/default/production/fan.X.production.obj
@@ -377,10 +377,10 @@ Total ram usage:        8 bytes
  Defined at:
 		line 27 in file "main.c"
  Parameters:    Size  Location     Type
-  in             10   22[BANK0 ] struct .
+  in             10   22[BANK0 ] volatile struct .
   t               2   32[BANK0 ] unsigned int 
  Auto vars:     Size  Location     Type
-  out            10   42[BANK0 ] struct .
+  out            10   42[BANK0 ] volatile struct .
  Return value:  Size  Location     Type
                   10   22[BANK0 ] struct .
  Registers used:

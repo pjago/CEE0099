@@ -24,9 +24,9 @@
 "20 /home/pjago/MPLABXProjects/fan.X/main.c
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
 "10
-[s S19 . 10 `ui 1 time 2 0 `i 1 value 2 2 `i 1 count 2 4 `i 1 div 2 6 `i 1 max 2 8 ]
+[s S19 . 10 `ui 1 time 2 0 `i 1 value 2 2 `VEi 1 count 2 4 `i 1 div 2 6 `i 1 max 2 8 ]
 "27
-[v _rpm_timer rpm_timer `(S19  1 e 10 0 ]
+[v _rpm_timer rpm_timer `(VES19  1 e 10 0 ]
 "52
 [v _main main `(i  1 e 2 0 ]
 "632 /opt/microchip/xc8/v1.43/include/pic16f877a.h
@@ -73,23 +73,23 @@
 [v _TRISC2 TRISC2 `VEb  1 e 0 @1082 ]
 "2841
 [v _nRBPU nRBPU `VEb  1 e 0 @1039 ]
-[s S19 . 10 `ui 1 time 2 0 `i 1 value 2 2 `i 1 count 2 4 `i 1 div 2 6 `i 1 max 2 8 ]
+[s S19 . 10 `ui 1 time 2 0 `i 1 value 2 2 `VEi 1 count 2 4 `i 1 div 2 6 `i 1 max 2 8 ]
 "18 /home/pjago/MPLABXProjects/fan.X/main.c
-[v _FAN FAN `S19  1 e 10 0 ]
+[v _FAN FAN `VES19  1 e 10 0 ]
 "52
 [v _main main `(i  1 e 2 0 ]
 {
 "82
 } 0
 "10
-[s S19 . 10 `ui 1 time 2 0 `i 1 value 2 2 `i 1 count 2 4 `i 1 div 2 6 `i 1 max 2 8 ]
+[s S19 . 10 `ui 1 time 2 0 `i 1 value 2 2 `VEi 1 count 2 4 `i 1 div 2 6 `i 1 max 2 8 ]
 "27
-[v _rpm_timer rpm_timer `(S19  1 e 10 0 ]
+[v _rpm_timer rpm_timer `(VES19  1 e 10 0 ]
 {
 "28
-[v rpm_timer@out out `S19  1 a 10 42 ]
+[v rpm_timer@out out `VES19  1 a 10 42 ]
 "27
-[v rpm_timer@in in `S19  1 p 10 22 ]
+[v rpm_timer@in in `VES19  1 p 10 22 ]
 [v rpm_timer@t t `ui  1 p 2 32 ]
 "50
 } 0

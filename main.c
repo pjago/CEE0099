@@ -9,13 +9,13 @@
 
 typedef struct {
     unsigned int time;
+    volatile int count;
     int value;
-    int count;
     int div;
     int max;
 } rpm;
 
-rpm FAN = {0, 0, -1, 7, 5000};
+rpm FAN = {0, -1, 0, 7, 5000};
 
 void interrupt raycast_intersection_cleared (void) {
     RB7 = !RB7;
