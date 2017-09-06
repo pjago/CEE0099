@@ -1,7 +1,7 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"10 main.c
-[s S95 `ui 1 `i 1 `Vi 1 `i 1 `i 1 ]
-[n S95 . time value count div max ]
+"24 main.c
+[s S95 `Vi 1 `ui 1 `ui 1 `ui 1 `ui 1 ]
+[n S95 . count time value div max ]
 "2585 /opt/microchip/xc8/v1.43/include/pic16f877a.h
 [v _RB7 `Vb ~T0 @X0 0 e@55 ]
 "2525
@@ -47,6 +47,22 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _GIE `Vb ~T0 @X0 0 e@95 ]
 "632
 [v _TMR1 `Vus ~T0 @X0 0 e@14 ]
+"10 main.c
+[p x FOSC=EXTRC ]
+"11
+[p x WDTE=OFF ]
+"12
+[p x PWRTE=OFF ]
+"13
+[p x BOREN=OFF ]
+"14
+[p x LVP=OFF ]
+"15
+[p x CPD=OFF ]
+"16
+[p x WRT=OFF ]
+"17
+[p x CP=OFF ]
 [; ;htc.h: 26: extern const char __xc8_OPTIM_SPEED;
 [; ;htc.h: 28: extern double __fpnormalize(double);
 [; ;xc8debug.h: 14: extern void __builtin_software_breakpoint(void);
@@ -1063,227 +1079,222 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;pic.h: 192: extern unsigned char __resetbits;
 [; ;pic.h: 193: extern __bit __powerdown;
 [; ;pic.h: 194: extern __bit __timeout;
-[; ;main.c: 10: typedef struct {
-[; ;main.c: 11: unsigned int time;
-[; ;main.c: 12: int value;
-[; ;main.c: 13: volatile int count;
-[; ;main.c: 14: int div;
-[; ;main.c: 15: int max;
-[; ;main.c: 16: } rpm;
-"18 main.c
+"21 main.c
+[v _T1FOSC `Cui ~T0 @X0 1 e ]
+[i _T1FOSC
+-> -> 4096 `i `ui
+]
+[; ;main.c: 21: const unsigned int T1FOSC = 0x1000;
+"22
+[v _RPSMIN `Cui ~T0 @X0 1 e ]
+[i _RPSMIN
+-> -> 8 `i `ui
+]
+[; ;main.c: 22: const unsigned int RPSMIN = 8;
+[; ;main.c: 24: typedef struct {
+[; ;main.c: 25: volatile int count;
+[; ;main.c: 26: unsigned int time;
+[; ;main.c: 27: unsigned int value;
+[; ;main.c: 28: unsigned int div;
+[; ;main.c: 29: unsigned int max;
+[; ;main.c: 30: } rpm;
+"32
 [v _FAN `S95 ~T0 @X0 1 e ]
 [i _FAN
 :U ..
 :U ..
--> -> 0 `i `ui
--> 0 `i
 -U -> 1 `i
--> 7 `i
--> 5000 `i
+-> -> 0 `i `ui
+-> -> 0 `i `ui
+-> -> 7 `i `ui
+-> -> 5000 `i `ui
 ..
 ..
 ]
-[; ;main.c: 18: rpm FAN = {0, 0, -1, 7, 5000};
+[; ;main.c: 32: rpm FAN = {-1, 0, 0, 7, 5000};
 [v $root$_raycast_intersection_cleared `(v ~T0 @X0 0 e ]
-[v F1106 `(v ~T0 @X0 1 tf ]
-"20
-[v _raycast_intersection_cleared `IF1106 ~T0 @X0 1 e ]
+[v F1108 `(v ~T0 @X0 1 tf ]
+"34
+[v _raycast_intersection_cleared `IF1108 ~T0 @X0 1 e ]
 {
-[; ;main.c: 20: void interrupt raycast_intersection_cleared (void) {
+[; ;main.c: 34: void interrupt raycast_intersection_cleared (void) {
 [e :U _raycast_intersection_cleared ]
 [f ]
-[; ;main.c: 21: RB7 = !RB7;
-"21
+[; ;main.c: 35: RB7 = !RB7;
+"35
 [e = _RB7 ! _RB7 ]
-[; ;main.c: 22: FAN.count++;
-"22
-[e ++ . _FAN 2 -> 1 `i ]
-[; ;main.c: 23: INTF = 0;
-"23
+[; ;main.c: 36: FAN.count++;
+"36
+[e ++ . _FAN 0 -> 1 `i ]
+[; ;main.c: 37: INTF = 0;
+"37
 [e = _INTF -> -> 0 `i `b ]
-[; ;main.c: 24: return;
-"24
+[; ;main.c: 38: return;
+"38
 [e $UE 96  ]
-[; ;main.c: 25: }
-"25
+[; ;main.c: 39: }
+"39
 [e :UE 96 ]
 }
-"27
-[v _rpm_timer `(S95 ~T0 @X0 1 ef2`S95`ui ]
+"41
+[v _rps_timer1 `(S95 ~T0 @X0 1 ef2`S95`ui ]
 {
-[; ;main.c: 27: rpm rpm_timer (rpm in, unsigned int t) {
-[e :U _rpm_timer ]
-[v _in `S95 ~T0 @X0 1 r1 ]
+[; ;main.c: 41: rpm rps_timer1 (rpm x, unsigned int t) {
+[e :U _rps_timer1 ]
+[v _x `S95 ~T0 @X0 1 r1 ]
 [v _t `ui ~T0 @X0 1 r2 ]
 [f ]
-"28
-[v _out `S95 ~T0 @X0 1 a ]
-[; ;main.c: 28: rpm out;
-[; ;main.c: 30: if (out.time > t) {
-"30
-[e $ ! > . _out 0 _t 98  ]
-{
-[; ;main.c: 31: out.count = 0;
-"31
-[e = . _out 2 -> 0 `i ]
-[; ;main.c: 32: out.value = in.value;
-"32
-[e = . _out 1 . _in 1 ]
-[; ;main.c: 33: out.time = t;
-"33
-[e = . _out 0 _t ]
-"34
-}
-[; ;main.c: 34: }
-[e $U 99  ]
-"35
-[e :U 98 ]
-[; ;main.c: 35: else if (in.count > 0) {
-[e $ ! > . _in 2 -> 0 `i 100  ]
-{
-[; ;main.c: 36: out.count = 0;
-"36
-[e = . _out 2 -> 0 `i ]
-[; ;main.c: 37: out.value = 37500 / (t - in.time) * 1000 * in.count / in.div;
-"37
-[e = . _out 1 -> / * * / -> 37500 `l -> - _t . _in 0 `l -> -> 1000 `i `l -> . _in 2 `l -> . _in 3 `l `i ]
-[; ;main.c: 38: if (out.value > in.max) out.max = out.value;
-"38
-[e $ ! > . _out 1 . _in 4 101  ]
-[e = . _out 4 . _out 1 ]
-[e :U 101 ]
-[; ;main.c: 39: out.time = t;
-"39
-[e = . _out 0 _t ]
-"40
-}
-[; ;main.c: 40: }
-[e $U 102  ]
-"41
-[e :U 100 ]
-[; ;main.c: 41: else if (t - in.time > 37500) {
-[e $ ! > -> - _t . _in 0 `l -> 37500 `l 103  ]
-{
-[; ;main.c: 42: out.count = -1;
+[; ;main.c: 42: if (x.time > t) {
 "42
-[e = . _out 2 -U -> 1 `i ]
-[; ;main.c: 43: out.value = 0;
+[e $ ! > . _x 1 _t 98  ]
+{
+[; ;main.c: 43: x.count = 0;
 "43
-[e = . _out 1 -> 0 `i ]
-[; ;main.c: 44: out.time = t;
+[e = . _x 0 -> 0 `i ]
+[; ;main.c: 44: x.time = t;
 "44
-[e = . _out 0 _t ]
+[e = . _x 1 _t ]
 "45
 }
 [; ;main.c: 45: }
-[e $U 104  ]
+[e $U 99  ]
 "46
-[e :U 103 ]
-[; ;main.c: 46: else {
+[e :U 98 ]
+[; ;main.c: 46: else if (x.count > 0) {
+[e $ ! > . _x 0 -> 0 `i 100  ]
 {
-[; ;main.c: 47: out = in;
+[; ;main.c: 47: x.value = T1FOSC / (t - x.time) * x.count / x.div;
 "47
-[e = _out _in ]
+[e = . _x 2 / * / _T1FOSC - _t . _x 1 -> . _x 0 `ui . _x 3 ]
+[; ;main.c: 48: if (x.value > x.max) x.max = x.value;
 "48
+[e $ ! > . _x 2 . _x 4 101  ]
+[e = . _x 4 . _x 2 ]
+[e :U 101 ]
+[; ;main.c: 49: x.count = 0;
+"49
+[e = . _x 0 -> 0 `i ]
+[; ;main.c: 50: x.time = t;
+"50
+[e = . _x 1 _t ]
+"51
 }
-[e :U 104 ]
+[; ;main.c: 51: }
+[e $U 102  ]
+"52
+[e :U 100 ]
+[; ;main.c: 52: else if ( (t - x.time) > (T1FOSC / RPSMIN) ) {
+[e $ ! > - _t . _x 1 / _T1FOSC _RPSMIN 103  ]
+{
+[; ;main.c: 53: x.count = -1;
+"53
+[e = . _x 0 -U -> 1 `i ]
+[; ;main.c: 54: x.value = 0;
+"54
+[e = . _x 2 -> -> 0 `i `ui ]
+[; ;main.c: 55: x.time = t;
+"55
+[e = . _x 1 _t ]
+"56
+}
+[e :U 103 ]
+"57
 [e :U 102 ]
 [e :U 99 ]
-[; ;main.c: 48: }
-[; ;main.c: 49: return out;
-"49
-[e ) _out ]
+[; ;main.c: 56: }
+[; ;main.c: 57: return x;
+[e ) _x ]
 [e $UE 97  ]
-[; ;main.c: 50: }
-"50
+[; ;main.c: 58: }
+"58
 [e :UE 97 ]
 }
 [v $root$_main `(v ~T0 @X0 0 e ]
-"52
+"60
 [v _main `(i ~T0 @X0 1 ef ]
 {
-[; ;main.c: 52: int main (void) {
+[; ;main.c: 60: int main (void) {
 [e :U _main ]
 [f ]
-[; ;main.c: 54: TMR1CS = 0;
-"54
-[e = _TMR1CS -> -> 0 `i `b ]
-[; ;main.c: 55: T1CKPS0 = 1;
-"55
-[e = _T1CKPS0 -> -> 1 `i `b ]
-[; ;main.c: 56: T1CKPS1 = 1;
-"56
-[e = _T1CKPS1 -> -> 1 `i `b ]
-[; ;main.c: 57: TMR1ON = 1;
-"57
-[e = _TMR1ON -> -> 1 `i `b ]
-[; ;main.c: 59: CCP1M3 = 1;
-"59
-[e = _CCP1M3 -> -> 1 `i `b ]
-[; ;main.c: 60: CCP1M2 = 1;
-"60
-[e = _CCP1M2 -> -> 1 `i `b ]
-[; ;main.c: 61: CCP1CON &= 0x0F;
-"61
-[e =& _CCP1CON -> -> 15 `i `uc ]
-[; ;main.c: 62: CCPR1L = 0;
-"62
-[e = _CCPR1L -> -> 0 `i `uc ]
-[; ;main.c: 63: PR2 = 100;
+[; ;main.c: 63: TMR1CS = 1;
 "63
-[e = _PR2 -> -> 100 `i `uc ]
-[; ;main.c: 64: T2CKPS0 = 0;
+[e = _TMR1CS -> -> 1 `i `b ]
+[; ;main.c: 64: T1CKPS0 = 1;
 "64
-[e = _T2CKPS0 -> -> 0 `i `b ]
-[; ;main.c: 65: T2CKPS1 = 0;
+[e = _T1CKPS0 -> -> 1 `i `b ]
+[; ;main.c: 65: T1CKPS1 = 1;
 "65
-[e = _T2CKPS1 -> -> 0 `i `b ]
-[; ;main.c: 66: TMR2ON = 1;
+[e = _T1CKPS1 -> -> 1 `i `b ]
+[; ;main.c: 66: TMR1ON = 1;
 "66
-[e = _TMR2ON -> -> 1 `i `b ]
-[; ;main.c: 67: TRISC2 = 0;
-"67
-[e = _TRISC2 -> -> 0 `i `b ]
-[; ;main.c: 69: nRBPU = 0;
+[e = _TMR1ON -> -> 1 `i `b ]
+[; ;main.c: 68: CCP1M3 = 1;
+"68
+[e = _CCP1M3 -> -> 1 `i `b ]
+[; ;main.c: 69: CCP1M2 = 1;
 "69
-[e = _nRBPU -> -> 0 `i `b ]
-[; ;main.c: 70: TRISB0 = 1;
+[e = _CCP1M2 -> -> 1 `i `b ]
+[; ;main.c: 70: CCP1CON &= 0x0F;
 "70
-[e = _TRISB0 -> -> 1 `i `b ]
-[; ;main.c: 71: TRISB7 = 0;
+[e =& _CCP1CON -> -> 15 `i `uc ]
+[; ;main.c: 71: CCPR1L = 0;
 "71
-[e = _TRISB7 -> -> 0 `i `b ]
-[; ;main.c: 72: INTEDG = 0;
+[e = _CCPR1L -> -> 0 `i `uc ]
+[; ;main.c: 72: PR2 = 100;
 "72
-[e = _INTEDG -> -> 0 `i `b ]
-[; ;main.c: 73: INTE = 1;
+[e = _PR2 -> -> 100 `i `uc ]
+[; ;main.c: 73: T2CKPS0 = 0;
 "73
-[e = _INTE -> -> 1 `i `b ]
-[; ;main.c: 74: GIE = 1;
+[e = _T2CKPS0 -> -> 0 `i `b ]
+[; ;main.c: 74: T2CKPS1 = 0;
 "74
-[e = _GIE -> -> 1 `i `b ]
-[; ;main.c: 77: while (1) {
-"77
-[e :U 107 ]
-{
-[; ;main.c: 78: FAN = rpm_timer(FAN, TMR1);
+[e = _T2CKPS1 -> -> 0 `i `b ]
+[; ;main.c: 75: TMR2ON = 1;
+"75
+[e = _TMR2ON -> -> 1 `i `b ]
+[; ;main.c: 76: TRISC2 = 0;
+"76
+[e = _TRISC2 -> -> 0 `i `b ]
+[; ;main.c: 78: nRBPU = 0;
 "78
-[e = _FAN ( _rpm_timer (2 , _FAN -> _TMR1 `ui ]
-[; ;main.c: 79: CCPR1L = 10 * FAN.value / FAN.max * 10;
+[e = _nRBPU -> -> 0 `i `b ]
+[; ;main.c: 79: TRISB0 = 1;
 "79
-[e = _CCPR1L -> * / * -> 10 `i . _FAN 1 . _FAN 4 -> 10 `i `uc ]
+[e = _TRISB0 -> -> 1 `i `b ]
+[; ;main.c: 80: TRISB7 = 0;
 "80
-}
-[e :U 106 ]
-"77
-[e $U 107  ]
-[e :U 108 ]
-[; ;main.c: 80: }
-[; ;main.c: 81: return 0;
+[e = _TRISB7 -> -> 0 `i `b ]
+[; ;main.c: 81: INTEDG = 0;
 "81
-[e ) -> 0 `i ]
-[e $UE 105  ]
-[; ;main.c: 82: }
+[e = _INTEDG -> -> 0 `i `b ]
+[; ;main.c: 82: INTE = 1;
 "82
-[e :UE 105 ]
+[e = _INTE -> -> 1 `i `b ]
+[; ;main.c: 83: GIE = 1;
+"83
+[e = _GIE -> -> 1 `i `b ]
+[; ;main.c: 87: while (1) {
+"87
+[e :U 106 ]
+{
+[; ;main.c: 88: CCPR1L = 100 * FAN.value / FAN.max;
+"88
+[e = _CCPR1L -> / * -> -> 100 `i `ui . _FAN 2 . _FAN 4 `uc ]
+[; ;main.c: 89: FAN = rps_timer1(FAN, TMR1);
+"89
+[e = _FAN ( _rps_timer1 (2 , _FAN -> _TMR1 `ui ]
+"90
+}
+[e :U 105 ]
+"87
+[e $U 106  ]
+[e :U 107 ]
+[; ;main.c: 90: }
+[; ;main.c: 91: return 0;
+"91
+[e ) -> 0 `i ]
+[e $UE 104  ]
+[; ;main.c: 92: }
+"92
+[e :UE 104 ]
 }

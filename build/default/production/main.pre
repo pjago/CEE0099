@@ -1,6 +1,17 @@
 
 # 1 "main.c"
 
+
+# 10
+#pragma config FOSC = EXTRC
+#pragma config WDTE = OFF
+#pragma config PWRTE = OFF
+#pragma config BOREN = OFF
+#pragma config LVP = OFF
+#pragma config CPD = OFF
+#pragma config WRT = OFF
+#pragma config CP = OFF
+
 # 26 "/opt/microchip/xc8/v1.43/include/htc.h"
 extern const char __xc8_OPTIM_SPEED;
 
@@ -1460,16 +1471,19 @@ extern unsigned char __resetbits;
 extern __bit __powerdown;
 extern __bit __timeout;
 
-# 10 "main.c"
+# 21 "main.c"
+const unsigned int T1FOSC = 0x1000;
+const unsigned int RPSMIN = 8;
+
 typedef struct {
-unsigned int time;
-int value;
 volatile int count;
-int div;
-int max;
+unsigned int time;
+unsigned int value;
+unsigned int div;
+unsigned int max;
 } rpm;
 
-rpm FAN = {0, 0, -1, 7, 5000};
+rpm FAN = {-1, 0, 0, 7, 5000};
 
 void interrupt raycast_intersection_cleared (void) {
 RB7 = !RB7;
@@ -1478,34 +1492,29 @@ INTF = 0;
 return;
 }
 
-rpm rpm_timer (rpm in, unsigned int t) {
-rpm out;
-
-if (out.time > t) {
-out.count = 0;
-out.value = in.value;
-out.time = t;
+rpm rps_timer1 (rpm x, unsigned int t) {
+if (x.time > t) {
+x.count = 0;
+x.time = t;
 }
-else if (in.count > 0) {
-out.count = 0;
-out.value = 37500 / (t - in.time) * 1000 * in.count / in.div;
-if (out.value > in.max) out.max = out.value;
-out.time = t;
+else if (x.count > 0) {
+x.value = T1FOSC / (t - x.time) * x.count / x.div;
+if (x.value > x.max) x.max = x.value;
+x.count = 0;
+x.time = t;
 }
-else if (t - in.time > 37500) {
-out.count = -1;
-out.value = 0;
-out.time = t;
+else if ( (t - x.time) > (T1FOSC / RPSMIN) ) {
+x.count = -1;
+x.value = 0;
+x.time = t;
 }
-else {
-out = in;
-}
-return out;
+return x;
 }
 
 int main (void) {
 
-TMR1CS = 0;
+
+TMR1CS = 1;
 T1CKPS0 = 1;
 T1CKPS1 = 1;
 TMR1ON = 1;
@@ -1528,9 +1537,10 @@ INTE = 1;
 GIE = 1;
 
 
+
 while (1) {
-FAN = rpm_timer(FAN, TMR1);
-CCPR1L = 10 * FAN.value / FAN.max * 10;
+CCPR1L = 100 * FAN.value / FAN.max;
+FAN = rps_timer1(FAN, TMR1);
 }
 return 0;
 }
