@@ -3,27 +3,47 @@
 [d edition pro ]
 [d chip 16F877A ]
 [d frameptr 6 ]
+"464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
+[v _printf printf `(i  1 e 2 0 ]
 "62 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\float.c
 [v ___ftpack __ftpack `(f  1 e 3 0 ]
 "86 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftadd.c
 [v ___ftadd __ftadd `(f  1 e 3 0 ]
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
+[v _isdigit isdigit `(b  1 e 0 0 ]
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
 "6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
 "15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
 "6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\pic\eeprom.c
 [v _eecpymem eecpymem `(v  1 e 1 0 ]
 "39
 [v _memcpyee memcpyee `(v  1 e 1 0 ]
-"34 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"31 C:\Users\usuario\Documents\Github\CEE0099\main.c
+[v _beep beep `(v  1 e 1 0 ]
+"39
+[v _putch putch `(v  1 e 1 0 ]
+"47
+[v _prog_lcd prog_lcd `(v  1 e 1 0 ]
+"55
+[v _init_lcd init_lcd `(v  1 e 1 0 ]
+"66
+[v _main_lcd main_lcd `(v  1 e 1 0 ]
+"84
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
-"24
-[s S19 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
-"41
-[v _rps_timer1 rps_timer1 `(VES19  1 e 10 0 ]
-"60
+"74
+[s S35 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+"91
+[v _rps_timer1 rps_timer1 `(VES35  1 e 10 0 ]
+"110
 [v _main main `(i  1 e 2 0 ]
-"452 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
+"338 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
+[v _PORTD PORTD `VEuc  1 e 1 @8 ]
+"452
 [v _INTCON INTCON `VEuc  1 e 1 @11 ]
 "632
 [v _TMR1 TMR1 `VEus  1 e 2 @14 ]
@@ -37,36 +57,103 @@
 [v _CCP1CON CCP1CON `VEuc  1 e 1 @23 ]
 "1253
 [v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
+"1323
+[v _TRISA TRISA `VEuc  1 e 1 @133 ]
 "1373
 [v _TRISB TRISB `VEuc  1 e 1 @134 ]
 "1435
 [v _TRISC TRISC `VEuc  1 e 1 @135 ]
+"1497
+[v _TRISD TRISD `VEuc  1 e 1 @136 ]
+"1559
+[v _TRISE TRISE `VEuc  1 e 1 @137 ]
 "1814
 [v _PR2 PR2 `VEuc  1 e 1 @146 ]
 "2525
 [v _INTF INTF `VEb  1 e 0 @89 ]
+"2569
+[v _RA5 RA5 `VEb  1 e 0 @45 ]
 "2585
 [v _RB7 RB7 `VEb  1 e 0 @55 ]
-"21 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"354 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
+[v _dpowers dpowers `DC[5]ui  1 s 10 dpowers ]
+"22 C:\Users\usuario\Documents\Github\CEE0099\main.c
+[v _IFOSC IFOSC `DCul  1 e 4 0 ]
+"23
 [v _T1FOSC T1FOSC `DCui  1 e 2 0 ]
-"22
+"24
 [v _RPSMIN RPSMIN `DCui  1 e 2 0 ]
-[s S19 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
-"32
-[v _FAN FAN `VES19  1 e 10 0 ]
-"60
+[s S19 . 1 `uc 1 RS 1 0 :1:0 
+`uc 1 EN 1 0 :1:1 
+]
+"29
+[v _LCD LCD `S19  1 e 1 @9 ]
+[s S35 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+"82
+[v _FAN FAN `VES35  1 e 10 0 ]
+"110
 [v _main main `(i  1 e 2 0 ]
 {
-"80
+"143
 } 0
-"24
-[s S19 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
-"41
-[v _rps_timer1 rps_timer1 `(VES19  1 e 10 0 ]
+"74
+[s S35 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+"91
+[v _rps_timer1 rps_timer1 `(VES35  1 e 10 0 ]
 {
-[v rps_timer1@x x `VES19  1 p 10 8 ]
+[v rps_timer1@x x `VES35  1 p 10 8 ]
 [v rps_timer1@t t `ui  1 p 2 18 ]
-"58
+"108
+} 0
+"66
+[v _main_lcd main_lcd `(v  1 e 1 0 ]
+{
+[v main_lcd@value value `l  1 p 4 33 ]
+[v main_lcd@duty duty `i  1 p 2 37 ]
+"72
+} 0
+"464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
+[v _printf printf `(i  1 e 2 0 ]
+{
+[v printf@f f `*.24DCuc  1 a 1 wreg ]
+"501
+[v printf@width width `i  1 a 2 30 ]
+"528
+[v printf@val val `ui  1 a 2 27 ]
+"529
+[v printf@len len `ui  1 a 2 25 ]
+"499
+[v printf@c c `c  1 a 1 32 ]
+"508
+[v printf@flag flag `uc  1 a 1 24 ]
+"506
+[v printf@prec prec `c  1 a 1 23 ]
+"530
+[v printf@cp cp `*.4DCuc  1 a 1 22 ]
+"466
+[v printf@ap ap `[1]*.4v  1 a 1 21 ]
+"464
+[v printf@f f `*.24DCuc  1 a 1 wreg ]
+"533
+[v printf@f f `*.24DCuc  1 a 1 29 ]
+"1541
+} 0
+"39 C:\Users\usuario\Documents\Github\CEE0099\main.c
+[v _putch putch `(v  1 e 1 0 ]
+{
+[v putch@msg msg `uc  1 a 1 wreg ]
+[v putch@msg msg `uc  1 a 1 wreg ]
+[v putch@msg msg `uc  1 a 1 12 ]
+"45
+} 0
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
+[v _isdigit isdigit `(b  1 e 0 0 ]
+{
+[v isdigit@c c `uc  1 a 1 wreg ]
+[v isdigit@c c `uc  1 a 1 wreg ]
+"14
+[v isdigit@c c `uc  1 a 1 5 ]
+"15
 } 0
 "15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
@@ -77,6 +164,16 @@
 [v ___wmul@multiplier multiplier `ui  1 p 2 4 ]
 [v ___wmul@multiplicand multiplicand `ui  1 p 2 6 ]
 "53
+} 0
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+{
+"11
+[v ___lwmod@counter counter `uc  1 a 1 13 ]
+"6
+[v ___lwmod@divisor divisor `ui  1 p 2 8 ]
+[v ___lwmod@dividend dividend `ui  1 p 2 10 ]
+"26
 } 0
 "6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
@@ -90,8 +187,40 @@
 [v ___lwdiv@dividend dividend `ui  1 p 2 2 ]
 "31
 } 0
-"34 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"55 C:\Users\usuario\Documents\Github\CEE0099\main.c
+[v _init_lcd init_lcd `(v  1 e 1 0 ]
+{
+"64
+} 0
+"47
+[v _prog_lcd prog_lcd `(v  1 e 1 0 ]
+{
+[v prog_lcd@msg msg `uc  1 a 1 wreg ]
+[v prog_lcd@msg msg `uc  1 a 1 wreg ]
+[v prog_lcd@msg msg `uc  1 a 1 12 ]
+"53
+} 0
+"31
+[v _beep beep `(v  1 e 1 0 ]
+{
+"33
+[v beep@j j `i  1 a 2 12 ]
+"37
+} 0
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
+[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+{
+"11
+[v ___lldiv@quotient quotient `ul  1 a 4 5 ]
+"12
+[v ___lldiv@counter counter `uc  1 a 1 9 ]
+"6
+[v ___lldiv@divisor divisor `ul  1 p 4 0 ]
+[v ___lldiv@dividend dividend `ul  1 p 4 4 ]
+"31
+} 0
+"84 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
 {
-"39
+"89
 } 0

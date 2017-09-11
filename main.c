@@ -16,10 +16,60 @@
 #pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
+#include <stdio.h>
 #include <xc.h>
 
-const unsigned int T1FOSC = 0x1000;  // RTC = 0x8000 Hz, CKPS = 0b11 @T1CON
-const unsigned int RPSMIN = 8;       // RPS minimal pickup value @rps_timer
+const unsigned long IFOSC = 1000000;  // CLK = 4 Mhz, CYC = 1 Mhz @beep @delay
+const unsigned int T1FOSC = 0x1000;   // RTC = 0x8000 Hz, CKPS = 0b11 @T1CON
+const unsigned int RPSMIN = 8;        // RPS minimal pickup value @rps_timer
+
+struct {
+    unsigned RS : 1;     //Register Select
+    unsigned EN : 1;     //ENable
+} LCD @ &PORTE;
+
+void beep () {
+    _delay(IFOSC/10);
+    for (int j = 0; j < 100; ++j) {
+        RA5 = 1; _delay(IFOSC/1000);
+        RA5 = 0; _delay(IFOSC/2000);
+    } 
+}
+
+void putch (char msg) {
+    LCD.RS = 1;
+    PORTD = msg;
+    LCD.EN = 1; _delay(IFOSC/1000000);
+    LCD.EN = 0; _delay(IFOSC/20000);
+    return;
+}
+
+void prog_lcd (char msg) {
+    LCD.RS = 0;
+    PORTD = msg;
+    LCD.EN = 1; _delay(IFOSC/1000000);
+    LCD.EN = 0; _delay(IFOSC/20000);
+    return;
+}
+
+void init_lcd () {
+    prog_lcd(0x30); _delay(IFOSC/200);
+    prog_lcd(0x30); _delay(IFOSC/10000);
+    prog_lcd(0x30);
+    prog_lcd(0x38);
+    prog_lcd(0x01); _delay(IFOSC/500);
+    prog_lcd(0x0C);
+    prog_lcd(0x06);
+    return;
+}
+
+void main_lcd (long value, int duty) {
+    prog_lcd(0xC0);
+    printf("%4d ", value);
+    prog_lcd(0xC8);
+    printf("PWM %3d%%", duty);
+    return;
+}
 
 typedef struct {
     volatile unsigned int count;
@@ -69,12 +119,25 @@ int main (void) {
     OPTION_REG = 0x00;      // B internal pull-ups, B0 INTE falling edge
     TRISB = 0x7F;           // B0 reads IR, B7 powers a LED
     INTCON = 0x90;          // enable external interrupt on B0
-
+    TRISD = 0x00;           // LCD output
+    TRISE = 0xFC;           // LCD enable e rs
+    TRISA = 0xDF;           // A5 buzz a buzzer
+    
+    beep();
+    beep();
+    beep();
+    init_lcd();
+    prog_lcd(0x80);
+    printf("LAB.CONT.DIGITAL");
+    prog_lcd(0xC0);
+    printf("Seja Bem-Vindo!");
+    
     //LOOP   
     
     while (1) {
         CCPR1L = 100 * FAN.value / FAN.max;
         FAN = rps_timer1(FAN, TMR1);
+        main_lcd(FAN.value, CCPR1L); //todo: only per sec
     }
     return 0;
 }

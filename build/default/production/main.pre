@@ -12,6 +12,69 @@
 #pragma config WRT = OFF
 #pragma config CP = OFF
 
+# 4 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\__size_t.h"
+typedef unsigned size_t;
+
+# 7 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdarg.h"
+typedef void * va_list[1];
+
+#pragma intrinsic(__va_start)
+extern void * __va_start(void);
+
+#pragma intrinsic(__va_arg)
+extern void * __va_arg(void *, ...);
+
+# 43 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h"
+struct __prbuf
+{
+char * ptr;
+void (* func)(char);
+};
+
+# 29 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\errno.h"
+extern int errno;
+
+# 12 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\conio.h"
+extern void init_uart(void);
+
+extern char getch(void);
+extern char getche(void);
+extern void putch(char);
+extern void ungetch(char);
+
+extern __bit kbhit(void);
+
+# 23
+extern char * cgets(char *);
+extern void cputs(const char *);
+
+# 88 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h"
+extern int cprintf(char *, ...);
+#pragma printf_check(cprintf)
+
+
+
+extern int _doprnt(struct __prbuf *, const register char *, register va_list);
+
+
+# 180
+#pragma printf_check(vprintf) const
+#pragma printf_check(vsprintf) const
+
+extern char * gets(char *);
+extern int puts(const char *);
+extern int scanf(const char *, ...) __attribute__((unsupported("scanf() is not supported by this compiler")));
+extern int sscanf(const char *, const char *, ...) __attribute__((unsupported("sscanf() is not supported by this compiler")));
+extern int vprintf(const char *, va_list) __attribute__((unsupported("vprintf() is not supported by this compiler")));
+extern int vsprintf(char *, const char *, va_list) __attribute__((unsupported("vsprintf() is not supported by this compiler")));
+extern int vscanf(const char *, va_list ap) __attribute__((unsupported("vscanf() is not supported by this compiler")));
+extern int vsscanf(const char *, const char *, va_list) __attribute__((unsupported("vsscanf() is not supported by this compiler")));
+
+#pragma printf_check(printf) const
+#pragma printf_check(sprintf) const
+extern int sprintf(char *, const char *, ...);
+extern int printf(const char *, ...);
+
 # 26 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\htc.h"
 extern const char __xc8_OPTIM_SPEED;
 
@@ -1471,9 +1534,58 @@ extern unsigned char __resetbits;
 extern __bit __powerdown;
 extern __bit __timeout;
 
-# 21 "main.c"
+# 22 "main.c"
+const unsigned long IFOSC = 1000000;
 const unsigned int T1FOSC = 0x1000;
 const unsigned int RPSMIN = 8;
+
+struct {
+unsigned RS : 1;
+unsigned EN : 1;
+} LCD @ &PORTE;
+
+void beep () {
+_delay(IFOSC/10);
+for (int j = 0; j < 100; ++j) {
+RA5 = 1; _delay(IFOSC/1000);
+RA5 = 0; _delay(IFOSC/2000);
+}
+}
+
+void putch (char msg) {
+LCD.RS = 1;
+PORTD = msg;
+LCD.EN = 1; _delay(IFOSC/1000000);
+LCD.EN = 0; _delay(IFOSC/20000);
+return;
+}
+
+void prog_lcd (char msg) {
+LCD.RS = 0;
+PORTD = msg;
+LCD.EN = 1; _delay(IFOSC/1000000);
+LCD.EN = 0; _delay(IFOSC/20000);
+return;
+}
+
+void init_lcd () {
+prog_lcd(0x30); _delay(IFOSC/200);
+prog_lcd(0x30); _delay(IFOSC/10000);
+prog_lcd(0x30);
+prog_lcd(0x38);
+prog_lcd(0x01); _delay(IFOSC/500);
+prog_lcd(0x0C);
+prog_lcd(0x06);
+return;
+}
+
+void main_lcd (long value, int duty) {
+prog_lcd(0xC0);
+printf("%4d ", value);
+prog_lcd(0xC8);
+printf("PWM %3d%%", duty);
+return;
+}
 
 typedef struct {
 volatile unsigned int count;
@@ -1523,12 +1635,25 @@ TRISC = 0xFB;
 OPTION_REG = 0x00;
 TRISB = 0x7F;
 INTCON = 0x90;
+TRISD = 0x00;
+TRISE = 0xFC;
+TRISA = 0xDF;
+
+beep();
+beep();
+beep();
+init_lcd();
+prog_lcd(0x80);
+printf("LAB.CONT.DIGITAL");
+prog_lcd(0xC0);
+printf("Seja Bem-Vindo!");
 
 
 
 while (1) {
 CCPR1L = 100 * FAN.value / FAN.max;
 FAN = rps_timer1(FAN, TMR1);
+main_lcd(FAN.value, CCPR1L);
 }
 return 0;
 }

@@ -1,7 +1,20 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"24 main.c
-[s S95 `Vui 1 `ui 1 `ui 1 `ui 1 `ui 1 ]
-[n S95 . count time value div max ]
+"26 main.c
+[s S96 :1 `uc 1 :1 `uc 1 ]
+[n S96 . RS EN ]
+[v F1151 `(v ~T0 @X0 1 tf1`ul ]
+"152 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h
+[v __delay `JF1151 ~T0 @X0 0 e ]
+[p i __delay ]
+"2569 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
+[v _RA5 `Vb ~T0 @X0 0 e@45 ]
+"338
+[v _PORTD `Vuc ~T0 @X0 0 e@8 ]
+"195 C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h
+[v _printf `(i ~T0 @X0 0 ev`*Cuc ]
+"74 main.c
+[s S105 `Vui 1 `ui 1 `ui 1 `ui 1 `ui 1 ]
+[n S105 . count time value div max ]
 "2585 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
 [v _RB7 `Vb ~T0 @X0 0 e@55 ]
 "2525
@@ -25,6 +38,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _TRISB `Vuc ~T0 @X0 0 e@134 ]
 "452
 [v _INTCON `Vuc ~T0 @X0 0 e@11 ]
+"1497
+[v _TRISD `Vuc ~T0 @X0 0 e@136 ]
+"1559
+[v _TRISE `Vuc ~T0 @X0 0 e@137 ]
+"1323
+[v _TRISA `Vuc ~T0 @X0 0 e@133 ]
 "632
 [v _TMR1 `Vus ~T0 @X0 0 e@14 ]
 "10 main.c
@@ -43,6 +62,36 @@ Version 3.2 HI-TECH Software Intermediate Code
 [p x WRT=OFF ]
 "17
 [p x CP=OFF ]
+[; ;__size_t.h: 4: typedef unsigned size_t;
+[; ;stdarg.h: 7: typedef void * va_list[1];
+[; ;stdarg.h: 10: extern void * __va_start(void);
+[; ;stdarg.h: 13: extern void * __va_arg(void *, ...);
+[; ;stdio.h: 43: struct __prbuf
+[; ;stdio.h: 44: {
+[; ;stdio.h: 45: char * ptr;
+[; ;stdio.h: 46: void (* func)(char);
+[; ;stdio.h: 47: };
+[; ;errno.h: 29: extern int errno;
+[; ;conio.h: 12: extern void init_uart(void);
+[; ;conio.h: 14: extern char getch(void);
+[; ;conio.h: 15: extern char getche(void);
+[; ;conio.h: 16: extern void putch(char);
+[; ;conio.h: 17: extern void ungetch(char);
+[; ;conio.h: 19: extern __bit kbhit(void);
+[; ;conio.h: 23: extern char * cgets(char *);
+[; ;conio.h: 24: extern void cputs(const char *);
+[; ;stdio.h: 88: extern int cprintf(char *, ...);
+[; ;stdio.h: 93: extern int _doprnt(struct __prbuf *, const register char *, register va_list);
+[; ;stdio.h: 183: extern char * gets(char *);
+[; ;stdio.h: 184: extern int puts(const char *);
+[; ;stdio.h: 185: extern int scanf(const char *, ...) __attribute__((unsupported("scanf() is not supported by this compiler")));
+[; ;stdio.h: 186: extern int sscanf(const char *, const char *, ...) __attribute__((unsupported("sscanf() is not supported by this compiler")));
+[; ;stdio.h: 187: extern int vprintf(const char *, va_list) __attribute__((unsupported("vprintf() is not supported by this compiler")));
+[; ;stdio.h: 188: extern int vsprintf(char *, const char *, va_list) __attribute__((unsupported("vsprintf() is not supported by this compiler")));
+[; ;stdio.h: 189: extern int vscanf(const char *, va_list ap) __attribute__((unsupported("vscanf() is not supported by this compiler")));
+[; ;stdio.h: 190: extern int vsscanf(const char *, const char *, va_list) __attribute__((unsupported("vsscanf() is not supported by this compiler")));
+[; ;stdio.h: 194: extern int sprintf(char *, const char *, ...);
+[; ;stdio.h: 195: extern int printf(const char *, ...);
 [; ;htc.h: 26: extern const char __xc8_OPTIM_SPEED;
 [; ;htc.h: 28: extern double __fpnormalize(double);
 [; ;xc8debug.h: 14: extern void __builtin_software_breakpoint(void);
@@ -1059,27 +1108,198 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;pic.h: 192: extern unsigned char __resetbits;
 [; ;pic.h: 193: extern __bit __powerdown;
 [; ;pic.h: 194: extern __bit __timeout;
-"21 main.c
+"22 main.c
+[v _IFOSC `Cul ~T0 @X0 1 e ]
+[i _IFOSC
+-> -> 1000000 `l `ul
+]
+[; ;main.c: 22: const unsigned long IFOSC = 1000000;
+"23
 [v _T1FOSC `Cui ~T0 @X0 1 e ]
 [i _T1FOSC
 -> -> 4096 `i `ui
 ]
-[; ;main.c: 21: const unsigned int T1FOSC = 0x1000;
-"22
+[; ;main.c: 23: const unsigned int T1FOSC = 0x1000;
+"24
 [v _RPSMIN `Cui ~T0 @X0 1 e ]
 [i _RPSMIN
 -> -> 8 `i `ui
 ]
-[; ;main.c: 22: const unsigned int RPSMIN = 8;
-[; ;main.c: 24: typedef struct {
-[; ;main.c: 25: volatile unsigned int count;
-[; ;main.c: 26: unsigned int time;
-[; ;main.c: 27: unsigned int value;
-[; ;main.c: 28: unsigned int div;
-[; ;main.c: 29: unsigned int max;
-[; ;main.c: 30: } rpm;
+[; ;main.c: 24: const unsigned int RPSMIN = 8;
+"29
+[v _LCD `S96 ~T0 @X0 1 e@9 ]
+[; ;main.c: 26: struct {
+[; ;main.c: 27: unsigned RS : 1;
+[; ;main.c: 28: unsigned EN : 1;
+[; ;main.c: 29: } LCD @ &PORTE;
+"31
+[v _beep `(v ~T0 @X0 1 ef ]
+{
+[; ;main.c: 31: void beep () {
+[e :U _beep ]
+[f ]
+[; ;main.c: 32: _delay(IFOSC/10);
 "32
-[v _FAN `S95 ~T0 @X0 1 e ]
+[e ( __delay (1 / _IFOSC -> -> -> 10 `i `l `ul ]
+[; ;main.c: 33: for (int j = 0; j < 100; ++j) {
+"33
+{
+[v _j `i ~T0 @X0 1 a ]
+[e = _j -> 0 `i ]
+[e $ < _j -> 100 `i 98  ]
+[e $U 99  ]
+[e :U 98 ]
+{
+[; ;main.c: 34: RA5 = 1; _delay(IFOSC/1000);
+"34
+[e = _RA5 -> -> 1 `i `b ]
+[e ( __delay (1 / _IFOSC -> -> -> 1000 `i `l `ul ]
+[; ;main.c: 35: RA5 = 0; _delay(IFOSC/2000);
+"35
+[e = _RA5 -> -> 0 `i `b ]
+[e ( __delay (1 / _IFOSC -> -> -> 2000 `i `l `ul ]
+"36
+}
+"33
+[e =+ _j -> 1 `i ]
+[e $ < _j -> 100 `i 98  ]
+[e :U 99 ]
+"36
+}
+[; ;main.c: 36: }
+[; ;main.c: 37: }
+"37
+[e :UE 97 ]
+}
+"39
+[v _putch `(v ~T0 @X0 1 ef1`uc ]
+{
+[; ;main.c: 39: void putch (char msg) {
+[e :U _putch ]
+[v _msg `uc ~T0 @X0 1 r1 ]
+[f ]
+[; ;main.c: 40: LCD.RS = 1;
+"40
+[e = . _LCD 0 -> -> 1 `i `uc ]
+[; ;main.c: 41: PORTD = msg;
+"41
+[e = _PORTD _msg ]
+[; ;main.c: 42: LCD.EN = 1; _delay(IFOSC/1000000);
+"42
+[e = . _LCD 1 -> -> 1 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> 1000000 `l `ul ]
+[; ;main.c: 43: LCD.EN = 0; _delay(IFOSC/20000);
+"43
+[e = . _LCD 1 -> -> 0 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> -> 20000 `i `l `ul ]
+[; ;main.c: 44: return;
+"44
+[e $UE 101  ]
+[; ;main.c: 45: }
+"45
+[e :UE 101 ]
+}
+"47
+[v _prog_lcd `(v ~T0 @X0 1 ef1`uc ]
+{
+[; ;main.c: 47: void prog_lcd (char msg) {
+[e :U _prog_lcd ]
+[v _msg `uc ~T0 @X0 1 r1 ]
+[f ]
+[; ;main.c: 48: LCD.RS = 0;
+"48
+[e = . _LCD 0 -> -> 0 `i `uc ]
+[; ;main.c: 49: PORTD = msg;
+"49
+[e = _PORTD _msg ]
+[; ;main.c: 50: LCD.EN = 1; _delay(IFOSC/1000000);
+"50
+[e = . _LCD 1 -> -> 1 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> 1000000 `l `ul ]
+[; ;main.c: 51: LCD.EN = 0; _delay(IFOSC/20000);
+"51
+[e = . _LCD 1 -> -> 0 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> -> 20000 `i `l `ul ]
+[; ;main.c: 52: return;
+"52
+[e $UE 102  ]
+[; ;main.c: 53: }
+"53
+[e :UE 102 ]
+}
+"55
+[v _init_lcd `(v ~T0 @X0 1 ef ]
+{
+[; ;main.c: 55: void init_lcd () {
+[e :U _init_lcd ]
+[f ]
+[; ;main.c: 56: prog_lcd(0x30); _delay(IFOSC/200);
+"56
+[e ( _prog_lcd (1 -> -> 48 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> -> 200 `i `l `ul ]
+[; ;main.c: 57: prog_lcd(0x30); _delay(IFOSC/10000);
+"57
+[e ( _prog_lcd (1 -> -> 48 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> -> 10000 `i `l `ul ]
+[; ;main.c: 58: prog_lcd(0x30);
+"58
+[e ( _prog_lcd (1 -> -> 48 `i `uc ]
+[; ;main.c: 59: prog_lcd(0x38);
+"59
+[e ( _prog_lcd (1 -> -> 56 `i `uc ]
+[; ;main.c: 60: prog_lcd(0x01); _delay(IFOSC/500);
+"60
+[e ( _prog_lcd (1 -> -> 1 `i `uc ]
+[e ( __delay (1 / _IFOSC -> -> -> 500 `i `l `ul ]
+[; ;main.c: 61: prog_lcd(0x0C);
+"61
+[e ( _prog_lcd (1 -> -> 12 `i `uc ]
+[; ;main.c: 62: prog_lcd(0x06);
+"62
+[e ( _prog_lcd (1 -> -> 6 `i `uc ]
+[; ;main.c: 63: return;
+"63
+[e $UE 103  ]
+[; ;main.c: 64: }
+"64
+[e :UE 103 ]
+}
+"66
+[v _main_lcd `(v ~T0 @X0 1 ef2`l`i ]
+{
+[; ;main.c: 66: void main_lcd (long value, int duty) {
+[e :U _main_lcd ]
+[v _value `l ~T0 @X0 1 r1 ]
+[v _duty `i ~T0 @X0 1 r2 ]
+[f ]
+[; ;main.c: 67: prog_lcd(0xC0);
+"67
+[e ( _prog_lcd (1 -> -> 192 `i `uc ]
+[; ;main.c: 68: printf("%4d ", value);
+"68
+[e ( _printf , (. :s 1C _value ]
+[; ;main.c: 69: prog_lcd(0xC8);
+"69
+[e ( _prog_lcd (1 -> -> 200 `i `uc ]
+[; ;main.c: 70: printf("PWM %3d%%", duty);
+"70
+[e ( _printf , (. :s 2C _duty ]
+[; ;main.c: 71: return;
+"71
+[e $UE 104  ]
+[; ;main.c: 72: }
+"72
+[e :UE 104 ]
+}
+[; ;main.c: 74: typedef struct {
+[; ;main.c: 75: volatile unsigned int count;
+[; ;main.c: 76: unsigned int time;
+[; ;main.c: 77: unsigned int value;
+[; ;main.c: 78: unsigned int div;
+[; ;main.c: 79: unsigned int max;
+[; ;main.c: 80: } rpm;
+"82
+[v _FAN `S105 ~T0 @X0 1 e ]
 [i _FAN
 :U ..
 :U ..
@@ -1091,160 +1311,201 @@ Version 3.2 HI-TECH Software Intermediate Code
 ..
 ..
 ]
-[; ;main.c: 32: rpm FAN = {-1, 0, 0, 7, 5000};
+[; ;main.c: 82: rpm FAN = {-1, 0, 0, 7, 5000};
 [v $root$_raycast_intersection_cleared `(v ~T0 @X0 0 e ]
-[v F1108 `(v ~T0 @X0 1 tf ]
-"34
-[v _raycast_intersection_cleared `IF1108 ~T0 @X0 1 e ]
+[v F1184 `(v ~T0 @X0 1 tf ]
+"84
+[v _raycast_intersection_cleared `IF1184 ~T0 @X0 1 e ]
 {
-[; ;main.c: 34: void interrupt raycast_intersection_cleared (void) {
+[; ;main.c: 84: void interrupt raycast_intersection_cleared (void) {
 [e :U _raycast_intersection_cleared ]
 [f ]
-[; ;main.c: 35: RB7 = !RB7;
-"35
+[; ;main.c: 85: RB7 = !RB7;
+"85
 [e = _RB7 ! _RB7 ]
-[; ;main.c: 36: FAN.count++;
-"36
+[; ;main.c: 86: FAN.count++;
+"86
 [e ++ . _FAN 0 -> -> 1 `i `ui ]
-[; ;main.c: 37: INTF = 0;
-"37
+[; ;main.c: 87: INTF = 0;
+"87
 [e = _INTF -> -> 0 `i `b ]
-[; ;main.c: 38: return;
-"38
-[e $UE 96  ]
-[; ;main.c: 39: }
-"39
-[e :UE 96 ]
+[; ;main.c: 88: return;
+"88
+[e $UE 106  ]
+[; ;main.c: 89: }
+"89
+[e :UE 106 ]
 }
-"41
-[v _rps_timer1 `(S95 ~T0 @X0 1 ef2`S95`ui ]
+"91
+[v _rps_timer1 `(S105 ~T0 @X0 1 ef2`S105`ui ]
 {
-[; ;main.c: 41: rpm rps_timer1 (rpm x, unsigned int t) {
+[; ;main.c: 91: rpm rps_timer1 (rpm x, unsigned int t) {
 [e :U _rps_timer1 ]
-[v _x `S95 ~T0 @X0 1 r1 ]
+[v _x `S105 ~T0 @X0 1 r1 ]
 [v _t `ui ~T0 @X0 1 r2 ]
 [f ]
-[; ;main.c: 42: if (x.time > t) {
-"42
-[e $ ! > . _x 1 _t 98  ]
+[; ;main.c: 92: if (x.time > t) {
+"92
+[e $ ! > . _x 1 _t 108  ]
 {
-[; ;main.c: 43: x.count = 0;
-"43
+[; ;main.c: 93: x.count = 0;
+"93
 [e = . _x 0 -> -> 0 `i `ui ]
-[; ;main.c: 44: x.time = t;
-"44
+[; ;main.c: 94: x.time = t;
+"94
 [e = . _x 1 _t ]
-"45
+"95
 }
-[; ;main.c: 45: }
-[e $U 99  ]
-"46
-[e :U 98 ]
-[; ;main.c: 46: else if (x.count > 0) {
-[e $ ! > . _x 0 -> -> 0 `i `ui 100  ]
+[; ;main.c: 95: }
+[e $U 109  ]
+"96
+[e :U 108 ]
+[; ;main.c: 96: else if (x.count > 0) {
+[e $ ! > . _x 0 -> -> 0 `i `ui 110  ]
 {
-[; ;main.c: 47: x.value = T1FOSC / (t - x.time) * x.count / x.div;
-"47
+[; ;main.c: 97: x.value = T1FOSC / (t - x.time) * x.count / x.div;
+"97
 [e = . _x 2 / * / _T1FOSC - _t . _x 1 . _x 0 . _x 3 ]
-[; ;main.c: 48: if (x.value > x.max) x.max = x.value;
-"48
-[e $ ! > . _x 2 . _x 4 101  ]
+[; ;main.c: 98: if (x.value > x.max) x.max = x.value;
+"98
+[e $ ! > . _x 2 . _x 4 111  ]
 [e = . _x 4 . _x 2 ]
-[e :U 101 ]
-[; ;main.c: 49: x.count = 0;
-"49
+[e :U 111 ]
+[; ;main.c: 99: x.count = 0;
+"99
 [e = . _x 0 -> -> 0 `i `ui ]
-[; ;main.c: 50: x.time = t;
-"50
+[; ;main.c: 100: x.time = t;
+"100
 [e = . _x 1 _t ]
-"51
+"101
 }
-[; ;main.c: 51: }
-[e $U 102  ]
-"52
-[e :U 100 ]
-[; ;main.c: 52: else if ( (t - x.time) > (T1FOSC / RPSMIN) ) {
-[e $ ! > - _t . _x 1 / _T1FOSC _RPSMIN 103  ]
+[; ;main.c: 101: }
+[e $U 112  ]
+"102
+[e :U 110 ]
+[; ;main.c: 102: else if ( (t - x.time) > (T1FOSC / RPSMIN) ) {
+[e $ ! > - _t . _x 1 / _T1FOSC _RPSMIN 113  ]
 {
-[; ;main.c: 53: x.count = -1;
-"53
+[; ;main.c: 103: x.count = -1;
+"103
 [e = . _x 0 -> -U -> 1 `i `ui ]
-[; ;main.c: 54: x.value = 0;
-"54
+[; ;main.c: 104: x.value = 0;
+"104
 [e = . _x 2 -> -> 0 `i `ui ]
-[; ;main.c: 55: x.time = t;
-"55
+[; ;main.c: 105: x.time = t;
+"105
 [e = . _x 1 _t ]
-"56
+"106
 }
-[e :U 103 ]
-"57
-[e :U 102 ]
-[e :U 99 ]
-[; ;main.c: 56: }
-[; ;main.c: 57: return x;
+[e :U 113 ]
+"107
+[e :U 112 ]
+[e :U 109 ]
+[; ;main.c: 106: }
+[; ;main.c: 107: return x;
 [e ) _x ]
-[e $UE 97  ]
-[; ;main.c: 58: }
-"58
-[e :UE 97 ]
+[e $UE 107  ]
+[; ;main.c: 108: }
+"108
+[e :UE 107 ]
 }
 [v $root$_main `(v ~T0 @X0 0 e ]
-"60
+"110
 [v _main `(i ~T0 @X0 1 ef ]
 {
-[; ;main.c: 60: int main (void) {
+[; ;main.c: 110: int main (void) {
 [e :U _main ]
 [f ]
-[; ;main.c: 63: T1CON = 0xFB;
-"63
+[; ;main.c: 113: T1CON = 0xFB;
+"113
 [e = _T1CON -> -> 251 `i `uc ]
-[; ;main.c: 64: CCP1CON = 0x0F;
-"64
+[; ;main.c: 114: CCP1CON = 0x0F;
+"114
 [e = _CCP1CON -> -> 15 `i `uc ]
-[; ;main.c: 65: CCPR1L = 0;
-"65
+[; ;main.c: 115: CCPR1L = 0;
+"115
 [e = _CCPR1L -> -> 0 `i `uc ]
-[; ;main.c: 66: PR2 = 100;
-"66
+[; ;main.c: 116: PR2 = 100;
+"116
 [e = _PR2 -> -> 100 `i `uc ]
-[; ;main.c: 67: T2CON = 0x04;
-"67
+[; ;main.c: 117: T2CON = 0x04;
+"117
 [e = _T2CON -> -> 4 `i `uc ]
-[; ;main.c: 68: TRISC = 0xFB;
-"68
+[; ;main.c: 118: TRISC = 0xFB;
+"118
 [e = _TRISC -> -> 251 `i `uc ]
-[; ;main.c: 69: OPTION_REG = 0x00;
-"69
+[; ;main.c: 119: OPTION_REG = 0x00;
+"119
 [e = _OPTION_REG -> -> 0 `i `uc ]
-[; ;main.c: 70: TRISB = 0x7F;
-"70
+[; ;main.c: 120: TRISB = 0x7F;
+"120
 [e = _TRISB -> -> 127 `i `uc ]
-[; ;main.c: 71: INTCON = 0x90;
-"71
+[; ;main.c: 121: INTCON = 0x90;
+"121
 [e = _INTCON -> -> 144 `i `uc ]
-[; ;main.c: 75: while (1) {
-"75
-[e :U 106 ]
+[; ;main.c: 122: TRISD = 0x00;
+"122
+[e = _TRISD -> -> 0 `i `uc ]
+[; ;main.c: 123: TRISE = 0xFC;
+"123
+[e = _TRISE -> -> 252 `i `uc ]
+[; ;main.c: 124: TRISA = 0xDF;
+"124
+[e = _TRISA -> -> 223 `i `uc ]
+[; ;main.c: 126: beep();
+"126
+[e ( _beep ..  ]
+[; ;main.c: 127: beep();
+"127
+[e ( _beep ..  ]
+[; ;main.c: 128: beep();
+"128
+[e ( _beep ..  ]
+[; ;main.c: 129: init_lcd();
+"129
+[e ( _init_lcd ..  ]
+[; ;main.c: 130: prog_lcd(0x80);
+"130
+[e ( _prog_lcd (1 -> -> 128 `i `uc ]
+[; ;main.c: 131: printf("LAB.CONT.DIGITAL");
+"131
+[e ( _printf :s 3C ]
+[; ;main.c: 132: prog_lcd(0xC0);
+"132
+[e ( _prog_lcd (1 -> -> 192 `i `uc ]
+[; ;main.c: 133: printf("Seja Bem-Vindo!");
+"133
+[e ( _printf :s 4C ]
+[; ;main.c: 137: while (1) {
+"137
+[e :U 116 ]
 {
-[; ;main.c: 76: CCPR1L = 100 * FAN.value / FAN.max;
-"76
+[; ;main.c: 138: CCPR1L = 100 * FAN.value / FAN.max;
+"138
 [e = _CCPR1L -> / * -> -> 100 `i `ui . _FAN 2 . _FAN 4 `uc ]
-[; ;main.c: 77: FAN = rps_timer1(FAN, TMR1);
-"77
+[; ;main.c: 139: FAN = rps_timer1(FAN, TMR1);
+"139
 [e = _FAN ( _rps_timer1 (2 , _FAN -> _TMR1 `ui ]
-"78
+[; ;main.c: 140: main_lcd(FAN.value, CCPR1L);
+"140
+[e ( _main_lcd (2 , -> . _FAN 2 `l -> _CCPR1L `i ]
+"141
 }
-[e :U 105 ]
-"75
-[e $U 106  ]
-[e :U 107 ]
-[; ;main.c: 78: }
-[; ;main.c: 79: return 0;
-"79
+[e :U 115 ]
+"137
+[e $U 116  ]
+[e :U 117 ]
+[; ;main.c: 141: }
+[; ;main.c: 142: return 0;
+"142
 [e ) -> 0 `i ]
-[e $UE 104  ]
-[; ;main.c: 80: }
-"80
-[e :UE 104 ]
+[e $UE 114  ]
+[; ;main.c: 143: }
+"143
+[e :UE 114 ]
 }
+[p f _printf 9470080 ]
+[a 3C 76 65 66 46 67 79 78 84 46 68 73 71 73 84 65 76 0 ]
+[a 2C 80 87 77 32 37 51 100 37 37 0 ]
+[a 4C 83 101 106 97 32 66 101 109 45 86 105 110 100 111 33 0 ]
+[a 1C 37 52 100 32 0 ]
