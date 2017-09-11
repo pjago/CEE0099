@@ -1,50 +1,30 @@
 Version 3.2 HI-TECH Software Intermediate Code
 "24 main.c
-[s S95 `Vi 1 `ui 1 `ui 1 `ui 1 `ui 1 ]
+[s S95 `Vui 1 `ui 1 `ui 1 `ui 1 `ui 1 ]
 [n S95 . count time value div max ]
-"2585 /opt/microchip/xc8/v1.43/include/pic16f877a.h
+"2585 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
 [v _RB7 `Vb ~T0 @X0 0 e@55 ]
 "2525
 [v _INTF `Vb ~T0 @X0 0 e@89 ]
 [p mainexit ]
-"2711
-[v _TMR1CS `Vb ~T0 @X0 0 e@129 ]
-"2693
-[v _T1CKPS0 `Vb ~T0 @X0 0 e@132 ]
-"2695
-[v _T1CKPS1 `Vb ~T0 @X0 0 e@133 ]
-"2717
-[v _TMR1ON `Vb ~T0 @X0 0 e@128 ]
-"2421
-[v _CCP1M3 `Vb ~T0 @X0 0 e@187 ]
-"2419
-[v _CCP1M2 `Vb ~T0 @X0 0 e@186 ]
+"653
+[v _T1CON `Vuc ~T0 @X0 0 e@16 ]
 "904
 [v _CCP1CON `Vuc ~T0 @X0 0 e@23 ]
 "890
 [v _CCPR1L `Vuc ~T0 @X0 0 e@21 ]
 "1814
 [v _PR2 `Vuc ~T0 @X0 0 e@146 ]
-"2703
-[v _T2CKPS0 `Vb ~T0 @X0 0 e@144 ]
-"2705
-[v _T2CKPS1 `Vb ~T0 @X0 0 e@145 ]
-"2723
-[v _TMR2ON `Vb ~T0 @X0 0 e@146 ]
-"2765
-[v _TRISC2 `Vb ~T0 @X0 0 e@1082 ]
-"2841
-[v _nRBPU `Vb ~T0 @X0 0 e@1039 ]
-"2745
-[v _TRISB0 `Vb ~T0 @X0 0 e@1072 ]
-"2759
-[v _TRISB7 `Vb ~T0 @X0 0 e@1079 ]
-"2523
-[v _INTEDG `Vb ~T0 @X0 0 e@1038 ]
-"2521
-[v _INTE `Vb ~T0 @X0 0 e@92 ]
-"2501
-[v _GIE `Vb ~T0 @X0 0 e@95 ]
+"735
+[v _T2CON `Vuc ~T0 @X0 0 e@18 ]
+"1435
+[v _TRISC `Vuc ~T0 @X0 0 e@135 ]
+"1253
+[v _OPTION_REG `Vuc ~T0 @X0 0 e@129 ]
+"1373
+[v _TRISB `Vuc ~T0 @X0 0 e@134 ]
+"452
+[v _INTCON `Vuc ~T0 @X0 0 e@11 ]
 "632
 [v _TMR1 `Vus ~T0 @X0 0 e@14 ]
 "10 main.c
@@ -67,7 +47,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;htc.h: 28: extern double __fpnormalize(double);
 [; ;xc8debug.h: 14: extern void __builtin_software_breakpoint(void);
 [; ;pic16f877a.h: 50: extern volatile unsigned char INDF @ 0x000;
-"52 /opt/microchip/xc8/v1.43/include/pic16f877a.h
+"52 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
 [; ;pic16f877a.h: 52: asm("INDF equ 00h");
 [; <" INDF equ 00h ;# ">
 [; ;pic16f877a.h: 57: extern volatile unsigned char TMR0 @ 0x001;
@@ -1092,7 +1072,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 ]
 [; ;main.c: 22: const unsigned int RPSMIN = 8;
 [; ;main.c: 24: typedef struct {
-[; ;main.c: 25: volatile int count;
+[; ;main.c: 25: volatile unsigned int count;
 [; ;main.c: 26: unsigned int time;
 [; ;main.c: 27: unsigned int value;
 [; ;main.c: 28: unsigned int div;
@@ -1103,7 +1083,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [i _FAN
 :U ..
 :U ..
--U -> 1 `i
+-> -U -> 1 `i `ui
 -> -> 0 `i `ui
 -> -> 0 `i `ui
 -> -> 7 `i `ui
@@ -1125,7 +1105,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e = _RB7 ! _RB7 ]
 [; ;main.c: 36: FAN.count++;
 "36
-[e ++ . _FAN 0 -> 1 `i ]
+[e ++ . _FAN 0 -> -> 1 `i `ui ]
 [; ;main.c: 37: INTF = 0;
 "37
 [e = _INTF -> -> 0 `i `b ]
@@ -1150,7 +1130,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 {
 [; ;main.c: 43: x.count = 0;
 "43
-[e = . _x 0 -> 0 `i ]
+[e = . _x 0 -> -> 0 `i `ui ]
 [; ;main.c: 44: x.time = t;
 "44
 [e = . _x 1 _t ]
@@ -1161,11 +1141,11 @@ Version 3.2 HI-TECH Software Intermediate Code
 "46
 [e :U 98 ]
 [; ;main.c: 46: else if (x.count > 0) {
-[e $ ! > . _x 0 -> 0 `i 100  ]
+[e $ ! > . _x 0 -> -> 0 `i `ui 100  ]
 {
 [; ;main.c: 47: x.value = T1FOSC / (t - x.time) * x.count / x.div;
 "47
-[e = . _x 2 / * / _T1FOSC - _t . _x 1 -> . _x 0 `ui . _x 3 ]
+[e = . _x 2 / * / _T1FOSC - _t . _x 1 . _x 0 . _x 3 ]
 [; ;main.c: 48: if (x.value > x.max) x.max = x.value;
 "48
 [e $ ! > . _x 2 . _x 4 101  ]
@@ -1173,7 +1153,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e :U 101 ]
 [; ;main.c: 49: x.count = 0;
 "49
-[e = . _x 0 -> 0 `i ]
+[e = . _x 0 -> -> 0 `i `ui ]
 [; ;main.c: 50: x.time = t;
 "50
 [e = . _x 1 _t ]
@@ -1188,7 +1168,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 {
 [; ;main.c: 53: x.count = -1;
 "53
-[e = . _x 0 -U -> 1 `i ]
+[e = . _x 0 -> -U -> 1 `i `ui ]
 [; ;main.c: 54: x.value = 0;
 "54
 [e = . _x 2 -> -> 0 `i `ui ]
@@ -1216,85 +1196,55 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 60: int main (void) {
 [e :U _main ]
 [f ]
-[; ;main.c: 63: TMR1CS = 1;
+[; ;main.c: 63: T1CON = 0xFB;
 "63
-[e = _TMR1CS -> -> 1 `i `b ]
-[; ;main.c: 64: T1CKPS0 = 1;
+[e = _T1CON -> -> 251 `i `uc ]
+[; ;main.c: 64: CCP1CON = 0x0F;
 "64
-[e = _T1CKPS0 -> -> 1 `i `b ]
-[; ;main.c: 65: T1CKPS1 = 1;
+[e = _CCP1CON -> -> 15 `i `uc ]
+[; ;main.c: 65: CCPR1L = 0;
 "65
-[e = _T1CKPS1 -> -> 1 `i `b ]
-[; ;main.c: 66: TMR1ON = 1;
-"66
-[e = _TMR1ON -> -> 1 `i `b ]
-[; ;main.c: 68: CCP1M3 = 1;
-"68
-[e = _CCP1M3 -> -> 1 `i `b ]
-[; ;main.c: 69: CCP1M2 = 1;
-"69
-[e = _CCP1M2 -> -> 1 `i `b ]
-[; ;main.c: 70: CCP1CON &= 0x0F;
-"70
-[e =& _CCP1CON -> -> 15 `i `uc ]
-[; ;main.c: 71: CCPR1L = 0;
-"71
 [e = _CCPR1L -> -> 0 `i `uc ]
-[; ;main.c: 72: PR2 = 100;
-"72
+[; ;main.c: 66: PR2 = 100;
+"66
 [e = _PR2 -> -> 100 `i `uc ]
-[; ;main.c: 73: T2CKPS0 = 0;
-"73
-[e = _T2CKPS0 -> -> 0 `i `b ]
-[; ;main.c: 74: T2CKPS1 = 0;
-"74
-[e = _T2CKPS1 -> -> 0 `i `b ]
-[; ;main.c: 75: TMR2ON = 1;
+[; ;main.c: 67: T2CON = 0x04;
+"67
+[e = _T2CON -> -> 4 `i `uc ]
+[; ;main.c: 68: TRISC = 0xFB;
+"68
+[e = _TRISC -> -> 251 `i `uc ]
+[; ;main.c: 69: OPTION_REG = 0x00;
+"69
+[e = _OPTION_REG -> -> 0 `i `uc ]
+[; ;main.c: 70: TRISB = 0x7F;
+"70
+[e = _TRISB -> -> 127 `i `uc ]
+[; ;main.c: 71: INTCON = 0x90;
+"71
+[e = _INTCON -> -> 144 `i `uc ]
+[; ;main.c: 75: while (1) {
 "75
-[e = _TMR2ON -> -> 1 `i `b ]
-[; ;main.c: 76: TRISC2 = 0;
-"76
-[e = _TRISC2 -> -> 0 `i `b ]
-[; ;main.c: 78: nRBPU = 0;
-"78
-[e = _nRBPU -> -> 0 `i `b ]
-[; ;main.c: 79: TRISB0 = 1;
-"79
-[e = _TRISB0 -> -> 1 `i `b ]
-[; ;main.c: 80: TRISB7 = 0;
-"80
-[e = _TRISB7 -> -> 0 `i `b ]
-[; ;main.c: 81: INTEDG = 0;
-"81
-[e = _INTEDG -> -> 0 `i `b ]
-[; ;main.c: 82: INTE = 1;
-"82
-[e = _INTE -> -> 1 `i `b ]
-[; ;main.c: 83: GIE = 1;
-"83
-[e = _GIE -> -> 1 `i `b ]
-[; ;main.c: 87: while (1) {
-"87
 [e :U 106 ]
 {
-[; ;main.c: 88: CCPR1L = 100 * FAN.value / FAN.max;
-"88
+[; ;main.c: 76: CCPR1L = 100 * FAN.value / FAN.max;
+"76
 [e = _CCPR1L -> / * -> -> 100 `i `ui . _FAN 2 . _FAN 4 `uc ]
-[; ;main.c: 89: FAN = rps_timer1(FAN, TMR1);
-"89
+[; ;main.c: 77: FAN = rps_timer1(FAN, TMR1);
+"77
 [e = _FAN ( _rps_timer1 (2 , _FAN -> _TMR1 `ui ]
-"90
+"78
 }
 [e :U 105 ]
-"87
+"75
 [e $U 106  ]
 [e :U 107 ]
-[; ;main.c: 90: }
-[; ;main.c: 91: return 0;
-"91
+[; ;main.c: 78: }
+[; ;main.c: 79: return 0;
+"79
 [e ) -> 0 `i ]
 [e $UE 104  ]
-[; ;main.c: 92: }
-"92
+[; ;main.c: 80: }
+"80
 [e :UE 104 ]
 }

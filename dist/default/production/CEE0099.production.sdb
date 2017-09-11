@@ -3,84 +3,64 @@
 [d edition pro ]
 [d chip 16F877A ]
 [d frameptr 6 ]
-"62 /opt/microchip/xc8/v1.43/sources/common/float.c
+"62 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\float.c
 [v ___ftpack __ftpack `(f  1 e 3 0 ]
-"86 /opt/microchip/xc8/v1.43/sources/common/ftadd.c
+"86 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftadd.c
 [v ___ftadd __ftadd `(f  1 e 3 0 ]
-"6 /opt/microchip/xc8/v1.43/sources/common/lwdiv.c
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
-"15 /opt/microchip/xc8/v1.43/sources/common/Umul16.c
+"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
-"6 /opt/microchip/xc8/v1.43/sources/pic/eeprom.c
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\pic\eeprom.c
 [v _eecpymem eecpymem `(v  1 e 1 0 ]
 "39
 [v _memcpyee memcpyee `(v  1 e 1 0 ]
-"34 /home/pjago/MPLABXProjects/fan.X/main.c
+"34 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
 "24
-[s S19 . 10 `VEi 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+[s S19 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
 "41
 [v _rps_timer1 rps_timer1 `(VES19  1 e 10 0 ]
 "60
 [v _main main `(i  1 e 2 0 ]
-"632 /opt/microchip/xc8/v1.43/include/pic16f877a.h
+"452 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
+[v _INTCON INTCON `VEuc  1 e 1 @11 ]
+"632
 [v _TMR1 TMR1 `VEus  1 e 2 @14 ]
+"653
+[v _T1CON T1CON `VEuc  1 e 1 @16 ]
+"735
+[v _T2CON T2CON `VEuc  1 e 1 @18 ]
 "890
 [v _CCPR1L CCPR1L `VEuc  1 e 1 @21 ]
 "904
 [v _CCP1CON CCP1CON `VEuc  1 e 1 @23 ]
+"1253
+[v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
+"1373
+[v _TRISB TRISB `VEuc  1 e 1 @134 ]
+"1435
+[v _TRISC TRISC `VEuc  1 e 1 @135 ]
 "1814
 [v _PR2 PR2 `VEuc  1 e 1 @146 ]
-"2419
-[v _CCP1M2 CCP1M2 `VEb  1 e 0 @186 ]
-"2421
-[v _CCP1M3 CCP1M3 `VEb  1 e 0 @187 ]
-"2501
-[v _GIE GIE `VEb  1 e 0 @95 ]
-"2521
-[v _INTE INTE `VEb  1 e 0 @92 ]
-"2523
-[v _INTEDG INTEDG `VEb  1 e 0 @1038 ]
 "2525
 [v _INTF INTF `VEb  1 e 0 @89 ]
 "2585
 [v _RB7 RB7 `VEb  1 e 0 @55 ]
-"2693
-[v _T1CKPS0 T1CKPS0 `VEb  1 e 0 @132 ]
-"2695
-[v _T1CKPS1 T1CKPS1 `VEb  1 e 0 @133 ]
-"2703
-[v _T2CKPS0 T2CKPS0 `VEb  1 e 0 @144 ]
-"2705
-[v _T2CKPS1 T2CKPS1 `VEb  1 e 0 @145 ]
-"2711
-[v _TMR1CS TMR1CS `VEb  1 e 0 @129 ]
-"2717
-[v _TMR1ON TMR1ON `VEb  1 e 0 @128 ]
-"2723
-[v _TMR2ON TMR2ON `VEb  1 e 0 @146 ]
-"2745
-[v _TRISB0 TRISB0 `VEb  1 e 0 @1072 ]
-"2759
-[v _TRISB7 TRISB7 `VEb  1 e 0 @1079 ]
-"2765
-[v _TRISC2 TRISC2 `VEb  1 e 0 @1082 ]
-"2841
-[v _nRBPU nRBPU `VEb  1 e 0 @1039 ]
-"21 /home/pjago/MPLABXProjects/fan.X/main.c
+"21 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _T1FOSC T1FOSC `DCui  1 e 2 0 ]
 "22
 [v _RPSMIN RPSMIN `DCui  1 e 2 0 ]
-[s S19 . 10 `VEi 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+[s S19 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
 "32
 [v _FAN FAN `VES19  1 e 10 0 ]
 "60
 [v _main main `(i  1 e 2 0 ]
 {
-"92
+"80
 } 0
 "24
-[s S19 . 10 `VEi 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+[s S19 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
 "41
 [v _rps_timer1 rps_timer1 `(VES19  1 e 10 0 ]
 {
@@ -88,7 +68,7 @@
 [v rps_timer1@t t `ui  1 p 2 18 ]
 "58
 } 0
-"15 /opt/microchip/xc8/v1.43/sources/common/Umul16.c
+"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
 {
 "17
@@ -98,7 +78,7 @@
 [v ___wmul@multiplicand multiplicand `ui  1 p 2 6 ]
 "53
 } 0
-"6 /opt/microchip/xc8/v1.43/sources/common/lwdiv.c
+"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
 {
 "11
@@ -110,7 +90,7 @@
 [v ___lwdiv@dividend dividend `ui  1 p 2 2 ]
 "31
 } 0
-"34 /home/pjago/MPLABXProjects/fan.X/main.c
+"34 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
 {
 "39

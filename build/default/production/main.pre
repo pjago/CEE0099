@@ -12,17 +12,17 @@
 #pragma config WRT = OFF
 #pragma config CP = OFF
 
-# 26 "/opt/microchip/xc8/v1.43/include/htc.h"
+# 26 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\htc.h"
 extern const char __xc8_OPTIM_SPEED;
 
 extern double __fpnormalize(double);
 
 
-# 13 "/opt/microchip/xc8/v1.43/include/xc8debug.h"
+# 13 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\xc8debug.h"
 #pragma intrinsic(__builtin_software_breakpoint)
 extern void __builtin_software_breakpoint(void);
 
-# 50 "/opt/microchip/xc8/v1.43/include/pic16f877a.h"
+# 50 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h"
 extern volatile unsigned char INDF @ 0x000;
 
 asm("INDF equ 00h");
@@ -1446,21 +1446,21 @@ extern volatile __bit nW @ (((unsigned) &SSPSTAT)*8) + 2;
 extern volatile __bit nWRITE @ (((unsigned) &SSPSTAT)*8) + 2;
 
 
-# 27 "/opt/microchip/xc8/v1.43/include/pic.h"
+# 27 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h"
 #pragma intrinsic(__nop)
 extern void __nop(void);
 
 # 77
 extern unsigned int flash_read(unsigned short addr);
 
-# 114 "/opt/microchip/xc8/v1.43/include/eeprom_routines.h"
+# 114 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\eeprom_routines.h"
 extern void eeprom_write(unsigned char addr, unsigned char value);
 extern unsigned char eeprom_read(unsigned char addr);
 extern void eecpymem(volatile unsigned char *to, __eeprom unsigned char *from, unsigned char size);
 extern void memcpyee(__eeprom unsigned char *to, const unsigned char *from, unsigned char size);
 
 
-# 151 "/opt/microchip/xc8/v1.43/include/pic.h"
+# 151 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h"
 #pragma intrinsic(_delay)
 extern __nonreentrant void _delay(unsigned long);
 #pragma intrinsic(_delaywdt)
@@ -1476,7 +1476,7 @@ const unsigned int T1FOSC = 0x1000;
 const unsigned int RPSMIN = 8;
 
 typedef struct {
-volatile int count;
+volatile unsigned int count;
 unsigned int time;
 unsigned int value;
 unsigned int div;
@@ -1514,27 +1514,15 @@ return x;
 int main (void) {
 
 
-TMR1CS = 1;
-T1CKPS0 = 1;
-T1CKPS1 = 1;
-TMR1ON = 1;
-
-CCP1M3 = 1;
-CCP1M2 = 1;
-CCP1CON &= 0x0F;
+T1CON = 0xFB;
+CCP1CON = 0x0F;
 CCPR1L = 0;
 PR2 = 100;
-T2CKPS0 = 0;
-T2CKPS1 = 0;
-TMR2ON = 1;
-TRISC2 = 0;
-
-nRBPU = 0;
-TRISB0 = 1;
-TRISB7 = 0;
-INTEDG = 0;
-INTE = 1;
-GIE = 1;
+T2CON = 0x04;
+TRISC = 0xFB;
+OPTION_REG = 0x00;
+TRISB = 0x7F;
+INTCON = 0x90;
 
 
 
