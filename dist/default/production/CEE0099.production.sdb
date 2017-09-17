@@ -3,46 +3,58 @@
 [d edition pro ]
 [d chip 16F877A ]
 [d frameptr 6 ]
-"464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
+"464 /opt/microchip/xc8/v1.43/sources/common/doprnt.c
 [v _printf printf `(i  1 e 2 0 ]
-"62 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\float.c
+"62 /opt/microchip/xc8/v1.43/sources/common/float.c
 [v ___ftpack __ftpack `(f  1 e 3 0 ]
-"86 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftadd.c
+"86 /opt/microchip/xc8/v1.43/sources/common/ftadd.c
 [v ___ftadd __ftadd `(f  1 e 3 0 ]
-"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
+"8 /opt/microchip/xc8/v1.43/sources/common/isdigit.c
 [v _isdigit isdigit `(b  1 e 0 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
+"6 /opt/microchip/xc8/v1.43/sources/common/lldiv.c
 [v ___lldiv __lldiv `(ul  1 e 4 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
+"6 /opt/microchip/xc8/v1.43/sources/common/lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
+"6 /opt/microchip/xc8/v1.43/sources/common/lwmod.c
 [v ___lwmod __lwmod `(ui  1 e 2 0 ]
-"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
+"15 /opt/microchip/xc8/v1.43/sources/common/Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\pic\eeprom.c
+"6 /opt/microchip/xc8/v1.43/sources/pic/eeprom.c
 [v _eecpymem eecpymem `(v  1 e 1 0 ]
 "39
 [v _memcpyee memcpyee `(v  1 e 1 0 ]
-"31 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"41 /home/pjago/Documents/Github/CEE0099/main.c
 [v _beep beep `(v  1 e 1 0 ]
-"39
+"49
 [v _putch putch `(v  1 e 1 0 ]
-"47
+"63
+[v _getch getch `(uc  1 e 1 0 ]
+"68
 [v _prog_lcd prog_lcd `(v  1 e 1 0 ]
-"55
+"76
 [v _init_lcd init_lcd `(v  1 e 1 0 ]
-"66
+"93
 [v _main_lcd main_lcd `(v  1 e 1 0 ]
-"84
+"113
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
-"74
-[s S35 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
-"91
-[v _rps_timer1 rps_timer1 `(VES35  1 e 10 0 ]
-"110
+"103
+[s S39 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+"119
+[v _rps_timer1 rps_timer1 `(VES39  1 e 10 0 ]
+"138
+[v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
+"145
+[v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
+"152
+[v _write write `(v  1 e 1 0 ]
+"156
+[v _io_switch io_switch `(v  1 e 1 0 ]
+"169
+[v _buffer_serial buffer_serial `(i  1 e 2 0 ]
+"181
 [v _main main `(i  1 e 2 0 ]
-"338 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
-[v _PORTD PORTD `VEuc  1 e 1 @8 ]
+"57 /opt/microchip/xc8/v1.43/include/pic16f877a.h
+[v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
 "452
 [v _INTCON INTCON `VEuc  1 e 1 @11 ]
 "632
@@ -55,6 +67,12 @@
 [v _CCPR1L CCPR1L `VEuc  1 e 1 @21 ]
 "904
 [v _CCP1CON CCP1CON `VEuc  1 e 1 @23 ]
+"962
+[v _RCSTA RCSTA `VEuc  1 e 1 @24 ]
+"1057
+[v _TXREG TXREG `VEuc  1 e 1 @25 ]
+"1064
+[v _RCREG RCREG `VEuc  1 e 1 @26 ]
 "1253
 [v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
 "1323
@@ -69,84 +87,150 @@
 [v _TRISE TRISE `VEuc  1 e 1 @137 ]
 "1814
 [v _PR2 PR2 `VEuc  1 e 1 @146 ]
+"1997
+[v _TXSTA TXSTA `VEuc  1 e 1 @152 ]
+"2078
+[v _SPBRG SPBRG `VEuc  1 e 1 @153 ]
 "2525
 [v _INTF INTF `VEb  1 e 0 @89 ]
-"2569
-[v _RA5 RA5 `VEb  1 e 0 @45 ]
-"2585
-[v _RB7 RB7 `VEb  1 e 0 @55 ]
-"354 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
+"2617
+[v _RCIF RCIF `VEb  1 e 0 @101 ]
+"2813
+[v _TXIF TXIF `VEb  1 e 0 @100 ]
+"354 /opt/microchip/xc8/v1.43/sources/common/doprnt.c
 [v _dpowers dpowers `DC[5]ui  1 s 10 dpowers ]
-"22 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"23 /home/pjago/Documents/Github/CEE0099/main.c
 [v _IFOSC IFOSC `DCul  1 e 4 0 ]
-"23
-[v _T1FOSC T1FOSC `DCui  1 e 2 0 ]
 "24
+[v _T1FOSC T1FOSC `DCui  1 e 2 0 ]
+"25
 [v _RPSMIN RPSMIN `DCui  1 e 2 0 ]
-[s S19 . 1 `uc 1 RS 1 0 :1:0 
-`uc 1 EN 1 0 :1:1 
-]
+"28
+[v _PWM PWM `uc  1 e 1 @21 ]
 "29
-[v _LCD LCD `S19  1 e 1 @9 ]
-[s S35 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
-"82
-[v _FAN FAN `VES35  1 e 10 0 ]
-"110
+[v _BUZ BUZ `b  1 e 0 @45 ]
+"30
+[v _PUT PUT `b  1 e 0 0 ]
+[s S19 . 2 `uc 1 CH 1 0 :8:0 
+`uc 1 RS 1 1 :1:0 
+`uc 1 RW 1 1 :1:1 
+`uc 1 EN 1 1 :1:2 
+]
+"37
+[v _LCD LCD `S19  1 e 2 @8 ]
+[s S39 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+"111
+[v _FAN FAN `VES39  1 e 10 0 ]
+"181
 [v _main main `(i  1 e 2 0 ]
+{
+"208
+[v main@buffer buffer `[6]uc  1 a 6 48 ]
+"209
+[v main@idx idx `i  1 a 2 56 ]
+"207
+[v main@logged logged `ui  1 a 2 54 ]
+"219
+} 0
+"93
+[v _main_lcd main_lcd `(v  1 e 1 0 ]
+{
+[v main_lcd@value value `ui  1 p 2 31 ]
+[v main_lcd@duty duty `uc  1 p 1 33 ]
+"99
+} 0
+"76
+[v _init_lcd init_lcd `(v  1 e 1 0 ]
+{
+"91
+} 0
+"68
+[v _prog_lcd prog_lcd `(v  1 e 1 0 ]
+{
+[v prog_lcd@msg msg `uc  1 a 1 wreg ]
+[v prog_lcd@msg msg `uc  1 a 1 wreg ]
+[v prog_lcd@msg msg `uc  1 a 1 13 ]
+"74
+} 0
+"169
+[v _buffer_serial buffer_serial `(i  1 e 2 0 ]
+{
+[v buffer_serial@buffer buffer `*.4uc  1 a 1 wreg ]
+[v buffer_serial@buffer buffer `*.4uc  1 a 1 wreg ]
+[v buffer_serial@idx idx `i  1 p 2 40 ]
+[v buffer_serial@buffer buffer `*.4uc  1 a 1 44 ]
+"179
+} 0
+"156
+[v _io_switch io_switch `(v  1 e 1 0 ]
+{
+[v io_switch@x x `*.4uc  1 a 1 wreg ]
+[v io_switch@x x `*.4uc  1 a 1 wreg ]
+[v io_switch@x x `*.4uc  1 a 1 39 ]
+"167
+} 0
+"152
+[v _write write `(v  1 e 1 0 ]
+{
+[v write@duty duty `uc  1 a 1 wreg ]
+[v write@duty duty `uc  1 a 1 wreg ]
+[v write@duty duty `uc  1 a 1 4 ]
+"154
+} 0
+"138
+[v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
 {
 "143
 } 0
-"74
-[s S35 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
-"91
-[v _rps_timer1 rps_timer1 `(VES35  1 e 10 0 ]
+"103
+[s S39 . 10 `VEui 1 count 2 0 `ui 1 time 2 2 `ui 1 value 2 4 `ui 1 div 2 6 `ui 1 max 2 8 ]
+"119
+[v _rps_timer1 rps_timer1 `(VES39  1 e 10 0 ]
 {
-[v rps_timer1@x x `VES35  1 p 10 8 ]
-[v rps_timer1@t t `ui  1 p 2 18 ]
-"108
+[v rps_timer1@x x `VES39  1 p 10 9 ]
+[v rps_timer1@t t `ui  1 p 2 19 ]
+"136
 } 0
-"66
-[v _main_lcd main_lcd `(v  1 e 1 0 ]
+"145
+[v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
 {
-[v main_lcd@value value `l  1 p 4 33 ]
-[v main_lcd@duty duty `i  1 p 2 37 ]
-"72
+"150
 } 0
-"464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
+"464 /opt/microchip/xc8/v1.43/sources/common/doprnt.c
 [v _printf printf `(i  1 e 2 0 ]
 {
 [v printf@f f `*.24DCuc  1 a 1 wreg ]
 "501
-[v printf@width width `i  1 a 2 30 ]
+[v printf@width width `i  1 a 2 28 ]
 "528
-[v printf@val val `ui  1 a 2 27 ]
+[v printf@val val `ui  1 a 2 25 ]
 "529
-[v printf@len len `ui  1 a 2 25 ]
+[v printf@len len `ui  1 a 2 22 ]
 "499
-[v printf@c c `c  1 a 1 32 ]
+[v printf@c c `c  1 a 1 30 ]
 "508
 [v printf@flag flag `uc  1 a 1 24 ]
-"506
-[v printf@prec prec `c  1 a 1 23 ]
-"530
-[v printf@cp cp `*.4DCuc  1 a 1 22 ]
 "466
 [v printf@ap ap `[1]*.4v  1 a 1 21 ]
+"506
+[v printf@prec prec `c  1 a 1 20 ]
+"530
+[v printf@cp cp `*.4DCuc  1 a 1 19 ]
 "464
 [v printf@f f `*.24DCuc  1 a 1 wreg ]
 "533
-[v printf@f f `*.24DCuc  1 a 1 29 ]
+[v printf@f f `*.24DCuc  1 a 1 27 ]
 "1541
 } 0
-"39 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"49 /home/pjago/Documents/Github/CEE0099/main.c
 [v _putch putch `(v  1 e 1 0 ]
 {
 [v putch@msg msg `uc  1 a 1 wreg ]
 [v putch@msg msg `uc  1 a 1 wreg ]
-[v putch@msg msg `uc  1 a 1 12 ]
-"45
+[v putch@msg msg `uc  1 a 1 13 ]
+"61
 } 0
-"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
+"8 /opt/microchip/xc8/v1.43/sources/common/isdigit.c
 [v _isdigit isdigit `(b  1 e 0 0 ]
 {
 [v isdigit@c c `uc  1 a 1 wreg ]
@@ -155,72 +239,64 @@
 [v isdigit@c c `uc  1 a 1 5 ]
 "15
 } 0
-"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
+"15 /opt/microchip/xc8/v1.43/sources/common/Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
 {
 "17
-[v ___wmul@product product `ui  1 a 2 8 ]
+[v ___wmul@product product `ui  1 a 2 7 ]
 "15
-[v ___wmul@multiplier multiplier `ui  1 p 2 4 ]
-[v ___wmul@multiplicand multiplicand `ui  1 p 2 6 ]
+[v ___wmul@multiplier multiplier `ui  1 p 2 3 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 5 ]
 "53
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
+"6 /opt/microchip/xc8/v1.43/sources/common/lwmod.c
 [v ___lwmod __lwmod `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwmod@counter counter `uc  1 a 1 13 ]
+[v ___lwmod@counter counter `uc  1 a 1 8 ]
 "6
-[v ___lwmod@divisor divisor `ui  1 p 2 8 ]
-[v ___lwmod@dividend dividend `ui  1 p 2 10 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 3 ]
+[v ___lwmod@dividend dividend `ui  1 p 2 5 ]
 "26
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
+"6 /opt/microchip/xc8/v1.43/sources/common/lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwdiv@quotient quotient `ui  1 a 2 5 ]
+[v ___lwdiv@quotient quotient `ui  1 a 2 0 ]
 "12
-[v ___lwdiv@counter counter `uc  1 a 1 7 ]
+[v ___lwdiv@counter counter `uc  1 a 1 2 ]
 "6
-[v ___lwdiv@divisor divisor `ui  1 p 2 0 ]
-[v ___lwdiv@dividend dividend `ui  1 p 2 2 ]
+[v ___lwdiv@divisor divisor `ui  1 p 2 4 ]
+[v ___lwdiv@dividend dividend `ui  1 p 2 6 ]
 "31
 } 0
-"55 C:\Users\usuario\Documents\Github\CEE0099\main.c
-[v _init_lcd init_lcd `(v  1 e 1 0 ]
-{
-"64
-} 0
-"47
-[v _prog_lcd prog_lcd `(v  1 e 1 0 ]
-{
-[v prog_lcd@msg msg `uc  1 a 1 wreg ]
-[v prog_lcd@msg msg `uc  1 a 1 wreg ]
-[v prog_lcd@msg msg `uc  1 a 1 12 ]
-"53
-} 0
-"31
+"41 /home/pjago/Documents/Github/CEE0099/main.c
 [v _beep beep `(v  1 e 1 0 ]
 {
-"33
-[v beep@j j `i  1 a 2 12 ]
-"37
+"43
+[v beep@j j `i  1 a 2 13 ]
+"47
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
+"6 /opt/microchip/xc8/v1.43/sources/common/lldiv.c
 [v ___lldiv __lldiv `(ul  1 e 4 0 ]
 {
 "11
-[v ___lldiv@quotient quotient `ul  1 a 4 5 ]
+[v ___lldiv@quotient quotient `ul  1 a 4 8 ]
 "12
-[v ___lldiv@counter counter `uc  1 a 1 9 ]
+[v ___lldiv@counter counter `uc  1 a 1 12 ]
 "6
 [v ___lldiv@divisor divisor `ul  1 p 4 0 ]
 [v ___lldiv@dividend dividend `ul  1 p 4 4 ]
 "31
 } 0
-"84 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"63 /home/pjago/Documents/Github/CEE0099/main.c
+[v _getch getch `(uc  1 e 1 0 ]
+{
+"66
+} 0
+"113
 [v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
 {
-"89
+"117
 } 0

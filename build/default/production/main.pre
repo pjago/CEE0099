@@ -12,29 +12,10 @@
 #pragma config WRT = OFF
 #pragma config CP = OFF
 
-# 4 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\__size_t.h"
-typedef unsigned size_t;
-
-# 7 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdarg.h"
-typedef void * va_list[1];
-
-#pragma intrinsic(__va_start)
-extern void * __va_start(void);
-
-#pragma intrinsic(__va_arg)
-extern void * __va_arg(void *, ...);
-
-# 43 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h"
-struct __prbuf
-{
-char * ptr;
-void (* func)(char);
-};
-
-# 29 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\errno.h"
+# 29 "/opt/microchip/xc8/v1.43/include/errno.h"
 extern int errno;
 
-# 12 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\conio.h"
+# 12 "/opt/microchip/xc8/v1.43/include/conio.h"
 extern void init_uart(void);
 
 extern char getch(void);
@@ -48,7 +29,26 @@ extern __bit kbhit(void);
 extern char * cgets(char *);
 extern void cputs(const char *);
 
-# 88 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h"
+# 4 "/opt/microchip/xc8/v1.43/include/__size_t.h"
+typedef unsigned size_t;
+
+# 7 "/opt/microchip/xc8/v1.43/include/stdarg.h"
+typedef void * va_list[1];
+
+#pragma intrinsic(__va_start)
+extern void * __va_start(void);
+
+#pragma intrinsic(__va_arg)
+extern void * __va_arg(void *, ...);
+
+# 43 "/opt/microchip/xc8/v1.43/include/stdio.h"
+struct __prbuf
+{
+char * ptr;
+void (* func)(char);
+};
+
+# 88
 extern int cprintf(char *, ...);
 #pragma printf_check(cprintf)
 
@@ -75,17 +75,17 @@ extern int vsscanf(const char *, const char *, va_list) __attribute__((unsupport
 extern int sprintf(char *, const char *, ...);
 extern int printf(const char *, ...);
 
-# 26 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\htc.h"
+# 26 "/opt/microchip/xc8/v1.43/include/htc.h"
 extern const char __xc8_OPTIM_SPEED;
 
 extern double __fpnormalize(double);
 
 
-# 13 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\xc8debug.h"
+# 13 "/opt/microchip/xc8/v1.43/include/xc8debug.h"
 #pragma intrinsic(__builtin_software_breakpoint)
 extern void __builtin_software_breakpoint(void);
 
-# 50 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h"
+# 50 "/opt/microchip/xc8/v1.43/include/pic16f877a.h"
 extern volatile unsigned char INDF @ 0x000;
 
 asm("INDF equ 00h");
@@ -1509,21 +1509,21 @@ extern volatile __bit nW @ (((unsigned) &SSPSTAT)*8) + 2;
 extern volatile __bit nWRITE @ (((unsigned) &SSPSTAT)*8) + 2;
 
 
-# 27 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h"
+# 27 "/opt/microchip/xc8/v1.43/include/pic.h"
 #pragma intrinsic(__nop)
 extern void __nop(void);
 
 # 77
 extern unsigned int flash_read(unsigned short addr);
 
-# 114 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\eeprom_routines.h"
+# 114 "/opt/microchip/xc8/v1.43/include/eeprom_routines.h"
 extern void eeprom_write(unsigned char addr, unsigned char value);
 extern unsigned char eeprom_read(unsigned char addr);
 extern void eecpymem(volatile unsigned char *to, __eeprom unsigned char *from, unsigned char size);
 extern void memcpyee(__eeprom unsigned char *to, const unsigned char *from, unsigned char size);
 
 
-# 151 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h"
+# 151 "/opt/microchip/xc8/v1.43/include/pic.h"
 #pragma intrinsic(_delay)
 extern __nonreentrant void _delay(unsigned long);
 #pragma intrinsic(_delaywdt)
@@ -1534,41 +1534,63 @@ extern unsigned char __resetbits;
 extern __bit __powerdown;
 extern __bit __timeout;
 
-# 22 "main.c"
+# 23 "main.c"
 const unsigned long IFOSC = 1000000;
 const unsigned int T1FOSC = 0x1000;
 const unsigned int RPSMIN = 8;
+const unsigned long BAUD = 19200;
+
+char PWM @ &CCPR1L;
+bit BUZ @ (((unsigned) &PORTA)*8) + 5;
+bit PUT = 0;
 
 struct {
+unsigned CH : 8;
 unsigned RS : 1;
+unsigned RW : 1;
 unsigned EN : 1;
-} LCD @ &PORTE;
+} LCD @ &PORTD;
+
+
 
 void beep () {
 _delay(IFOSC/10);
 for (int j = 0; j < 100; ++j) {
-RA5 = 1; _delay(IFOSC/1000);
-RA5 = 0; _delay(IFOSC/2000);
+BUZ = 1; _delay(IFOSC/1000);
+BUZ = 0; _delay(IFOSC/2000);
 }
 }
 
 void putch (char msg) {
+if (PUT) {
 LCD.RS = 1;
-PORTD = msg;
+LCD.CH = msg;
 LCD.EN = 1; _delay(IFOSC/1000000);
 LCD.EN = 0; _delay(IFOSC/20000);
+}
+else {
+while(!TXIF) continue;
+TXREG = msg;
+}
 return;
+}
+
+char getch () {
+while(!RCIF) continue;
+return RCREG;
 }
 
 void prog_lcd (char msg) {
 LCD.RS = 0;
-PORTD = msg;
+LCD.CH = msg;
 LCD.EN = 1; _delay(IFOSC/1000000);
 LCD.EN = 0; _delay(IFOSC/20000);
 return;
 }
 
 void init_lcd () {
+PUT = 1;
+LCD.RW = 0;
 prog_lcd(0x30); _delay(IFOSC/200);
 prog_lcd(0x30); _delay(IFOSC/10000);
 prog_lcd(0x30);
@@ -1576,16 +1598,22 @@ prog_lcd(0x38);
 prog_lcd(0x01); _delay(IFOSC/500);
 prog_lcd(0x0C);
 prog_lcd(0x06);
+prog_lcd(0x80);
+printf("LAB.CONT.DIGITAL");
+prog_lcd(0xC0);
+printf("Seja Bem-Vindo!");
 return;
 }
 
-void main_lcd (long value, int duty) {
+void main_lcd (unsigned int value, char duty) {
+PUT = 1;
 prog_lcd(0xC0);
-printf("%4d ", value);
+printf("bps: %3u", value);
 prog_lcd(0xC8);
-printf("PWM %3d%%", duty);
-return;
+printf("pwm: %3d%%", duty);
 }
+
+
 
 typedef struct {
 volatile unsigned int count;
@@ -1598,7 +1626,6 @@ unsigned int max;
 rpm FAN = {-1, 0, 0, 7, 5000};
 
 void interrupt raycast_intersection_cleared (void) {
-RB7 = !RB7;
 FAN.count++;
 INTF = 0;
 return;
@@ -1623,6 +1650,49 @@ x.time = t;
 return x;
 }
 
+void read_tmr1 () {
+PUT = 0;
+FAN = rps_timer1(FAN, TMR1);
+printf("%u", FAN.value);
+return;
+}
+
+void read_tmr0 () {
+PUT = 0;
+printf("%d", TMR0);
+TMR0 = 0;
+return;
+}
+
+void write (char duty) {
+PWM = duty;
+}
+
+void io_switch (char *x) {
+switch (x[0]) {
+case '7': read_tmr0(); break;
+case '5': write(x[1]); break;
+case '1': read_tmr0(); write(x[1]); break;
+case 'r': read_tmr1(); break;
+case 'w': write(x[1]); break;
+case 'x': read_tmr1(); write(x[1]); break;
+case 's':
+case '2': write(0); beep(); beep(); break;
+}
+}
+
+int buffer_serial (char *buffer, int idx) {
+buffer[idx] = getch();
+if (buffer[idx] == '\n') {
+idx=0;
+io_switch(buffer);
+}
+else {
+idx++;
+}
+return idx;
+}
+
 int main (void) {
 
 
@@ -1632,28 +1702,33 @@ CCPR1L = 0;
 PR2 = 100;
 T2CON = 0x04;
 TRISC = 0xFB;
-OPTION_REG = 0x00;
+OPTION_REG = 0x38;
 TRISB = 0x7F;
 INTCON = 0x90;
 TRISD = 0x00;
-TRISE = 0xFC;
-TRISA = 0xDF;
+TRISE = 0xF8;
+TRISA = 0xCF;
+RCSTA = 0x90;
+TXSTA = 0x24;
+SPBRG = 12;
 
-beep();
-beep();
-beep();
 init_lcd();
-prog_lcd(0x80);
-printf("LAB.CONT.DIGITAL");
-prog_lcd(0xC0);
-printf("Seja Bem-Vindo!");
+beep();
+beep();
+beep();
 
 
 
+unsigned int logged;
+char buffer[6];
+int idx = 0;
 while (1) {
-CCPR1L = 100 * FAN.value / FAN.max;
-FAN = rps_timer1(FAN, TMR1);
-main_lcd(FAN.value, CCPR1L);
+idx = buffer_serial(buffer, idx);
+if (TMR1 < T1FOSC) logged = 0;
+else if (!logged) {
+main_lcd(TMR0, PWM);
+logged = 1;
+}
 }
 return 0;
 }

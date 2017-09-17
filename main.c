@@ -16,43 +16,66 @@
 #pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
+#include <conio.h>
 #include <stdio.h>
 #include <xc.h>
 
-const unsigned long IFOSC = 1000000;  // CLK = 4 Mhz, CYC = 1 Mhz @beep @delay
+const unsigned long IFOSC = 1000000;  // CLK = 4 Mhz, CLK/4 = 1 Mhz @delay
 const unsigned int T1FOSC = 0x1000;   // RTC = 0x8000 Hz, CKPS = 0b11 @T1CON
-const unsigned int RPSMIN = 8;        // RPS minimal pickup value @rps_timer
+const unsigned int RPSMIN = 8;        // RPS minimal pickup value @rps_timer1
+const unsigned long BAUD = 19200;     // BAUD rate @DeviceManager @RBPRG
+
+char PWM @ &CCPR1L;
+bit  BUZ @ (((unsigned) &PORTA)*8) + 5;
+bit  PUT = 0;
 
 struct {
+    unsigned CH : 8;
     unsigned RS : 1;     //Register Select
+    unsigned RW : 1;     //Read/Write
     unsigned EN : 1;     //ENable
-} LCD @ &PORTE;
+} LCD @ &PORTD;
+
+// UI
 
 void beep () {
     _delay(IFOSC/10);
     for (int j = 0; j < 100; ++j) {
-        RA5 = 1; _delay(IFOSC/1000);
-        RA5 = 0; _delay(IFOSC/2000);
+        BUZ = 1; _delay(IFOSC/1000);
+        BUZ = 0; _delay(IFOSC/2000);
     } 
 }
 
-void putch (char msg) {
-    LCD.RS = 1;
-    PORTD = msg;
-    LCD.EN = 1; _delay(IFOSC/1000000);
-    LCD.EN = 0; _delay(IFOSC/20000);
+void putch (char msg) {    
+    if (PUT) {
+        LCD.RS = 1;
+        LCD.CH = msg;
+        LCD.EN = 1; _delay(IFOSC/1000000);
+        LCD.EN = 0; _delay(IFOSC/20000);
+    }
+    else {
+        while(!TXIF) continue;
+        TXREG = msg;
+    }
     return;
+}
+
+char getch () {
+    while(!RCIF) continue;
+    return RCREG;
 }
 
 void prog_lcd (char msg) {
     LCD.RS = 0;
-    PORTD = msg;
+    LCD.CH = msg;
     LCD.EN = 1; _delay(IFOSC/1000000);
     LCD.EN = 0; _delay(IFOSC/20000);
     return;
 }
 
 void init_lcd () {
+    PUT = 1;
+    LCD.RW = 0;
     prog_lcd(0x30); _delay(IFOSC/200);
     prog_lcd(0x30); _delay(IFOSC/10000);
     prog_lcd(0x30);
@@ -60,16 +83,22 @@ void init_lcd () {
     prog_lcd(0x01); _delay(IFOSC/500);
     prog_lcd(0x0C);
     prog_lcd(0x06);
+    prog_lcd(0x80);
+    printf("LAB.CONT.DIGITAL");
+    prog_lcd(0xC0);
+    printf("Seja Bem-Vindo!");
     return;
 }
 
-void main_lcd (long value, int duty) {
+void main_lcd (unsigned int value, char duty) {
+    PUT = 1;
     prog_lcd(0xC0);
-    printf("%4d ", value);
+    printf("bps: %3u", value);
     prog_lcd(0xC8);
-    printf("PWM %3d%%", duty);
-    return;
+    printf("pwm: %3d%%", duty);
 }
+
+// MEASUREMENT
 
 typedef struct {
     volatile unsigned int count;
@@ -82,7 +111,6 @@ typedef struct {
 rpm FAN = {-1, 0, 0, 7, 5000};
 
 void interrupt raycast_intersection_cleared (void) {
-    RB7 = !RB7;
     FAN.count++;
     INTF = 0;
     return;
@@ -107,37 +135,85 @@ rpm rps_timer1 (rpm x, unsigned int t) {
     return x;
 }
 
+void read_tmr1 () {
+    PUT = 0;
+    FAN = rps_timer1(FAN, TMR1);
+    printf("%u", FAN.value);
+    return;
+}
+
+void read_tmr0 () {
+    PUT = 0;
+    printf("%u", TMR0);
+    TMR0 = 0;
+    return;
+}
+
+void write (char duty) {
+    PWM = duty;
+}
+
+void io_switch (char *x) {
+	switch (x[0]) {
+		case '7': read_tmr0();               break;
+        case '5': write(x[1]);				 break;
+		case '1': read_tmr0(); write(x[1]);  break;
+        case 'r': read_tmr1();               break;
+        case 'w': write(x[1]);				 break;
+        case 'x': read_tmr1(); write(x[1]);  break;
+        case 's':
+        case '2': write(0);	beep(); beep();  break;
+	}
+}
+
+int buffer_serial (char *buffer, int idx) {
+    buffer[idx] = getch();
+    if (buffer[idx] == '\n') {
+        idx=0;
+        io_switch(buffer);
+    }
+    else {
+        idx++;
+    }
+    return idx;
+}
+
 int main (void) {
     //SETUP    
     
-    T1CON = 0xFB;           // TMR1 external clock, sync, prescale 8    
+    T1CON = 0xFB;           // TMR1 external clock, sync, TMR1/8    
     CCP1CON = 0x0F;         // CCP1 module is on PWM mode
     CCPR1L = 0;             // PWM duty = (CCPR1L:CCP1CON<5:4>)*TOSC*T2CKPS
     PR2 = 100;              // PWM period = [(PR2)+1]*4*TOSC*T2CKPS
     T2CON = 0x04;           // TMR2 enabled at maximum frequency
     TRISC = 0xFB;           // C2 powers a LED
-    OPTION_REG = 0x00;      // B internal pull-ups, B0 INTE falling edge
+    OPTION_REG = 0x38;      // B pull-ups, B0 falling, T0CKI falling, TMR0/1
     TRISB = 0x7F;           // B0 reads IR, B7 powers a LED
     INTCON = 0x90;          // enable external interrupt on B0
     TRISD = 0x00;           // LCD output
-    TRISE = 0xFC;           // LCD enable e rs
-    TRISA = 0xDF;           // A5 buzz a buzzer
+    TRISE = 0xF8;           // LCD register select, read/write, enable
+    TRISA = 0xCF;           // A5 buzz a buzzer, A4 counts rotations
+    RCSTA = 0x90;           // asynchronous 8 bit RS-232
+    TXSTA = 0x24;           // asynchronous 8 bit RS-232
+    SPBRG = 12;             // BAUD generator = IFOSC / (4*BAUD) - 1;
     
-    beep();
-    beep();
-    beep();
     init_lcd();
-    prog_lcd(0x80);
-    printf("LAB.CONT.DIGITAL");
-    prog_lcd(0xC0);
-    printf("Seja Bem-Vindo!");
+    beep();
+    beep();
+    beep();
     
-    //LOOP   
+    //LOOP     
     
+    unsigned int logged;
+    char buffer[6];
+    int idx = 0;
     while (1) {
-        CCPR1L = 100 * FAN.value / FAN.max;
-        FAN = rps_timer1(FAN, TMR1);
-        main_lcd(FAN.value, CCPR1L); //todo: only per sec
+        idx = buffer_serial(buffer, idx);
+        if (TMR1 < T1FOSC) logged = 0;
+        else if (!logged) {
+            main_lcd(TMR0, PWM);
+            logged = 1;
+        }
     }
     return 0;
 }
