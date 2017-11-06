@@ -1,3 +1,5 @@
+VERSION: 06.11.2017
+
 install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
 If you want an updated version of this repository (open cmd):

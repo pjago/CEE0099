@@ -1,10 +1,10 @@
 %Gz = mqnr(y, u, T) não recursivo
-function Gz = mqnr(y, u, T)    
+function Gz = mqnr2(y, u, T)    
     n = size(y, 1);
     for i = 1:size(y, 2)
         Y=[];
         fi=[];
-        for k=4:n 
+        for k=3:n 
             y1 = y(k-1, i);
             y2 = y(k-2, i);
             u1 = at(u, k-1, i);
