@@ -1,7 +1,5 @@
 src/astron.m
 src/zigler_nichols.m
-src/mqnr1.m
-src/mqnr2.m
 src/relay.m
 *.m~
 survey
