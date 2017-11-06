@@ -4,3 +4,6 @@ src/relay.m
 *.m~
 survey
 src/easylife.m
+sim/
+dc fan/
+web fan/
