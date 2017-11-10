@@ -1,9 +1,3 @@
-%1. APERTE RUN E SELECIONE 'CHANGE FOLDER'
-%2. APLIQUE UM DEGRAU COM RUIDO ALEATORIO (ver CONFIG)
-%3. EXECUTE mqnr2(y, u, T). COPIE O RESULTADO EM Gz (ver I/O)
-%4. APLIQUE OUTRO SINAL E COMPARE. EX: MESMO DEGRAU, SEM RUIDO
-%5. REPITA O MESMO PROCEDIMENTO CONECTADO À PLANTA
-
 clc
 clear
 format shortg
@@ -11,30 +5,22 @@ addpath 'src'
 
 global y r t e u v k
 
-%% CONFIG
+%% CONFIGURAÇÃO
 
-T = 0.1;        %time sampling
-n = 101;        %sample size
-d = 50;
-
-%define functions to calculate r, e, u, v
-R = @(k) 82.1;
-E = @(y, r, k) r(k) - y(k);
-U = @(u, e, k) d; % DEGRAU SEM RUÍDO (help rand)
-V = @(u, k) (u(k) > 0)*(u(k) < 100)*u(k) + (u(k) >= 100)*100;
+T = 0.1;        %tempo de amostragem
+n = 101;        %número de amostras
 
 %% I/O
 
-%define transfer function
+%função de transferência para simulação, caso não ache planta
 z = tf('z', T, 'variable', 'z^-1');
 Gz = z^-1*(0.077508 + 0.17161*z^-1)/(1 - 0.8539*z^-1 - 0.02473*z^-2);
 
-%set COM at 19200 baud rate at Device Manager
+%ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
 [read, write, plant] = startcom(T, 'COM6', '0.0.0.0:3001', Gz);
 
-%% CONTROL LOOP
+%% LOOP DE CONTROLE
 
-%set initial values to zero state
 t = (0:(n-1))*T;
 [r, y, e, u, v] = deal(zeros(n, 1)); 
 ping = nan(n, 1);
@@ -42,19 +28,27 @@ t0 = tic;
 
 %LOOP
 for k = 1:n
-    %READ
+    %LEITURA
     time = tic;
     y(k) = read();
 
-    %SETPOINT
-    r(k) = R(k);
-    e(k) = E(y, r, k);
+    %REFERÊNCIA E ERRO
+    r(k) = 82.1;
+    e(k) = r(k) - y(k);
 
-    %CONTROL
-    u(k) = U(u, e, k);
-    v(k) = V(u, k);
+    %CONTROLE
+    u(k) = 40;
     
-    %ACTUATE
+    %SATURAÇÃO
+    if u(k) > 100
+        v(k) = 100;
+    elseif u(k) < 0
+        v(k) = 0;
+    else
+        v(k) = u(k);
+    end
+    
+    %ESCRITA
     write(v(k));
     ping(k) = toc(time);
     
@@ -65,6 +59,6 @@ for k = 1:n
     end
 end
 
-fprintf('Elapsed time: %f seconds\n', toc(t0) - toc(time));
+fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
 saverun(plant, ping, t, y, r, e, u, v)
 write(0);
