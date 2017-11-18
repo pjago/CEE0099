@@ -3,7 +3,7 @@ clear
 format shortg
 addpath 'src'
 
-global y r t e u v k
+global y r t e u pwm k
 
 %% CONFIGURAÇÃO
 
@@ -12,7 +12,7 @@ n = 101;        %número de amostras
 
 %% I/O
 
-%função de transferência para simulação, caso não ache planta
+%caso não ache a planta, o programa simula pela função de transferência Gz
 z = tf('z', T, 'variable', 'z^-1');
 Gz = z^-1*(0.077508 + 0.17161*z^-1)/(1 - 0.8539*z^-1 - 0.02473*z^-2);
 
@@ -22,7 +22,7 @@ Gz = z^-1*(0.077508 + 0.17161*z^-1)/(1 - 0.8539*z^-1 - 0.02473*z^-2);
 %% LOOP DE CONTROLE
 
 t = (0:(n-1))*T;
-[r, y, e, u, v] = deal(zeros(n, 1)); 
+[r, y, e, u, pwm] = deal(zeros(n, 1)); 
 ping = nan(n, 1);
 t0 = tic;
 
@@ -37,19 +37,21 @@ for k = 1:n
     e(k) = r(k) - y(k);
 
     %CONTROLE
-    u(k) = 40;
+    if k == 1
+        u(k) = 40;
+    end
     
     %SATURAÇÃO
     if u(k) > 100
-        v(k) = 100;
+        pwm(k) = 100;
     elseif u(k) < 0
-        v(k) = 0;
+        pwm(k) = 0;
     else
-        v(k) = u(k);
+        pwm(k) = u(k);
     end
     
     %ESCRITA
-    write(v(k));
+    write(pwm(k));
     ping(k) = toc(time);
     
     %DELAY
@@ -60,5 +62,5 @@ for k = 1:n
 end
 
 fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
-saverun(plant, ping, t, y, r, e, u, v)
+saverun(plant, ping, t, y, r, e, u, pwm)
 write(0);

@@ -1,5 +1,11 @@
 %Attempts to connect with plant, virtual or model, in that order
-function [read, write, plant] = startcom(T, COM, url, Gz)
+function [read, write, plant] = startcom(T, COM, varargin)
+    if nargin >= 3
+        url = varargin{1};
+    end
+    if nargin >= 4
+        Gz = varargin{2};
+    end
     try
         s = serial(COM,'BaudRate',19200);
         s.terminator = 'LF';    

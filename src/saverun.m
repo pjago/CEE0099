@@ -1,4 +1,4 @@
-function saverun( plant, ping, t, y, r, e, u, v ) % instead pass a timeseries
+function saverun( plant, ping, t, y, r, e, u, pwm, varargin ) % instead pass a timeseries
     if ~plant
         folder = 'sim';
     else
@@ -13,8 +13,8 @@ function saverun( plant, ping, t, y, r, e, u, v ) % instead pass a timeseries
     date = datestr(datetime('now'));
     date(date == '-' | date == ':') = '_';
     path = [folder '/' date];
-    fig = plotudo(t, y, r, e, u, v, 0, 0);
-    save([path '.mat'], 'plant', 'ping', 't', 'y', 'r', 'e', 'u', 'v')
+    fig = plotudo(t, y, r, e, u, pwm, varargin{:});
+    save([path '.mat'], 'plant', 'ping', 't', 'y', 'r', 'e', 'u', 'pwm')
     saveas(fig, [path '.fig'])
     disp(['Plant: ' folder ' Saved at: ' path])
 end
