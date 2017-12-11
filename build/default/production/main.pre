@@ -3,7 +3,7 @@
 
 
 # 10
-#pragma config FOSC = EXTRC
+#pragma config FOSC = HS
 #pragma config WDTE = OFF
 #pragma config PWRTE = OFF
 #pragma config BOREN = OFF
@@ -12,10 +12,10 @@
 #pragma config WRT = OFF
 #pragma config CP = OFF
 
-# 29 "/opt/microchip/xc8/v1.43/include/errno.h"
+# 29 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\errno.h"
 extern int errno;
 
-# 12 "/opt/microchip/xc8/v1.43/include/conio.h"
+# 12 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\conio.h"
 extern void init_uart(void);
 
 extern char getch(void);
@@ -29,10 +29,10 @@ extern __bit kbhit(void);
 extern char * cgets(char *);
 extern void cputs(const char *);
 
-# 4 "/opt/microchip/xc8/v1.43/include/__size_t.h"
+# 4 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\__size_t.h"
 typedef unsigned size_t;
 
-# 7 "/opt/microchip/xc8/v1.43/include/stdarg.h"
+# 7 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdarg.h"
 typedef void * va_list[1];
 
 #pragma intrinsic(__va_start)
@@ -41,7 +41,7 @@ extern void * __va_start(void);
 #pragma intrinsic(__va_arg)
 extern void * __va_arg(void *, ...);
 
-# 43 "/opt/microchip/xc8/v1.43/include/stdio.h"
+# 43 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h"
 struct __prbuf
 {
 char * ptr;
@@ -75,17 +75,17 @@ extern int vsscanf(const char *, const char *, va_list) __attribute__((unsupport
 extern int sprintf(char *, const char *, ...);
 extern int printf(const char *, ...);
 
-# 26 "/opt/microchip/xc8/v1.43/include/htc.h"
+# 26 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\htc.h"
 extern const char __xc8_OPTIM_SPEED;
 
 extern double __fpnormalize(double);
 
 
-# 13 "/opt/microchip/xc8/v1.43/include/xc8debug.h"
+# 13 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\xc8debug.h"
 #pragma intrinsic(__builtin_software_breakpoint)
 extern void __builtin_software_breakpoint(void);
 
-# 50 "/opt/microchip/xc8/v1.43/include/pic16f877a.h"
+# 50 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h"
 extern volatile unsigned char INDF @ 0x000;
 
 asm("INDF equ 00h");
@@ -1509,21 +1509,21 @@ extern volatile __bit nW @ (((unsigned) &SSPSTAT)*8) + 2;
 extern volatile __bit nWRITE @ (((unsigned) &SSPSTAT)*8) + 2;
 
 
-# 27 "/opt/microchip/xc8/v1.43/include/pic.h"
+# 27 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h"
 #pragma intrinsic(__nop)
 extern void __nop(void);
 
 # 77
 extern unsigned int flash_read(unsigned short addr);
 
-# 114 "/opt/microchip/xc8/v1.43/include/eeprom_routines.h"
+# 114 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\eeprom_routines.h"
 extern void eeprom_write(unsigned char addr, unsigned char value);
 extern unsigned char eeprom_read(unsigned char addr);
 extern void eecpymem(volatile unsigned char *to, __eeprom unsigned char *from, unsigned char size);
 extern void memcpyee(__eeprom unsigned char *to, const unsigned char *from, unsigned char size);
 
 
-# 151 "/opt/microchip/xc8/v1.43/include/pic.h"
+# 151 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic.h"
 #pragma intrinsic(_delay)
 extern __nonreentrant void _delay(unsigned long);
 #pragma intrinsic(_delaywdt)
@@ -1535,9 +1535,8 @@ extern __bit __powerdown;
 extern __bit __timeout;
 
 # 23 "main.c"
-const unsigned long IFOSC = 1000000;
-const unsigned int T1FOSC = 0x1000;
-const unsigned int RPSMIN = 8;
+const unsigned long IFOSC = 5000000;
+const unsigned int T1FOSC = 360;
 const unsigned long BAUD = 19200;
 
 char PWM @ &CCPR1L;
@@ -1608,7 +1607,7 @@ return;
 void main_lcd (unsigned int value, char duty) {
 PUT = 1;
 prog_lcd(0xC0);
-printf("bps: %3u", value);
+printf("rps: %3u", value);
 prog_lcd(0xC8);
 printf("pwm: %3d%%", duty);
 }
@@ -1617,13 +1616,10 @@ printf("pwm: %3d%%", duty);
 
 typedef struct {
 volatile unsigned int count;
-unsigned int time;
 unsigned int value;
-unsigned int div;
-unsigned int max;
 } rpm;
 
-rpm FAN = {-1, 0, 0, 7, 5000};
+rpm FAN = {-1, 0};
 
 void interrupt raycast_intersection_cleared (void) {
 FAN.count++;
@@ -1631,21 +1627,14 @@ INTF = 0;
 return;
 }
 
-rpm rps_timer1 (rpm x, unsigned int t) {
-if (x.time > t) {
+rpm rps_timer1 (rpm x, unsigned int dt) {
+if (x.count > 0) {
+x.value = T1FOSC * x.count / dt;
 x.count = 0;
-x.time = t;
 }
-else if (x.count > 0) {
-x.value = T1FOSC / (t - x.time) * x.count / x.div;
-if (x.value > x.max) x.max = x.value;
-x.count = 0;
-x.time = t;
-}
-else if ( (t - x.time) > (T1FOSC / RPSMIN) ) {
+else {
 x.count = -1;
 x.value = 0;
-x.time = t;
 }
 return x;
 }
@@ -1654,19 +1643,24 @@ void read_tmr1 () {
 PUT = 0;
 FAN = rps_timer1(FAN, TMR1);
 printf("%u", FAN.value);
+TMR1 = 0;
 return;
 }
 
 void read_tmr0 () {
 PUT = 0;
-printf("%d", TMR0);
+printf("%u", TMR0);
 TMR0 = 0;
+FAN = rps_timer1(FAN, TMR1);
+TMR1 = 0;
 return;
 }
 
 void write (char duty) {
 PWM = duty;
 }
+
+
 
 void io_switch (char *x) {
 switch (x[0]) {
@@ -1679,6 +1673,7 @@ case 'x': read_tmr1(); write(x[1]); break;
 case 's':
 case '2': write(0); beep(); beep(); break;
 }
+main_lcd(FAN.value, PWM);
 }
 
 int buffer_serial (char *buffer, int idx) {
@@ -1694,9 +1689,7 @@ return idx;
 }
 
 int main (void) {
-
-
-T1CON = 0xFB;
+T1CON = 0x0B;
 CCP1CON = 0x0F;
 CCPR1L = 0;
 PR2 = 100;
@@ -1710,25 +1703,13 @@ TRISE = 0xF8;
 TRISA = 0xCF;
 RCSTA = 0x90;
 TXSTA = 0x24;
-SPBRG = 12;
-
+SPBRG = 64;
 init_lcd();
 beep();
 beep();
 beep();
-
-
-
-unsigned int logged;
 char buffer[6];
 int idx = 0;
-while (1) {
-idx = buffer_serial(buffer, idx);
-if (TMR1 < T1FOSC) logged = 0;
-else if (!logged) {
-main_lcd(TMR0, PWM);
-logged = 1;
-}
-}
+while (1) idx = buffer_serial(buffer, idx);
 return 0;
 }

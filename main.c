@@ -7,7 +7,7 @@
 
 // CONFIG
 
-#pragma config FOSC = EXTRC     // Oscillator Selection bits (RC oscillator)
+#pragma config FOSC = HS        // Oscillator Selection bits (High Speed crystal)
 #pragma config WDTE = OFF       // Watchdog Timer Enable bit (WDT disabled)
 #pragma config PWRTE = OFF      // Power-up Timer Enable bit (PWRT disabled)
 #pragma config BOREN = OFF      // Brown-out Reset Enable bit (BOR disabled)
@@ -20,9 +20,8 @@
 #include <stdio.h>
 #include <xc.h>
 
-const unsigned long IFOSC = 1000000;  // CLK = 4 Mhz, CLK/4 = 1 Mhz @delay
-const unsigned int T1FOSC = 0x1000;   // RTC = 0x8000 Hz, CKPS = 0b11 @T1CON
-const unsigned int RPSMIN = 8;        // RPS minimal pickup value @rps_timer1
+const unsigned long IFOSC = 5000000;  // CLK = 20 Mhz, CLK/4 = 5 Mhz @delay
+const unsigned int T1FOSC = 360;      // T1CLK = B*T1FOSC Hz, CKPS = 0b00 @T1CON
 const unsigned long BAUD = 19200;     // BAUD rate @DeviceManager @RBPRG
 
 char PWM @ &CCPR1L;
@@ -93,7 +92,7 @@ void init_lcd () {
 void main_lcd (unsigned int value, char duty) {
     PUT = 1;
     prog_lcd(0xC0);
-    printf("bps: %3u", value);
+    printf("rps: %3u", value);
     prog_lcd(0xC8);
     printf("pwm: %3d%%", duty);
 }
@@ -102,13 +101,10 @@ void main_lcd (unsigned int value, char duty) {
 
 typedef struct {
     volatile unsigned int count;
-    unsigned int time;
     unsigned int value;
-    unsigned int div;
-    unsigned int max;
 } rpm;
 
-rpm FAN = {-1, 0, 0, 7, 5000};
+rpm FAN = {-1, 0};
 
 void interrupt raycast_intersection_cleared (void) {
     FAN.count++;
@@ -116,21 +112,14 @@ void interrupt raycast_intersection_cleared (void) {
     return;
 }
 
-rpm rps_timer1 (rpm x, unsigned int t) {
-    if (x.time > t) {
+rpm rps_timer1 (rpm x, unsigned int dt) {
+    if (x.count > 0) {
+        x.value = T1FOSC * x.count / dt;
         x.count = 0;
-        x.time = t;
     }
-    else if (x.count > 0) {
-        x.value = T1FOSC / (t - x.time) * x.count / x.div;
-        if (x.value > x.max) x.max = x.value;
-        x.count = 0;
-        x.time = t;
-    }
-    else if ( (t - x.time) > (T1FOSC / RPSMIN) ) {
+    else {
         x.count = -1;
         x.value = 0;
-        x.time = t;
     }
     return x;
 }
@@ -139,6 +128,7 @@ void read_tmr1 () {
     PUT = 0;
     FAN = rps_timer1(FAN, TMR1);
     printf("%u", FAN.value);
+    TMR1 = 0;
     return;
 }
 
@@ -146,12 +136,16 @@ void read_tmr0 () {
     PUT = 0;
     printf("%u", TMR0);
     TMR0 = 0;
+    FAN = rps_timer1(FAN, TMR1);
+    TMR1 = 0;
     return;
 }
 
 void write (char duty) {
     PWM = duty;
 }
+
+// PROTOCOL
 
 void io_switch (char *x) {
 	switch (x[0]) {
@@ -164,6 +158,7 @@ void io_switch (char *x) {
         case 's':
         case '2': write(0);	beep(); beep();  break;
 	}
+    main_lcd(FAN.value, PWM);
 }
 
 int buffer_serial (char *buffer, int idx) {
@@ -179,9 +174,7 @@ int buffer_serial (char *buffer, int idx) {
 }
 
 int main (void) {
-    //SETUP    
-    
-    T1CON = 0xFB;           // TMR1 external clock, sync, TMR1/8    
+    T1CON = 0x0B;           // TMR1 external clock, sync, TMR1/1    
     CCP1CON = 0x0F;         // CCP1 module is on PWM mode
     CCPR1L = 0;             // PWM duty = (CCPR1L:CCP1CON<5:4>)*TOSC*T2CKPS
     PR2 = 100;              // PWM period = [(PR2)+1]*4*TOSC*T2CKPS
@@ -195,25 +188,13 @@ int main (void) {
     TRISA = 0xCF;           // A5 buzz a buzzer, A4 counts rotations
     RCSTA = 0x90;           // asynchronous 8 bit RS-232
     TXSTA = 0x24;           // asynchronous 8 bit RS-232
-    SPBRG = 12;             // BAUD generator = IFOSC / (4*BAUD) - 1;
-    
+    SPBRG = 64;             // BAUD generator = IFOSC / (4*BAUD) - 1;    
     init_lcd();
     beep();
     beep();
-    beep();
-    
-    //LOOP     
-    
-    unsigned int logged;
+    beep();    
     char buffer[6];
     int idx = 0;
-    while (1) {
-        idx = buffer_serial(buffer, idx);
-        if (TMR1 < T1FOSC) logged = 0;
-        else if (!logged) {
-            main_lcd(TMR0, PWM);
-            logged = 1;
-        }
-    }
+    while (1) idx = buffer_serial(buffer, idx);
     return 0;
 }
