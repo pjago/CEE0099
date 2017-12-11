@@ -1,230 +1,233 @@
-[p LITE_MODE AUTOSTATIC PIC14 PICREGULAR PICMID ]
+[p LITE_MODE AUTOSTATIC LFSROK EMI_WORD ]
 [d version 1.1 ]
 [d edition pro ]
-[d chip 16F877A ]
-[d frameptr 6 ]
+[d chip 18F4550 ]
+[d frameptr 4065 ]
 "464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
 [v _printf printf `(i  1 e 2 0 ]
 "62 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\float.c
 [v ___ftpack __ftpack `(f  1 e 3 0 ]
 "86 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftadd.c
 [v ___ftadd __ftadd `(f  1 e 3 0 ]
+"54 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftdiv.c
+[v ___ftdiv __ftdiv `(f  1 e 3 0 ]
+"62 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftmul.c
+[v ___ftmul __ftmul `(f  1 e 3 0 ]
+"20 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftsub.c
+[v ___ftsub __ftsub `(f  1 e 3 0 ]
 "8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
 [v _isdigit isdigit `(b  1 e 0 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
-[v ___lldiv __lldiv `(ul  1 e 4 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
 [v ___lwmod __lwmod `(ui  1 e 2 0 ]
+"10 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\sprcadd.c
+[v ___fladd __fladd `(d  1 e 3 0 ]
+"245
+[v ___flsub __flsub `(d  1 e 3 0 ]
+"11 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\sprcdiv.c
+[v ___fldiv __fldiv `(d  1 e 3 0 ]
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\sprcmul.c
+[v ___flmul __flmul `(d  1 e 3 0 ]
 "15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\pic\eeprom.c
-[v _eecpymem eecpymem `(v  1 e 1 0 ]
-"39
-[v _memcpyee memcpyee `(v  1 e 1 0 ]
-"40 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+"95 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _beep beep `(v  1 e 1 0 ]
-"48
+"103
 [v _putch putch `(v  1 e 1 0 ]
-"62
+"117
 [v _getch getch `(uc  1 e 1 0 ]
-"67
+"122
 [v _prog_lcd prog_lcd `(v  1 e 1 0 ]
-"75
+"130
 [v _init_lcd init_lcd `(v  1 e 1 0 ]
-"92
+"147
 [v _main_lcd main_lcd `(v  1 e 1 0 ]
-"109
-[v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
-"102
-[s S39 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
-"115
-[v _rps_timer1 rps_timer1 `(VES39  1 e 4 0 ]
-"127
-[v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
-"135
-[v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
-"144
-[v _write write `(v  1 e 1 0 ]
-"150
-[v _io_switch io_switch `(v  1 e 1 0 ]
 "164
+[v _raycast_intersection_cleared raycast_intersection_cleared `IIH(v  1 e 1 0 ]
+"157
+[s S41 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
+"170
+[v _rps_timer1 rps_timer1 `(VES41  1 e 4 0 ]
+"182
+[v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
+"190
+[v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
+"199
+[v _write write `(v  1 e 1 0 ]
+"205
+[v _io_switch io_switch `(v  1 e 1 0 ]
+"219
 [v _buffer_serial buffer_serial `(i  1 e 2 0 ]
-"176
+"231
 [v _main main `(i  1 e 2 0 ]
-"57 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
-[v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
-"452
-[v _INTCON INTCON `VEuc  1 e 1 @11 ]
-"632
-[v _TMR1 TMR1 `VEus  1 e 2 @14 ]
-"653
-[v _T1CON T1CON `VEuc  1 e 1 @16 ]
-"735
-[v _T2CON T2CON `VEuc  1 e 1 @18 ]
-"890
-[v _CCPR1L CCPR1L `VEuc  1 e 1 @21 ]
-"904
-[v _CCP1CON CCP1CON `VEuc  1 e 1 @23 ]
-"962
-[v _RCSTA RCSTA `VEuc  1 e 1 @24 ]
-"1057
-[v _TXREG TXREG `VEuc  1 e 1 @25 ]
-"1064
-[v _RCREG RCREG `VEuc  1 e 1 @26 ]
-"1253
-[v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
-"1323
-[v _TRISA TRISA `VEuc  1 e 1 @133 ]
-"1373
-[v _TRISB TRISB `VEuc  1 e 1 @134 ]
-"1435
-[v _TRISC TRISC `VEuc  1 e 1 @135 ]
-"1497
-[v _TRISD TRISD `VEuc  1 e 1 @136 ]
-"1559
-[v _TRISE TRISE `VEuc  1 e 1 @137 ]
-"1814
-[v _PR2 PR2 `VEuc  1 e 1 @146 ]
-"1997
-[v _TXSTA TXSTA `VEuc  1 e 1 @152 ]
-"2078
-[v _SPBRG SPBRG `VEuc  1 e 1 @153 ]
-"2525
-[v _INTF INTF `VEb  1 e 0 @89 ]
-"2617
-[v _RCIF RCIF `VEb  1 e 0 @101 ]
-"2813
-[v _TXIF TXIF `VEb  1 e 0 @100 ]
+"3425 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f4550.h
+[v _TRISA TRISA `VEuc  1 e 1 @3986 ]
+"3623
+[v _TRISB TRISB `VEuc  1 e 1 @3987 ]
+"3845
+[v _TRISC TRISC `VEuc  1 e 1 @3988 ]
+"3999
+[v _TRISD TRISD `VEuc  1 e 1 @3989 ]
+"4221
+[v _TRISE TRISE `VEuc  1 e 1 @3990 ]
+"4934
+[v _RCSTA RCSTA `VEuc  1 e 1 @4011 ]
+"5144
+[v _TXSTA TXSTA `VEuc  1 e 1 @4012 ]
+"5400
+[v _TXREG TXREG `VEuc  1 e 1 @4013 ]
+"5412
+[v _RCREG RCREG `VEuc  1 e 1 @4014 ]
+"5424
+[v _SPBRG SPBRG `VEuc  1 e 1 @4015 ]
+"6325
+[v _CCP1CON CCP1CON `VEuc  1 e 1 @4029 ]
+"6494
+[v _CCPR1L CCPR1L `VEuc  1 e 1 @4030 ]
+"7198
+[v _T2CON T2CON `VEuc  1 e 1 @4042 ]
+"7296
+[v _PR2 PR2 `VEuc  1 e 1 @4043 ]
+"7413
+[v _T1CON T1CON `VEuc  1 e 1 @4045 ]
+"7516
+[v _TMR1 TMR1 `VEus  1 e 2 @4046 ]
+"8067
+[v _T0CON T0CON `VEuc  1 e 1 @4053 ]
+"8137
+[v _TMR0 TMR0 `VEus  1 e 2 @4054 ]
+"8503
+[v _INTCON2 INTCON2 `VEuc  1 e 1 @4081 ]
+"8580
+[v _INTCON INTCON `VEuc  1 e 1 @4082 ]
+"9517
+[v _INT0IF INT0IF `VEb  1 e 0 @32657 ]
+"9927
+[v _RCIF RCIF `VEb  1 e 0 @31989 ]
+"10327
+[v _TXIF TXIF `VEb  1 e 0 @31988 ]
 "354 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
-[v _dpowers dpowers `DC[5]ui  1 s 10 dpowers ]
-"23 C:\Users\usuario\Documents\Github\CEE0099\main.c
-[v _IFOSC IFOSC `DCul  1 e 4 0 ]
-"24
-[v _T1FOSC T1FOSC `DCui  1 e 2 0 ]
-"27
-[v _PWM PWM `uc  1 e 1 @21 ]
-"28
-[v _BUZ BUZ `b  1 e 0 @45 ]
-"29
+[v _dpowers dpowers `C[5]ui  1 s 10 dpowers ]
+"79 C:\Users\usuario\Documents\Github\CEE0099\main.c
+[v _T1FOSC T1FOSC `Cui  1 e 2 0 ]
+"82
+[v _PWM PWM `uc  1 e 1 @4030 ]
+"83
+[v _BUZ BUZ `b  1 e 0 @31749 ]
+"84
 [v _PUT PUT `b  1 e 0 0 ]
-[s S19 . 2 `uc 1 CH 1 0 :8:0 
+[s S21 . 2 `uc 1 CH 1 0 :8:0 
 `uc 1 RS 1 1 :1:0 
 `uc 1 RW 1 1 :1:1 
 `uc 1 EN 1 1 :1:2 
 ]
-"36
-[v _LCD LCD `S19  1 e 2 @8 ]
-[s S39 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
-"107
-[v _FAN FAN `VES39  1 e 4 0 ]
-"176
+"91
+[v _LCD LCD `S21  1 e 2 @3971 ]
+[s S41 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
+"162
+[v _FAN FAN `VES41  1 e 4 0 ]
+"231
 [v _main main `(i  1 e 2 0 ]
 {
-"196
-[v main@buffer buffer `[6]uc  1 a 6 44 ]
-"197
-[v main@idx idx `i  1 a 2 50 ]
-"200
+"253
+[v main@buffer buffer `[6]uc  1 a 6 0 ]
+"254
+[v main@idx idx `i  1 a 2 6 ]
+"257
 } 0
-"75
+"130
 [v _init_lcd init_lcd `(v  1 e 1 0 ]
 {
-"90
+"145
 } 0
-"164
+"219
 [v _buffer_serial buffer_serial `(i  1 e 2 0 ]
 {
-[v buffer_serial@buffer buffer `*.4uc  1 a 1 wreg ]
-[v buffer_serial@buffer buffer `*.4uc  1 a 1 wreg ]
-[v buffer_serial@idx idx `i  1 p 2 39 ]
-[v buffer_serial@buffer buffer `*.4uc  1 a 1 43 ]
-"174
+[v buffer_serial@buffer buffer `*.39uc  1 p 2 62 ]
+[v buffer_serial@idx idx `i  1 p 2 64 ]
+"229
 } 0
-"150
+"205
 [v _io_switch io_switch `(v  1 e 1 0 ]
 {
-[v io_switch@x x `*.4uc  1 a 1 wreg ]
-[v io_switch@x x `*.4uc  1 a 1 wreg ]
-[v io_switch@x x `*.4uc  1 a 1 38 ]
-"162
+[v io_switch@x x `*.39uc  1 p 2 60 ]
+"217
 } 0
-"144
+"199
 [v _write write `(v  1 e 1 0 ]
 {
 [v write@duty duty `uc  1 a 1 wreg ]
 [v write@duty duty `uc  1 a 1 wreg ]
-[v write@duty duty `uc  1 a 1 4 ]
-"146
+[v write@duty duty `uc  1 a 1 18 ]
+"201
 } 0
-"127
+"182
 [v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
 {
-"133
+"188
 } 0
-"135
+"190
 [v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
 {
-"142
+"197
 } 0
-"102
-[s S39 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
-"115
-[v _rps_timer1 rps_timer1 `(VES39  1 e 4 0 ]
+"157
+[s S41 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
+"170
+[v _rps_timer1 rps_timer1 `(VES41  1 e 4 0 ]
 {
-[v rps_timer1@x x `VES39  1 p 4 9 ]
-[v rps_timer1@dt dt `ui  1 p 2 13 ]
-"125
+[v rps_timer1@x x `VES41  1 p 4 31 ]
+[v rps_timer1@dt dt `ui  1 p 2 35 ]
+"180
 } 0
-"92
+"147
 [v _main_lcd main_lcd `(v  1 e 1 0 ]
 {
-[v main_lcd@value value `ui  1 p 2 32 ]
-[v main_lcd@duty duty `uc  1 p 1 34 ]
-"98
+[v main_lcd@value value `ui  1 p 2 57 ]
+[v main_lcd@duty duty `uc  1 p 1 59 ]
+"153
 } 0
-"67
+"122
 [v _prog_lcd prog_lcd `(v  1 e 1 0 ]
 {
 [v prog_lcd@msg msg `uc  1 a 1 wreg ]
 [v prog_lcd@msg msg `uc  1 a 1 wreg ]
-[v prog_lcd@msg msg `uc  1 a 1 13 ]
-"73
+[v prog_lcd@msg msg `uc  1 a 1 18 ]
+"128
 } 0
 "464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
 [v _printf printf `(i  1 e 2 0 ]
 {
-[v printf@f f `*.24DCuc  1 a 1 wreg ]
 "501
-[v printf@width width `i  1 a 2 29 ]
+[v printf@width width `i  1 a 2 54 ]
 "528
-[v printf@val val `ui  1 a 2 26 ]
+[v printf@val val `ui  1 a 2 52 ]
 "529
-[v printf@len len `ui  1 a 2 23 ]
-"499
-[v printf@c c `c  1 a 1 31 ]
-"508
-[v printf@flag flag `uc  1 a 1 25 ]
+[v printf@len len `ui  1 a 2 49 ]
 "466
-[v printf@ap ap `[1]*.4v  1 a 1 22 ]
-"506
-[v printf@prec prec `c  1 a 1 21 ]
+[v printf@ap ap `[1]*.39v  1 a 2 47 ]
 "530
-[v printf@cp cp `*.4DCuc  1 a 1 20 ]
+[v printf@cp cp `*.39Cuc  1 a 2 44 ]
+"499
+[v printf@c c `c  1 a 1 56 ]
+"508
+[v printf@flag flag `uc  1 a 1 51 ]
+"506
+[v printf@prec prec `c  1 a 1 46 ]
 "464
-[v printf@f f `*.24DCuc  1 a 1 wreg ]
-"533
-[v printf@f f `*.24DCuc  1 a 1 28 ]
+[v printf@f f `*.25Cuc  1 p 2 36 ]
 "1541
 } 0
-"48 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"103 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _putch putch `(v  1 e 1 0 ]
 {
 [v putch@msg msg `uc  1 a 1 wreg ]
 [v putch@msg msg `uc  1 a 1 wreg ]
-[v putch@msg msg `uc  1 a 1 13 ]
-"60
+[v putch@msg msg `uc  1 a 1 18 ]
+"115
 } 0
 "8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
 [v _isdigit isdigit `(b  1 e 0 0 ]
@@ -232,67 +235,55 @@
 [v isdigit@c c `uc  1 a 1 wreg ]
 [v isdigit@c c `uc  1 a 1 wreg ]
 "14
-[v isdigit@c c `uc  1 a 1 5 ]
+[v isdigit@c c `uc  1 a 1 20 ]
 "15
 } 0
 "15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
 {
 "17
-[v ___wmul@product product `ui  1 a 2 0 ]
+[v ___wmul@product product `ui  1 a 2 22 ]
 "15
-[v ___wmul@multiplier multiplier `ui  1 p 2 4 ]
-[v ___wmul@multiplicand multiplicand `ui  1 p 2 6 ]
+[v ___wmul@multiplier multiplier `ui  1 p 2 18 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 20 ]
 "53
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
 [v ___lwmod __lwmod `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwmod@counter counter `uc  1 a 1 14 ]
-"6
-[v ___lwmod@divisor divisor `ui  1 p 2 9 ]
-[v ___lwmod@dividend dividend `ui  1 p 2 11 ]
+[v ___lwmod@counter counter `uc  1 a 1 35 ]
+"8
+[v ___lwmod@dividend dividend `ui  1 p 2 31 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 33 ]
 "26
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
+"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwdiv@quotient quotient `ui  1 a 2 7 ]
+[v ___lwdiv@quotient quotient `ui  1 a 2 29 ]
 "12
-[v ___lwdiv@counter counter `uc  1 a 1 6 ]
-"6
-[v ___lwdiv@divisor divisor `ui  1 p 2 2 ]
-[v ___lwdiv@dividend dividend `ui  1 p 2 4 ]
+[v ___lwdiv@counter counter `uc  1 a 1 28 ]
+"8
+[v ___lwdiv@dividend dividend `ui  1 p 2 24 ]
+[v ___lwdiv@divisor divisor `ui  1 p 2 26 ]
 "31
 } 0
-"40 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"95 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _beep beep `(v  1 e 1 0 ]
 {
-"42
-[v beep@j j `i  1 a 2 13 ]
-"46
+"97
+[v beep@j j `i  1 a 2 20 ]
+"101
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
-[v ___lldiv __lldiv `(ul  1 e 4 0 ]
-{
-"11
-[v ___lldiv@quotient quotient `ul  1 a 4 8 ]
-"12
-[v ___lldiv@counter counter `uc  1 a 1 12 ]
-"6
-[v ___lldiv@divisor divisor `ul  1 p 4 0 ]
-[v ___lldiv@dividend dividend `ul  1 p 4 4 ]
-"31
-} 0
-"62 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"117
 [v _getch getch `(uc  1 e 1 0 ]
 {
-"65
+"120
 } 0
-"109
-[v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
+"164
+[v _raycast_intersection_cleared raycast_intersection_cleared `IIH(v  1 e 1 0 ]
 {
-"113
+"168
 } 0
