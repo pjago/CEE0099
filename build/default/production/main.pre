@@ -3,12 +3,12 @@
 
 
 # 11
-#pragma config PLLDIV = 5
+#pragma config PLLDIV = 1
 #pragma config CPUDIV = OSC1_PLL2
 #pragma config USBDIV = 1
 
 
-#pragma config FOSC = HSPLL_HS
+#pragma config FOSC = HS
 #pragma config FCMEN = OFF
 #pragma config IESO = OFF
 
@@ -23,7 +23,7 @@
 #pragma config WDTPS = 32768
 
 
-#pragma config CCP2MX = ON
+#pragma config CCP2MX = OFF
 #pragma config PBADEN = ON
 #pragma config LPT1OSC = OFF
 #pragma config MCLRE = ON
@@ -4931,67 +4931,63 @@ extern __nonreentrant void _delaywdt(unsigned long);
 #pragma intrinsic(_delay3)
 extern __nonreentrant void _delay3(unsigned char);
 
-# 78 "main.c"
-const unsigned long IFOSC = 5000000;
-const unsigned int T1FOSC = 360;
-const unsigned long BAUD = 19200;
+# 77 "main.c"
+const unsigned long FCY = 1000000;
+const unsigned long T1FCY = 125000;
 
-char PWM @ &CCPR1L;
-bit BUZ @ (((unsigned) &PORTA)*8) + 5;
-bit PUT = 0;
+volatile enum {TMR0OF, NIL} ERR = NIL;
+char BUF[17] = "                ", RC = 0;
+unsigned char T0ZOH = 0;
+char ALIVE = 0;
 
 struct {
-unsigned CH : 8;
-unsigned RS : 1;
-unsigned RW : 1;
+unsigned CH : 4;
 unsigned EN : 1;
-} LCD @ &PORTD;
+unsigned RS : 1;
+} LCD @ &LATB = {0, 0, 0};
+signed char PWM @ &CCPR2L;
+bit BUZ @ (((unsigned) &LATB)*8) + 6;
 
 
 
 void beep () {
-_delay((unsigned long)((100)*(20000000/4000.0)));
 for (int j = 0; j < 100; ++j) {
-BUZ = 1; _delay((unsigned long)((1000)*(20000000/4000000.0)));
-BUZ = 0; _delay((unsigned long)((500)*(20000000/4000000.0)));
+BUZ = 1; _delay((unsigned long)((1000)*(4000000/4000000.0)));
+BUZ = 0; _delay((unsigned long)((500)*(4000000/4000000.0)));
 }
 }
 
 void putch (char msg) {
-if (PUT) {
+CCP2CON = 0x00;
 LCD.RS = 1;
+LCD.CH = (msg >> 4);
+LCD.EN = 1; _delay((unsigned long)((1)*(4000000/4000000.0)));
+LCD.EN = 0; _delay((unsigned long)((50)*(4000000/4000000.0)));
 LCD.CH = msg;
-LCD.EN = 1; _delay((unsigned long)((1)*(20000000/4000000.0)));
-LCD.EN = 0; _delay((unsigned long)((50)*(20000000/4000000.0)));
-}
-else {
-while(!TXIF) continue;
-TXREG = msg;
-}
+LCD.EN = 1; _delay((unsigned long)((1)*(4000000/4000000.0)));
+LCD.EN = 0; _delay((unsigned long)((50)*(4000000/4000000.0)));
+CCP2CON = 0x0F;
 return;
 }
 
-char getch () {
-while(!RCIF) continue;
-return RCREG;
-}
-
 void prog_lcd (char msg) {
+CCP2CON = 0x00;
 LCD.RS = 0;
+LCD.CH = (msg >> 4);
+LCD.EN = 1; _delay((unsigned long)((1)*(4000000/4000000.0)));
+LCD.EN = 0; _delay((unsigned long)((50)*(4000000/4000000.0)));
 LCD.CH = msg;
-LCD.EN = 1; _delay((unsigned long)((1)*(20000000/4000000.0)));
-LCD.EN = 0; _delay((unsigned long)((50)*(20000000/4000000.0)));
+LCD.EN = 1; _delay((unsigned long)((1)*(4000000/4000000.0)));
+LCD.EN = 0; _delay((unsigned long)((50)*(4000000/4000000.0)));
+CCP2CON = 0x0F;
 return;
 }
 
 void init_lcd () {
-PUT = 1;
-LCD.RW = 0;
-prog_lcd(0x30); _delay((unsigned long)((5)*(20000000/4000.0)));
-prog_lcd(0x30); _delay((unsigned long)((100)*(20000000/4000000.0)));
-prog_lcd(0x30);
-prog_lcd(0x38);
-prog_lcd(0x01); _delay((unsigned long)((2)*(20000000/4000.0)));
+_delay((unsigned long)((20)*(4000000/4000.0)));
+prog_lcd(0x02); _delay((unsigned long)((5)*(4000000/4000.0)));
+prog_lcd(0x28);
+prog_lcd(0x01); _delay((unsigned long)((2)*(4000000/4000.0)));
 prog_lcd(0x0C);
 prog_lcd(0x06);
 prog_lcd(0x80);
@@ -5001,114 +4997,99 @@ printf("Seja Bem-Vindo!");
 return;
 }
 
-void main_lcd (unsigned int value, char duty) {
-PUT = 1;
-prog_lcd(0xC0);
-printf("rps: %3u", value);
-prog_lcd(0xC8);
-printf("pwm: %3d%%", duty);
+void rsend (char msg) {
+while (!TXIF) continue;
+TXREG = msg;
+}
+
+char rsget () {
+while (!RCIF) continue;
+return RCREG;
 }
 
 
-
-typedef struct {
-volatile unsigned int count;
-unsigned int value;
-} rpm;
-
-rpm FAN = {-1, 0};
-
-void high_priority interrupt raycast_intersection_cleared (void) {
-FAN.count++;
-INT0IF = 0;
-return;
-}
-
-rpm rps_timer1 (rpm x, unsigned int dt) {
-if (x.count > 0) {
-x.value = T1FOSC * x.count / dt;
-x.count = 0;
-}
-else {
-x.count = -1;
-x.value = 0;
-}
-return x;
-}
-
-void read_tmr1 () {
-PUT = 0;
-FAN = rps_timer1(FAN, TMR1);
-printf("%u", FAN.value);
-TMR1 = 0;
-return;
-}
 
 void read_tmr0 () {
-PUT = 0;
-printf("%u", TMR0);
-TMR0 = 0;
-FAN = rps_timer1(FAN, TMR1);
-TMR1 = 0;
+T0ZOH = TMR0;
+rsend(0);
+rsend(T0ZOH);
+TMR0 -= T0ZOH;
 return;
 }
 
-void write (char duty) {
-PWM = duty;
+void write (signed char duty) {
+if (duty > 100) PWM = 100;
+else if (duty < 0) PWM = 0;
+else PWM = duty;
 }
 
 
 
-void io_switch (char *x) {
-switch (x[0]) {
-case '7': read_tmr0(); break;
-case '5': write(x[1]); break;
-case '1': read_tmr0(); write(x[1]); break;
-case 'r': read_tmr1(); break;
-case 'w': write(x[1]); break;
-case 'x': read_tmr1(); write(x[1]); break;
-case 's':
-case '2': write(0); beep(); beep(); break;
+void low_priority interrupt tmr_overflow () {
+if (ALIVE) {
+BUZ = 1;
+ERR = TMR0OF;
 }
-main_lcd(FAN.value, PWM);
-}
-
-int buffer_serial (char *buffer, int idx) {
-buffer[idx] = getch();
-if (buffer[idx] == '\n') {
-idx=0;
-io_switch(buffer);
-}
-else {
-idx++;
-}
-return idx;
+TMR0IF = 0;
+return;
 }
 
 int main (void) {
-T1CON = 0x0B;
-CCP1CON = 0x0F;
-CCPR1L = 0;
+T1CON = 0xF1;
+CCP2CON = 0x0F;
+CCPR2L = 0;
 PR2 = 100;
 T2CON = 0x04;
-TRISC = 0xFB;
 T0CON = 0xFF;
-INTCON = 0x90;
-INTCON2 = 0x00;
-TRISB = 0x7F;
-INTCON = 0x90;
-TRISD = 0x00;
-TRISE = 0xF8;
-TRISA = 0xCF;
+ADCON0 = 0x07;
+ADCON1 = 0x0D;
+ADCON2 = 0x00;
+TRISA = 0xFF;
+TRISB = 0x00;
+TRISC = 0xC0;
 RCSTA = 0x90;
 TXSTA = 0x24;
-SPBRG = 64;
-init_lcd();
-beep();
-beep();
-beep();
-char buffer[6];
-int idx = 0;
-while (1) idx = buffer_serial(buffer, idx);
+SPBRG = 12;
+INTCON2 = 0x00;
+IPR1 = 0x30;
+init_lcd(); _delay((unsigned long)((1500)*(4000000/4000.0)));
+beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+TMR0IF = 0;
+TMR1IF = 0;
+TMR0 = 0;
+TMR1 = 0;
+INTCON = 0xC0;
+
+while (1) {
+
+if (TMR1IF) {
+prog_lcd(0x80);
+if (ERR == NIL) printf("%s", BUF);
+else if (ERR == TMR0OF) printf("TMR0 OVERFLOW =P");
+prog_lcd(0xC0);
+printf("tmr %3u ", T0ZOH);
+prog_lcd(0xC8);
+printf("pwm %3d%%", PWM);
+TMR1IF = 0;
+}
+
+char x = rsget();
+if (x == '\n') {
+ALIVE = 1;
+switch (BUF[0]) {
+case 'r': case '7': read_tmr0(); break;
+case 'w': case '5': write(BUF[1]); break;
+case 'x': case '1': write(BUF[1]); read_tmr0(); break;
+case 's': case '2': ALIVE = 0; write(0); beep(); beep(); break;
+}
+RC = 0;
+}
+else {
+BUF[RC] = x;
+RC++;
+}
+}
 return 0;
 }

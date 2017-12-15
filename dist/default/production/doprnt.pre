@@ -332,7 +332,23 @@ case 'd':
 case 'i':
 break;
 
-# 750
+# 728
+case 's':
+
+# 734
+cp = (*(const char * *)__va_arg((*(const char * **)ap), (const char *)0));
+
+# 740
+if(!cp)
+cp = "(null)";
+
+
+
+len = 0;
+while(cp[len])
+len++;
+
+
 dostring:
 
 # 757
