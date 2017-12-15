@@ -55,7 +55,7 @@ NIL 1
 "162
 [v _write write `(v  1 e 1 0 ]
 "170
-[v _tmr_overflow tmr_overflow `IIL(v  1 e 1 0 ]
+[v _tmr_overflow tmr_overflow `II(v  1 e 1 0 ]
 "179
 [v _main main `(i  1 e 2 0 ]
 "3425 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic18f4550.h
@@ -64,8 +64,6 @@ NIL 1
 [v _TRISB TRISB `VEuc  1 e 1 @3987 ]
 "3845
 [v _TRISC TRISC `VEuc  1 e 1 @3988 ]
-"4550
-[v _IPR1 IPR1 `VEuc  1 e 1 @3999 ]
 "4934
 [v _RCSTA RCSTA `VEuc  1 e 1 @4011 ]
 "5144
@@ -98,8 +96,6 @@ NIL 1
 [v _T0CON T0CON `VEuc  1 e 1 @4053 ]
 "8137
 [v _TMR0 TMR0 `VEus  1 e 2 @4054 ]
-"8503
-[v _INTCON2 INTCON2 `VEuc  1 e 1 @4081 ]
 "8580
 [v _INTCON INTCON `VEuc  1 e 1 @4082 ]
 "9927
@@ -134,16 +130,16 @@ NIL 1
 "179
 [v _main main `(i  1 e 2 0 ]
 {
-"220
-[v main@x x `uc  1 a 1 44 ]
-"237
+"217
+[v main@x x `uc  1 a 1 54 ]
+"234
 } 0
 "162
 [v _write write `(v  1 e 1 0 ]
 {
 [v write@duty duty `c  1 a 1 wreg ]
 [v write@duty duty `c  1 a 1 wreg ]
-[v write@duty duty `c  1 a 1 21 ]
+[v write@duty duty `c  1 a 1 18 ]
 "166
 } 0
 "147
@@ -161,7 +157,7 @@ NIL 1
 {
 [v rsend@msg msg `uc  1 a 1 wreg ]
 [v rsend@msg msg `uc  1 a 1 wreg ]
-[v rsend@msg msg `uc  1 a 1 21 ]
+[v rsend@msg msg `uc  1 a 1 18 ]
 "145
 } 0
 "128
@@ -174,30 +170,30 @@ NIL 1
 {
 [v prog_lcd@msg msg `uc  1 a 1 wreg ]
 [v prog_lcd@msg msg `uc  1 a 1 wreg ]
-[v prog_lcd@msg msg `uc  1 a 1 22 ]
+[v prog_lcd@msg msg `uc  1 a 1 19 ]
 "126
 } 0
 "464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
 [v _printf printf `(i  1 e 2 0 ]
 {
 "501
-[v printf@width width `i  1 a 2 10 ]
+[v printf@width width `i  1 a 2 48 ]
 "529
-[v printf@len len `ui  1 a 2 8 ]
+[v printf@len len `ui  1 a 2 46 ]
 "528
-[v printf@val val `ui  1 a 2 6 ]
+[v printf@val val `ui  1 a 2 44 ]
 "530
-[v printf@cp cp `*.35Cuc  1 a 2 4 ]
+[v printf@cp cp `*.35Cuc  1 a 2 41 ]
 "466
-[v printf@ap ap `[1]*.39v  1 a 2 2 ]
+[v printf@ap ap `[1]*.39v  1 a 2 39 ]
 "499
-[v printf@c c `c  1 a 1 12 ]
+[v printf@c c `c  1 a 1 50 ]
 "508
-[v printf@flag flag `uc  1 a 1 1 ]
+[v printf@flag flag `uc  1 a 1 43 ]
 "506
-[v printf@prec prec `c  1 a 1 0 ]
+[v printf@prec prec `c  1 a 1 38 ]
 "464
-[v printf@f f `*.25Cuc  1 p 2 33 ]
+[v printf@f f `*.25Cuc  1 p 2 30 ]
 "1541
 } 0
 "102 C:\Users\usuario\Documents\Github\CEE0099\main.c
@@ -205,7 +201,7 @@ NIL 1
 {
 [v putch@msg msg `uc  1 a 1 wreg ]
 [v putch@msg msg `uc  1 a 1 wreg ]
-[v putch@msg msg `uc  1 a 1 22 ]
+[v putch@msg msg `uc  1 a 1 19 ]
 "113
 } 0
 "8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
@@ -214,50 +210,50 @@ NIL 1
 [v isdigit@c c `uc  1 a 1 wreg ]
 [v isdigit@c c `uc  1 a 1 wreg ]
 "14
-[v isdigit@c c `uc  1 a 1 23 ]
+[v isdigit@c c `uc  1 a 1 20 ]
 "15
 } 0
 "15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
 [v ___wmul __wmul `(ui  1 e 2 0 ]
 {
 "17
-[v ___wmul@product product `ui  1 a 2 25 ]
+[v ___wmul@product product `ui  1 a 2 22 ]
 "15
-[v ___wmul@multiplier multiplier `ui  1 p 2 21 ]
-[v ___wmul@multiplicand multiplicand `ui  1 p 2 23 ]
+[v ___wmul@multiplier multiplier `ui  1 p 2 18 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 20 ]
 "53
 } 0
 "8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
 [v ___lwmod __lwmod `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwmod@counter counter `uc  1 a 1 32 ]
+[v ___lwmod@counter counter `uc  1 a 1 29 ]
 "8
-[v ___lwmod@dividend dividend `ui  1 p 2 28 ]
-[v ___lwmod@divisor divisor `ui  1 p 2 30 ]
+[v ___lwmod@dividend dividend `ui  1 p 2 25 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 27 ]
 "26
 } 0
 "8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
 [v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwdiv@quotient quotient `ui  1 a 2 26 ]
+[v ___lwdiv@quotient quotient `ui  1 a 2 22 ]
 "12
-[v ___lwdiv@counter counter `uc  1 a 1 25 ]
+[v ___lwdiv@counter counter `uc  1 a 1 24 ]
 "8
-[v ___lwdiv@dividend dividend `ui  1 p 2 21 ]
-[v ___lwdiv@divisor divisor `ui  1 p 2 23 ]
+[v ___lwdiv@dividend dividend `ui  1 p 2 18 ]
+[v ___lwdiv@divisor divisor `ui  1 p 2 20 ]
 "31
 } 0
 "95 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _beep beep `(v  1 e 1 0 ]
 {
 "96
-[v beep@j j `i  1 a 2 21 ]
+[v beep@j j `i  1 a 2 18 ]
 "100
 } 0
 "170
-[v _tmr_overflow tmr_overflow `IIL(v  1 e 1 0 ]
+[v _tmr_overflow tmr_overflow `II(v  1 e 1 0 ]
 {
 "177
 } 0

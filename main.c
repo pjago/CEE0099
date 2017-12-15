@@ -167,7 +167,7 @@ void write (signed char duty) {
 
 // MAIN CODE
 
-void low_priority interrupt tmr_overflow () {
+void interrupt tmr_overflow () {
     if (ALIVE) {
         BUZ = 1;
         ERR = TMR0OF;
@@ -192,17 +192,15 @@ int main (void) {
     RCSTA = 0x90;           // asynchronous 8 bit RS-232
     TXSTA = 0x24;           // asynchronous 8 bit RS-232
     SPBRG = 12;             // BAUD generator = FOSC / (16*BAUD) - 1;
-    INTCON2 = 0x00;         // Set TMR0 interrupt to low priority
-    IPR1 = 0x30;            // Set RX/TX interrupts to high priority
     init_lcd(); __delay_ms(1500);
     beep(); __delay_ms(100);
     beep(); __delay_ms(100);
     beep(); __delay_ms(100);
-    TMR0IF = 0;
-    TMR1IF = 0;
     TMR0 = 0;
     TMR1 = 0;
-    INTCON = 0xC0;          // Enable TMR0 interrupts
+    INTCON = 0xA0;          // Enable TMR0 interrupts
+    TMR0IF = 0;
+    TMR1IF = 1;
     while (1) {
         // main_lcd
         if (TMR1IF) {

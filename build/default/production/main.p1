@@ -54,16 +54,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _TXSTA `Vuc ~T0 @X0 0 e@4012 ]
 "5424
 [v _SPBRG `Vuc ~T0 @X0 0 e@4015 ]
-"8503
-[v _INTCON2 `Vuc ~T0 @X0 0 e@4081 ]
-"4550
-[v _IPR1 `Vuc ~T0 @X0 0 e@3999 ]
-"10185
-[v _TMR1IF `Vb ~T0 @X0 0 e@31984 ]
 "7516
 [v _TMR1 `Vus ~T0 @X0 0 e@4046 ]
 "8580
 [v _INTCON `Vuc ~T0 @X0 0 e@4082 ]
+"10185
+[v _TMR1IF `Vb ~T0 @X0 0 e@31984 ]
 "11 main.c
 [p x PLLDIV=1 ]
 "12
@@ -4031,9 +4027,9 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v $root$_tmr_overflow `(v ~T0 @X0 0 e ]
 [v F3896 `(v ~T0 @X0 1 tf ]
 "170
-[v _tmr_overflow `ILF3896 ~T0 @X0 1 e ]
+[v _tmr_overflow `IF3896 ~T0 @X0 1 e ]
 {
-[; ;main.c: 170: void low_priority interrupt tmr_overflow () {
+[; ;main.c: 170: void interrupt tmr_overflow () {
 [e :U _tmr_overflow ]
 [f ]
 [; ;main.c: 171: if (ALIVE) {
@@ -4112,121 +4108,115 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 194: SPBRG = 12;
 "194
 [e = _SPBRG -> -> 12 `i `uc ]
-[; ;main.c: 195: INTCON2 = 0x00;
+[; ;main.c: 195: init_lcd(); _delay((unsigned long)((1500)*(4000000/4000.0)));
 "195
-[e = _INTCON2 -> -> 0 `i `uc ]
-[; ;main.c: 196: IPR1 = 0x30;
-"196
-[e = _IPR1 -> -> 48 `i `uc ]
-[; ;main.c: 197: init_lcd(); _delay((unsigned long)((1500)*(4000000/4000.0)));
-"197
 [e ( _init_lcd ..  ]
 [e ( __delay (1 -> * -> -> 1500 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
+[; ;main.c: 196: beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+"196
+[e ( _beep ..  ]
+[e ( __delay (1 -> * -> -> 100 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
+[; ;main.c: 197: beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+"197
+[e ( _beep ..  ]
+[e ( __delay (1 -> * -> -> 100 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
 [; ;main.c: 198: beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
 "198
 [e ( _beep ..  ]
 [e ( __delay (1 -> * -> -> 100 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 199: beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+[; ;main.c: 199: TMR0 = 0;
 "199
-[e ( _beep ..  ]
-[e ( __delay (1 -> * -> -> 100 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 200: beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
-"200
-[e ( _beep ..  ]
-[e ( __delay (1 -> * -> -> 100 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
-[; ;main.c: 201: TMR0IF = 0;
-"201
-[e = _TMR0IF -> -> 0 `i `b ]
-[; ;main.c: 202: TMR1IF = 0;
-"202
-[e = _TMR1IF -> -> 0 `i `b ]
-[; ;main.c: 203: TMR0 = 0;
-"203
 [e = _TMR0 -> -> 0 `i `us ]
-[; ;main.c: 204: TMR1 = 0;
-"204
+[; ;main.c: 200: TMR1 = 0;
+"200
 [e = _TMR1 -> -> 0 `i `us ]
-[; ;main.c: 205: INTCON = 0xC0;
-"205
-[e = _INTCON -> -> 192 `i `uc ]
-[; ;main.c: 207: while (1) {
-"207
+[; ;main.c: 201: INTCON = 0xA0;
+"201
+[e = _INTCON -> -> 160 `i `uc ]
+[; ;main.c: 202: TMR0IF = 0;
+"202
+[e = _TMR0IF -> -> 0 `i `b ]
+[; ;main.c: 203: TMR1IF = 1;
+"203
+[e = _TMR1IF -> -> 1 `i `b ]
+[; ;main.c: 204: while (1) {
+"204
 [e :U 389 ]
 {
-[; ;main.c: 209: if (TMR1IF) {
-"209
+[; ;main.c: 206: if (TMR1IF) {
+"206
 [e $ ! _TMR1IF 391  ]
 {
-[; ;main.c: 210: prog_lcd(0x80);
-"210
+[; ;main.c: 207: prog_lcd(0x80);
+"207
 [e ( _prog_lcd (1 -> -> 128 `i `uc ]
-[; ;main.c: 211: if (ERR == NIL) printf("%s", BUF);
-"211
+[; ;main.c: 208: if (ERR == NIL) printf("%s", BUF);
+"208
 [e $ ! == -> _ERR `i -> . `E3854 1 `i 392  ]
 [e ( _printf , (. :s 3C -> &U _BUF `*Cuc ]
 [e $U 393  ]
-"212
+"209
 [e :U 392 ]
-[; ;main.c: 212: else if (ERR == TMR0OF) printf("TMR0 OVERFLOW =P");
+[; ;main.c: 209: else if (ERR == TMR0OF) printf("TMR0 OVERFLOW =P");
 [e $ ! == -> _ERR `i -> . `E3854 0 `i 394  ]
 [e ( _printf :s 4C ]
 [e :U 394 ]
-"213
+"210
 [e :U 393 ]
-[; ;main.c: 213: prog_lcd(0xC0);
+[; ;main.c: 210: prog_lcd(0xC0);
 [e ( _prog_lcd (1 -> -> 192 `i `uc ]
-[; ;main.c: 214: printf("tmr %3u ", T0ZOH);
-"214
+[; ;main.c: 211: printf("tmr %3u ", T0ZOH);
+"211
 [e ( _printf , (. :s 5C -> _T0ZOH `i ]
-[; ;main.c: 215: prog_lcd(0xC8);
-"215
+[; ;main.c: 212: prog_lcd(0xC8);
+"212
 [e ( _prog_lcd (1 -> -> 200 `i `uc ]
-[; ;main.c: 216: printf("pwm %3d%%", PWM);
-"216
+[; ;main.c: 213: printf("pwm %3d%%", PWM);
+"213
 [e ( _printf , (. :s 6C -> _PWM `i ]
-[; ;main.c: 217: TMR1IF = 0;
-"217
+[; ;main.c: 214: TMR1IF = 0;
+"214
 [e = _TMR1IF -> -> 0 `i `b ]
-"218
+"215
 }
 [e :U 391 ]
-"220
+"217
 [v _x `uc ~T0 @X0 1 a ]
-[; ;main.c: 218: }
-[; ;main.c: 220: char x = rsget();
+[; ;main.c: 215: }
+[; ;main.c: 217: char x = rsget();
 [e = _x ( _rsget ..  ]
-[; ;main.c: 221: if (x == '\n') {
-"221
+[; ;main.c: 218: if (x == '\n') {
+"218
 [e $ ! == -> _x `ui -> 10 `ui 395  ]
 {
-[; ;main.c: 222: ALIVE = 1;
-"222
+[; ;main.c: 219: ALIVE = 1;
+"219
 [e = _ALIVE -> -> 1 `i `uc ]
-[; ;main.c: 223: switch (BUF[0]) {
-"223
+[; ;main.c: 220: switch (BUF[0]) {
+"220
 [e $U 397  ]
 {
-[; ;main.c: 224: case 'r': case '7': read_tmr0(); break;
-"224
+[; ;main.c: 221: case 'r': case '7': read_tmr0(); break;
+"221
 [e :U 398 ]
 [e :U 399 ]
 [e ( _read_tmr0 ..  ]
 [e $U 396  ]
-[; ;main.c: 225: case 'w': case '5': write(BUF[1]); break;
-"225
+[; ;main.c: 222: case 'w': case '5': write(BUF[1]); break;
+"222
 [e :U 400 ]
 [e :U 401 ]
 [e ( _write (1 -> *U + &U _BUF * -> -> -> 1 `i `ui `ux -> -> # *U &U _BUF `ui `ux `c ]
 [e $U 396  ]
-[; ;main.c: 226: case 'x': case '1': write(BUF[1]); read_tmr0(); break;
-"226
+[; ;main.c: 223: case 'x': case '1': write(BUF[1]); read_tmr0(); break;
+"223
 [e :U 402 ]
 [e :U 403 ]
 [e ( _write (1 -> *U + &U _BUF * -> -> -> 1 `i `ui `ux -> -> # *U &U _BUF `ui `ux `c ]
 [e ( _read_tmr0 ..  ]
 [e $U 396  ]
-[; ;main.c: 227: case 's': case '2': ALIVE = 0; write(0); beep(); beep(); break;
-"227
+[; ;main.c: 224: case 's': case '2': ALIVE = 0; write(0); beep(); beep(); break;
+"224
 [e :U 404 ]
 [e :U 405 ]
 [e = _ALIVE -> -> 0 `i `uc ]
@@ -4234,11 +4224,11 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e ( _beep ..  ]
 [e ( _beep ..  ]
 [e $U 396  ]
-"228
+"225
 }
-[; ;main.c: 228: }
+[; ;main.c: 225: }
 [e $U 396  ]
-"223
+"220
 [e :U 397 ]
 [e [\ *U + &U _BUF * -> -> -> 0 `i `ui `ux -> -> # *U &U _BUF `ui `ux , $ -> -> 114 `ui `uc 398
  , $ -> -> 55 `ui `uc 399
@@ -4249,42 +4239,42 @@ Version 3.2 HI-TECH Software Intermediate Code
  , $ -> -> 115 `ui `uc 404
  , $ -> -> 50 `ui `uc 405
  396 ]
-"228
+"225
 [e :U 396 ]
-[; ;main.c: 229: RC = 0;
-"229
+[; ;main.c: 226: RC = 0;
+"226
 [e = _RC -> -> 0 `i `uc ]
-"230
+"227
 }
-[; ;main.c: 230: }
+[; ;main.c: 227: }
 [e $U 406  ]
-"231
+"228
 [e :U 395 ]
-[; ;main.c: 231: else {
+[; ;main.c: 228: else {
 {
-[; ;main.c: 232: BUF[RC] = x;
-"232
+[; ;main.c: 229: BUF[RC] = x;
+"229
 [e = *U + &U _BUF * -> _RC `ux -> -> # *U &U _BUF `ui `ux _x ]
-[; ;main.c: 233: RC++;
-"233
+[; ;main.c: 230: RC++;
+"230
 [e ++ _RC -> -> 1 `i `uc ]
-"234
+"231
 }
 [e :U 406 ]
-"235
+"232
 }
 [e :U 388 ]
-"207
+"204
 [e $U 389  ]
 [e :U 390 ]
-[; ;main.c: 234: }
-[; ;main.c: 235: }
-[; ;main.c: 236: return 0;
-"236
+[; ;main.c: 231: }
+[; ;main.c: 232: }
+[; ;main.c: 233: return 0;
+"233
 [e ) -> 0 `i ]
 [e $UE 387  ]
-[; ;main.c: 237: }
-"237
+[; ;main.c: 234: }
+"234
 [e :UE 387 ]
 }
 [p f _printf 9733248 ]

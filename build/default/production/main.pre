@@ -5025,7 +5025,7 @@ else PWM = duty;
 
 
 
-void low_priority interrupt tmr_overflow () {
+void interrupt tmr_overflow () {
 if (ALIVE) {
 BUZ = 1;
 ERR = TMR0OF;
@@ -5050,18 +5050,15 @@ TRISC = 0xC0;
 RCSTA = 0x90;
 TXSTA = 0x24;
 SPBRG = 12;
-INTCON2 = 0x00;
-IPR1 = 0x30;
 init_lcd(); _delay((unsigned long)((1500)*(4000000/4000.0)));
 beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
 beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
 beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
-TMR0IF = 0;
-TMR1IF = 0;
 TMR0 = 0;
 TMR1 = 0;
-INTCON = 0xC0;
-
+INTCON = 0xA0;
+TMR0IF = 0;
+TMR1IF = 1;
 while (1) {
 
 if (TMR1IF) {
