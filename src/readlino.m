@@ -1,4 +1,4 @@
-%readlino(s, T) (verify the com port and baud rate)
+%readlino(serial_port, sampling_time)
 function y = readlino(s, T)
     flushinput(s);
     flushoutput(s);

@@ -1,40 +1,29 @@
-%Attempts to connect with plant, virtual or model, in that order
-function [read, write, plant] = startcom(T, COM, varargin)
+%Attempts to connect with plant or model, in that order
+function [stop, read, write] = startcom(T, COM, varargin)
     if nargin >= 3
-        url = varargin{1};
-    end
-    if nargin >= 4
-        Gz = varargin{2};
+        Gz = varargin{1};
     end
     try
         s = serial(COM,'BaudRate',19200);
-        s.terminator = 'LF';    
+        s.terminator = 'LF';
+        s.RecordDetail = 'verbose';
+        s.RecordName = 'comlog.txt';
         out = instrfind(s);
         if strcmp(out.status, 'closed')
             fclose(instrfind);
             fopen(s);
         end
+        record(s, 'off');
         s.Timeout = T/2;
         read   = @() readlino(s, T);
         write  = @(duty) writelino(s, duty);
-        plant = 'dc fan';
+        stop   = @() stopino(s);
         read();
     catch ME1
         errors = textscan(ME1.message, '%[^\n]', 1);
-        disp([errors{end}{:} ' Trying virtual plant...']);
-        try
-            rport  = ['http://' url '/true-rpm'];
-            wport  = ['http://' url '/pwm'];
-            read   = @() getfield(webread(rport), 'true_rpm');
-            write  = @(duty) webwrite(wport, 'value', duty);
-            plant = 'web fan';
-            read();
-        catch ME2
-            errors = textscan(ME2.message, '%[^\n]', 1);
-            disp([errors{end}{:}]); Gz
-            read   = @() readsim(Gz); 
-            write  = @(duty) writesim(duty); 
-            plant = 0;
-        end
+        disp([errors{end}{:}]); Gz
+        read   = @() readsim(Gz); 
+        write  = @(duty) writesim(duty);
+        stop   = 0;
     end
 end

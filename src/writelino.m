@@ -1,4 +1,4 @@
-%writelino(s, value)
+%writelino(serial_port, duty_percent)
 function writelino(s, value)
     flushinput(s);
     flushoutput(s);

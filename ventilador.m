@@ -17,7 +17,7 @@ function ventilador(block)
 %% S-function such as ports, parameters, etc. Do not add any other
 %% calls to the main body of the function.
 %%
-addpath('src'); % add readlino and writelino functions
+addpath(genpath('src')); % add readlino and writelino functions
 setup(block);
 
 %endfunction
@@ -34,6 +34,8 @@ setup(block);
 %%   C-Mex counterpart: mdlInitializeSizes
 %%
 function setup(block)
+beep off
+
 % Register number of ports
 block.NumInputPorts  = 1;
 block.NumOutputPorts = 1;
@@ -97,7 +99,6 @@ block.RegBlockMethod('Terminate', @Terminate); % Required
 %%
 function Start(block)
 COM = block.DialogPrm(1).Data; % get the COM port number
-T = block.InputPort(1).SampleTime; % get sampling time
 s = serial(COM,'BaudRate',19200); % create the serial handler
 s.terminator = 'LF';    
 out = instrfind(s);
@@ -105,8 +106,7 @@ if strcmp(out.status, 'closed')
   fclose(instrfind);
   fopen(s);
 end
-s.Timeout = T/2;
-set_param(block, 'UserData', s);
+set_param(block.BlockHandle, 'UserData', s);
 
 %end Start
 
@@ -118,10 +118,16 @@ set_param(block, 'UserData', s);
 %%   C-MEX counterpart: mdlOutputs
 %%
 function Outputs(block)
-T = block.InputPort(1).SampleTime; % get sampling time
 s = get_param(block.BlockHandle, 'UserData'); % get serial handler
-writelino(s, block.InputPort(1)); % write to plant
-block.OutputPort(1).Data = readlino(s, T); % read from plant
+flushinput(s); 
+flushoutput(s);
+fwrite(s, '5', 'uint8'); % write to plant
+fwrite(s, block.InputPort(1).Data, 'uint8');
+fwrite(s, 10, 'uint8');
+fwrite(s, '7', 'uint8'); % read from plant
+fwrite(s, 10, 'uint8');
+saida = fread(s, 2);
+block.OutputPort(1).Data = double(bitor(bitshift(uint16(saida(1)),8),uint16(saida(2))));
 
 %end Outputs
 
@@ -133,9 +139,9 @@ block.OutputPort(1).Data = readlino(s, T); % read from plant
 %%
 function Terminate(block)
 s = get_param(block.BlockHandle, 'UserData'); % get serial handler
-flushinput(s); % todo: write stopino function? 
+flushinput(s); 
 flushoutput(s);
-fwrite(s, '2', 'uint8');
-fwrite(s, value, 'uint8');
+fwrite(s, '2', 'uint8'); % stop
+fwrite(s, 10, 'uint8');
 
 %end Terminate
