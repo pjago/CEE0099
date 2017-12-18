@@ -1,5 +1,5 @@
-The "master" branch is reserved for PIC 16f877a code, that interfaces 
-with the DC Fan.
+The "pic18f" branch is reserved for PIC 18f4550 code, that interfaces 
+with an contrallable DC Fan with encoder.
 
-If you're looking for the matlab application code, checkout the "degrau" 
+If you're looking for the matlab application code, checkout the "ufpi" 
 branch.
