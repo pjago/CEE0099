@@ -29,11 +29,12 @@ function [hf, hfu] = plotudo(t, y, r, e, u, pwm, varargin)
         else
             title(sprintf('Response %d', k))
         end
-        
         stairs(t', at(r, ':', k), 'r--', 'LineWidth', 0.5)
         stairs(t', y(:, k), 'LineWidth', 1.5, 'Color', [0 0.447 0.741]);
-        stairs(t', at(r, ':', k), 'r--', 'LineWidth', 0.5);
+        stairs(t', at(r, ':', k), 'r--', 'LineWidth', 0.5);        
+        hold off
         clickableLegend({'r', 'y'});
+        
         ax2 = subplot(2, 1, 2);
         hold on
         grid on
@@ -54,6 +55,7 @@ function [hf, hfu] = plotudo(t, y, r, e, u, pwm, varargin)
             plot(t, zeros(size(t)), 'r--', 'LineWidth', 0.5);
             clickableLegend([h1; h2; h3], {'u', 'pwm', 'e'}, 'groups', [1 2 3]);
         end
+        hold off
         linkaxes([ax1 ax2], 'x')
     end
     
@@ -82,6 +84,7 @@ function [hf, hfu] = plotudo(t, y, r, e, u, pwm, varargin)
                 clickableLegend([h1; h2; h3; h4], {'y', 'r', 'u', 'pwm'}, 'groups', [1 2 3 4]);
             end
             title(sprintf('Fourier %d', k))
+            hold off
         end
     end
 end

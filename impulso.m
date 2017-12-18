@@ -3,9 +3,12 @@ clear
 format shortg
 addpath(genpath('src'))
 
-global y r t e u pwm k
+global t y r e u pwm k
 
 %% CONFIGURAÇÃO
+
+% Adicione o nome de variáveis que queira salvar
+toSave = {'t', 'y', 'r', 'e', 'u', 'pwm'};
 
 T = 0.5;          %tempo de amostragem
 n =  21;          %número de amostras
@@ -15,10 +18,10 @@ t = (0:(n-1))*T;  %vetor de tempo
 
 %caso não ache a planta, o programa simula pela função de transferência Gz
 z = tf('z', T, 'variable', 'z^-1');
-Gz = z^-1*(0.01056 + 0.01335*z^-1)/(1 - 0.261*z^-1 - 0.63*z^-2);
+Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom(T, 'COM20', Gz);
+[stop, read, write] = startcom('COM20', Gz);
 
 %% ESTADO INCIAL
 
@@ -34,12 +37,12 @@ for k = 1:n
     y(k) = read();
 
     %REFERÊNCIA E ERRO
-    r(k) = 80;
+    r(k) = round(90*(7*T));
     e(k) = r(k) - y(k);
 
     %CONTROLE
     if k == 1
-        u(k) = 100;
+       u(k) = 100;
     end
     
     %SATURAÇÃO
@@ -82,6 +85,6 @@ end
 date = datestr(datetime('now'));
 date(date == '-' | date == ':') = '_';
 path = [folder '/' date];
-save([path '.mat'], 'ping', 't', 'y', 'r', 'e', 'u', 'pwm')
+save([path '.mat'], toSave{:})
 saveas(fig, [path '.fig'])
 disp(['Plant: ' folder ' Saved at: ' path])

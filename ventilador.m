@@ -119,15 +119,8 @@ set_param(block.BlockHandle, 'UserData', s);
 %%
 function Outputs(block)
 s = get_param(block.BlockHandle, 'UserData'); % get serial handler
-flushinput(s); 
-flushoutput(s);
-fwrite(s, '5', 'uint8'); % write to plant
-fwrite(s, block.InputPort(1).Data, 'uint8');
-fwrite(s, 10, 'uint8');
-fwrite(s, '7', 'uint8'); % read from plant
-fwrite(s, 10, 'uint8');
-saida = fread(s, 2);
-block.OutputPort(1).Data = double(bitor(bitshift(uint16(saida(1)),8),uint16(saida(2))));
+writelino(s, block.InputPort(1).Data) % write to plant
+block.OutputPort(1).Data = readlino(s); % read from plant
 
 %end Outputs
 
@@ -139,9 +132,6 @@ block.OutputPort(1).Data = double(bitor(bitshift(uint16(saida(1)),8),uint16(said
 %%
 function Terminate(block)
 s = get_param(block.BlockHandle, 'UserData'); % get serial handler
-flushinput(s); 
-flushoutput(s);
-fwrite(s, '2', 'uint8'); % stop
-fwrite(s, 10, 'uint8');
+stopino(s);
 
 %end Terminate

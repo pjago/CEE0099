@@ -1,3 +1,3 @@
-%writes to readsim target by global u, k
+%nop
 function writesim(~)
 end

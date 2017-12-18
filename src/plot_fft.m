@@ -1,4 +1,5 @@
-%https://www.mathworks.com/help/matlab/ref/fft.html
+%plots the normalized fft removing the DC bias
+%[handle, maximum_frequency] = plot_fft(y, sampling_frequency)
 function [hf, fmax] = plot_fft(X, Fs, varargin)
     X = inpaint_nans(X);
     L = length(X);

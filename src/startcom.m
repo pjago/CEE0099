@@ -1,6 +1,8 @@
 %Attempts to connect with plant or model, in that order
-function [stop, read, write] = startcom(T, COM, varargin)
-    if nargin >= 3
+%[stop, read, write] = startcom(COM)
+%[stop, read, write] = startcom(COM, Gz)
+function [stop, read, write] = startcom(COM, varargin)
+    if nargin == 2
         Gz = varargin{1};
     end
     try
@@ -14,8 +16,7 @@ function [stop, read, write] = startcom(T, COM, varargin)
             fopen(s);
         end
         record(s, 'off');
-        s.Timeout = T/2;
-        read   = @() readlino(s, T);
+        read   = @() readlino(s);
         write  = @(duty) writelino(s, duty);
         stop   = @() stopino(s);
         read();
