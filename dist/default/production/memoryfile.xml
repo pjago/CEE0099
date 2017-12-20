@@ -2,16 +2,16 @@
 <project>
   <executable name="dist/default/production\CEE0099.production.hex">
     <memory name="program">
-      <units>bytes</units>
-      <length>32768</length>
-      <used>2168</used>
-      <free>30600</free>
+      <units>words</units>
+      <length>2048</length>
+      <used>351</used>
+      <free>1697</free>
     </memory>
     <memory name="data">
       <units>bytes</units>
-      <length>2048</length>
-      <used>77</used>
-      <free>1971</free>
+      <length>128</length>
+      <used>27</used>
+      <free>101</free>
     </memory>
   </executable>
 </project>
