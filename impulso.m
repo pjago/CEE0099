@@ -5,23 +5,23 @@ addpath(genpath('src'))
 
 global t y r e u pwm k
 
-%% CONFIGURAÇÃO
+%% CONFIGURACAO
 
-% Adicione o nome de variáveis que queira salvar
+% Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
 T = 0.1;          %tempo de amostragem
-n =  21;          %número de amostras
+n =  21;          %numero de amostras
 t = (0:(n-1))*T;  %vetor de tempo
 
 %% I/O
 
-%caso não ache a planta, o programa simula pela função de transferência Gz
+%caso nao ache a planta, o programa simula pela funcao de transferencia Gz
 z = tf('z', T, 'variable', 'z^-1');
 Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom('COM5', Gz);
+[stop, read, write] = startcom('/dev/ttyUSB0', Gz);
 
 %% ESTADO INCIAL
 
@@ -36,7 +36,7 @@ for k = 1:n
     time = tic;
     y(k) = read();
 
-    %REFERÊNCIA E ERRO
+    %REFERENCIA E ERRO
     r(k) = round(90*(7*T));
     e(k) = r(k) - y(k);
 
@@ -45,7 +45,7 @@ for k = 1:n
        u(k) = 100;
     end
     
-    %SATURAÇÃO
+    %SATURACAO
     if u(k) > 100
         pwm(k) = 100;
     elseif u(k) < 0
@@ -65,7 +65,7 @@ for k = 1:n
     end
 end
 stop();
-fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
+fprintf('Duracao: %f seconds\n', toc(t0) - toc(time));
 if sum(ping(1:end-1)' > T)
     disp('In-loop latency is too high! Increase your sampling time.')
 end

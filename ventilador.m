@@ -107,6 +107,7 @@ if strcmp(out.status, 'closed')
   fopen(s);
 end
 set_param(block.BlockHandle, 'UserData', s);
+readlino(s); % read from plant, in order to clear TMR count
 
 %end Start
 
