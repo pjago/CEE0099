@@ -1,6 +1,9 @@
+CEE0099 is the Lab of Digital Control at Universidade Federal do Piauí.
+It all started from [pic-usart](https://github.com/fmarcolino/pic-usart).
+
 This is the "ufpi" branch, with MATLAB interfacing code.
 
-This repository was meant to be used at the CEE0099 "Digital Control" class at UFPI.
+This repository was meant to be used at the CEE0099 "Controle Digital" class at UFPI.
 All the experiments could be done by modifying "impulso.m" or "degrau.slx".
 I recomend saving modified versions of those files with different names.
 
