@@ -10,7 +10,7 @@ global t y r e u pwm k
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-T = 0.1;          %tempo de amostragem
+T = 0.5;          %tempo de amostragem
 n =  21;          %numero de amostras
 t = (0:(n-1))*T;  %vetor de tempo
 
@@ -21,7 +21,7 @@ z = tf('z', T, 'variable', 'z^-1');
 Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom('/dev/ttyUSB0', Gz);
+[stop, read, write] = startcom('/dev/ttyUSB2', Gz);
 
 %% ESTADO INCIAL
 
@@ -37,15 +37,16 @@ for k = 1:n
     y(k) = read();
 
     %REFERENCIA E ERRO
-    r(k) = round(90*(7*T));
+    r(k) = round(40*(7*T));
     e(k) = r(k) - y(k);
 
     %CONTROLE
-    if k == 1
-       u(k) = 100;
-    end
+%     if k == 1
+%        u(k) = 100;
+%     end
+    u(k) = 0.4616*(e(k) + T*sum(e)/1.3756);
     
-    %SATURACAO
+%     %SATURACAO
     if u(k) > 100
         pwm(k) = 100;
     elseif u(k) < 0

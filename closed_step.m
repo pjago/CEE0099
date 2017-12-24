@@ -1,40 +1,44 @@
-function closed_step (reference, varargin)
+function closed_step (set, COM, Gz)
 % closed_step
 addpath(genpath('src'))
 
 global t y r e u pwm k
 
-%% CONFIGURAÇÃO
+%% CONFIGURACAO
 
-if nargin > 1
-    duration = varargin{1};
-else
-    duration = 10;
-end
+duration = 30;
+kp = sum(Gz.num{1})/sum(Gz.den{1});
+kc = (100/set - 1)/kp;
 
-% Adicione o nome de variáveis que queira salvar
-toSave = {'ping', 'kc', 'kp', 't', 'y', 'r', 'e', 'u', 'pwm'};
+% Adicione o nome de variaveis que queira salvar
+toSave = {'ping', 'kp', 'kc', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-T = 0.3;                            %tempo de amostragem
-n = round(duration/T) + 1;          %número de amostras
+T = Gz.Ts;                          %tempo de amostragem
+n = round(duration/T) + 1;          %numero de amostras
 t = (0:(n-1))*T;                    %vetor de tempo
+
+%% TUNING
+
+[~,~,poles] = damp(Gz);
+[~, dp] = min(abs(abs(poles) - 1));
+dominant = poles(dp);
+tau = -Gz.Ts/log(dominant);
+for k = 1:100
+    drop = min(100, (1/kc + kp)*set/sum(Gz.num{1}));
+    kc = (drop/set - 1)/kp;
+end
 
 %% I/O
 
-%caso não ache a planta, o programa simula pela função de transferência Gz
-z = tf('z', T, 'variable', 'z^-1');
-% Gz = z^-1*(1.891)/(1 - 0.5564*z^-1 + 0.02444*z^-2); % T = 0.5;
-% Gz = z^-1*(1.313)/(1 - 0.5929*z^-1 - 0.0009634*z^-2); % T = 0.4;
-Gz = z^-1*(0.8047)/(1 - 0.6103*z^-1 - 0.0588*z^-2); % T = 0.3;
-kp = sum(Gz.num{1})/sum(Gz.den{1});
-
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom('COM5', Gz);
+[stop, read, write] = startcom(COM, Gz);
 
 %% ESTADO INCIAL
 
 kp = kp*ones(n, 1);
-kc = (100/reference - 1)./kp;
+kc = kc*ones(n, 1);
+ep = zeros(n, 1);
+ec = zeros(n, 1);
 
 for j=1:2
     [r, y, e, u, pwm] = deal(zeros(n, 1)); 
@@ -47,26 +51,28 @@ for j=1:2
         time = tic;
         y(k) = read();
 
-        %REFERÊNCIA E ERRO
+        %REFERENCIA E ERRO
         if j ~= 1
-            r(k) = (1/KC + KP)*reference;
+            r(k) = round((1/kc(end) + kp(end))*set);
         elseif k < n/4
-            r(k) = (1/kc(k) + kp(k))*reference;
-        else
-            kp(k) = kp(k-1) + 0.005*sum(reference - kc(k-1)*e(floor(n/4):k-1));
-            kc(k) = kc(k-1); % not so sure if this works
-            r(k) = (1/kc(k) + kp(k))*reference;
+            r(k) = round((1/kc(k) + kp(k))*set);
+        else%if k < 3*n/4
+            ep(k) = y(k-1) - kp(k-1)*set;
+            ec(k) = drop - set*(1 + kc(k-1)*kp(k-1));
+            kp(k) = kp(k-1) + 0.003*((1 + 10*T/tau)*ep(k) - ep(k-1));
+            kc(k) = kc(k-1) + 0.001*((1 + 10*T/tau)*ec(k) - ec(k-1));
+            r(k) = round((1/kc(k) + kp(k))*set);
         end
         e(k) = r(k) - y(k);
 
         %CONTROLE
         if j ~= 1
-            u(k) = KC*e(k);
+            u(k) = kc(end)*e(k);
         else
             u(k) = kc(k)*e(k);
         end
 
-        %SATURAÇÃO
+        %SATURACAO
         if u(k) > 100
             pwm(k) = 100;
         elseif u(k) < 0
@@ -85,11 +91,9 @@ for j=1:2
             end
         end
     end
-    KP = mean(kp(floor(n/2):end));
-    KC = (100/reference - 1)/KP;
-    kc = KC; % todo: maybe reach this incrementaly?
+  
     stop();
-    fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
+    fprintf('Duracao: %f seconds\n', toc(t0) - toc(time));
     if sum(ping(1:end-1)' > T)
         disp('In-loop latency is too high! Increase your sampling time.')
     end
@@ -99,6 +103,7 @@ for j=1:2
     fig(j) = plotudo(t, y, r, e, u, pwm, 0, 0);
     pause(10*T)
     read();
+    
 end
 
 if isa(stop, 'function_handle')
@@ -109,14 +114,14 @@ if isa(stop, 'function_handle')
     session = dir(folder);
     session = session([session.isdir]);
     if length(session) > 2
-        folder = [folder '\' session(end).name];
+        folder = [folder '/' session(end).name];
     end
     date = datestr(datetime('now'));
     date(date == '-' | date == ':') = '_';
     path = [folder '/' date];
     save([path '.mat'], toSave{:})
     saveas(fig(2), [path '.fig'])
-    disp(['Plant: ' folder ' Saved at: ' path])
+    disp(['Plant: ' folder ' Saved at: ' path 10])
     close(fig(1))
     close(fig(2))
 end
