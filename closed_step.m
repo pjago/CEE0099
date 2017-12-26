@@ -7,8 +7,9 @@ global t y r e u pwm k
 %% CONFIGURACAO
 
 duration = 30;
+drop = 100;
 kp = sum(Gz.num{1})/sum(Gz.den{1});
-kc = (100/set - 1)/kp;
+kc = (drop/set - 1)/kp;
 
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 'kp', 'kc', 't', 'y', 'r', 'e', 'u', 'pwm'};
@@ -23,15 +24,26 @@ t = (0:(n-1))*T;                    %vetor de tempo
 [~, dp] = min(abs(abs(poles) - 1));
 dominant = poles(dp);
 tau = -Gz.Ts/log(dominant);
-for k = 1:100
-    drop = min(100, (1/kc + kp)*set/sum(Gz.num{1}));
-    kc = (drop/set - 1)/kp;
+info = lsiminfo(impulse(Gz));
+for i = 1:100
+    drop = drop + ((1/kc + kp)*set/info.Max - drop);
+    kc = kc + 0.1*((drop/set - 1)/kp - kc);
 end
+drop = min(100, drop);
+kc = (drop/set - 1)/kp;
 
 %% I/O
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
 [stop, read, write] = startcom(COM, Gz);
+
+%% TUNING
+
+[wn,~,poles] = damp(Gz);
+[~, dp] = min(abs(abs(poles) - 1));
+dominant = poles(dp);
+tau = -Gz.Ts/log(dominant);
+mvg = ceil(2*pi/(wn(dp)))*3;
 
 %% ESTADO INCIAL
 
@@ -41,7 +53,7 @@ ep = zeros(n, 1);
 ec = zeros(n, 1);
 
 for j=1:2
-    [r, y, e, u, pwm] = deal(zeros(n, 1)); 
+    [ry, r, y, e, u, pwm] = deal(zeros(n, 1)); 
     ping = nan(n, 1);
     t0 = tic;
 
@@ -54,13 +66,15 @@ for j=1:2
         %REFERENCIA E ERRO
         if j ~= 1
             r(k) = round((1/kc(end) + kp(end))*set);
-        elseif k < n/4
+        elseif k <= mvg || k < n/4
             r(k) = round((1/kc(k) + kp(k))*set);
-        else%if k < 3*n/4
-            ep(k) = y(k-1) - kp(k-1)*set;
+            ry(k) = kp(k)*set;
+        else
+            ry(k) = ry(k-1) + (y(k) - ry(k-1))/mvg;
+            ep(k) = ry(k-1) - kp(k-1)*set;
             ec(k) = drop - set*(1 + kc(k-1)*kp(k-1));
-            kp(k) = kp(k-1) + 0.003*((1 + 10*T/tau)*ep(k) - ep(k-1));
-            kc(k) = kc(k-1) + 0.001*((1 + 10*T/tau)*ec(k) - ec(k-1));
+            kp(k) = kp(k-1) + 0.003*((1 + 5*T/tau)*ep(k) - ep(k-1));
+            kc(k) = kc(k-1) + 0.001*((1 + 2*T/tau)*ec(k) - ec(k-1));
             r(k) = round((1/kc(k) + kp(k))*set);
         end
         e(k) = r(k) - y(k);

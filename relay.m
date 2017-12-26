@@ -9,17 +9,16 @@ global t y r e u pwm k
 [absG, phaG, W] = bode(Gz);
 Gjw = absG.*exp(1j*phaG*pi/180);
 [~, ws] = min(abs(-1 - Gjw));
-kp = sum(Gz.num{1})/sum(Gz.den{1});
 
-duration = 10;
+duration = 30;
 d = 10;
 eps = -(4*d)*imag(Gjw(ws))/pi;
-a = sqrt((4/pi*d*real(Gjw(ws)))^2 - eps^2);
+a = sqrt((4/pi*d*real(Gjw(ws)))^2 + eps^2);
 
 % Adicione o nome de varieveis que queira salvar
 toSave = {'ping', 'd', 'eps', 'a', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-T = 0.03;                            %tempo de amostragem
+T = Gz.Ts;                          %tempo de amostragem
 n = round(duration/T) + 1;          %numero de amostras
 t = (0:(n-1))*T;                    %vetor de tempo
 
@@ -34,13 +33,12 @@ t = (0:(n-1))*T;                    %vetor de tempo
 [~, dp] = min(abs(abs(poles) - 1));
 dominant = poles(dp);
 tau = -Gz.Ts/log(dominant);
-mvg = round(2*pi/(wn(dp)*T));
+mvg = ceil(2*pi/(wn(dp)))*3;
 
 %% ESTADO INCIAL
 
-kp = kp*ones(n, 1);
+kp = sum(Gz.num{1})/sum(Gz.den{1})*ones(n, 1);
 ep = zeros(n, 1);
-ee = zeros(n, 1);
 
 for j=1:2
     % on first run, measure and control eps, by tuning r
@@ -62,17 +60,15 @@ for j=1:2
             r(k) = round(kp(k)*set);
         elseif k < n/4
             ep(k) = y(k-1) - kp(k-1)*set;
-            ee(k) = 0;
             kp(k) = kp(k-1) + 0.003*((1 + 10*T/tau)*ep(k) - ep(k-1));
             r(k) = round(kp(k)*set);
         else
             ep(k) = y(k-1) - kp(k-1)*set;
-            ee(k) = ee(k-1) + (1 - 1/mvg)*y(k) - y(k-1) + (1/mvg)*y(k-mvg);
-            kp(k) = kp(k-1) - 0.001*((1 + 2*T/tau)*ee(k) - ee(k-1));
-            r(k) = round(kp(k)*set);
+            r(k) = r(k-1) + (y(k) - r(k-1))/mvg;
+            kp(k) = r(k)/set;
         end
                 
-        if (k == ceil(n/4))
+        if j == 1 && (k == (ceil(n/4) + 1))
             r(k) = r(k) + 2*eps;
         end
         
@@ -116,21 +112,25 @@ for j=1:2
     if sum(ping(1:end-1)' > T)
         disp('In-loop latency is too high! Increase your sampling time.')
     end
-
+    
 %% PLOT & SAVE
 
     fig(j) = plotudo(t, y, r, e, u, pwm, 0, 0);
     pause(10*T)
-%     read();
+    read();
     
 end
 
-disp([10 'You wanted eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(W(ws)) ' rad'])    
+disp([10 'You wanted d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(W(ws)) ' rad/s' ', Gjw = ' num2str(pi*sqrt(a^2 + 2*eps^2)/(4*d)) ' <' num2str(atan2(-pi*eps/(4*d), -pi*sqrt(a^2 + eps^2)/(4*d)))])
 edg = [0; diff(pwm - set)/(2*d)];
+edg = edg.*(abs(edg) >= 1)./(abs(edg));
+edg(isnan(edg)) = 0;
+d = mean((pwm(logical(edg)) - set).*edg(logical(edg)));
 eps = mean(e(logical(edg)).*edg(logical(edg)));
-a = peak2peak(e(floor(n/2):end))/2;
-wr = meanfreq(pwm - mean(pwm))/T;
-disp(['Result was eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(wr) ' rad' 10])
+fst = max(find(edg ~= 0, 2));
+a = (mean(findpeaks(e(fst:end))) + mean(findpeaks(-e(fst:end))))/2;
+wr = 2*pi*meanfreq(pwm - mean(pwm), 1/T);
+disp(['Result was d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(wr) ' rad/s' ', Gjw = ' num2str(pi*sqrt(a^2 + 2*eps^2)/(4*d)) ' <' num2str(atan2(-pi*eps/(4*d), -pi*sqrt(a^2 + eps^2)/(4*d))) 10])
 
 if isa(stop, 'function_handle')
     folder = 'relay';

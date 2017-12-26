@@ -7,9 +7,13 @@ global t y r e u pwm k
 %% CONFIGURACAO
 
 duration = 30;
-d = 5; % target oscilation
+d = 10; % target oscilation
+eps = 0;
+a = 4/pi*d/margin(Gz);
+
 kp = sum(Gz.num{1})/sum(Gz.den{1});
-[kc, ~, ~, ~] = margin(Gz);
+Gz.TimeUnit = 'seconds';
+[kc, ~, Wc, ~] = margin(Gz);
 
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 'kp', 'kc', 't', 'y', 'r', 'e', 'u', 'pwm'};
@@ -20,10 +24,11 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 %% TUNING
 
-[~,~,poles] = damp(Gz);
+[wn,~,poles] = damp(Gz);
 [~, dp] = min(abs(abs(poles) - 1));
 dominant = poles(dp);
 tau = -Gz.Ts/log(dominant);
+mvg = ceil(2*pi/(wn(dp)))*3;
 
 %% I/O
 
@@ -49,11 +54,12 @@ for j=1:2
         t = (0:(n-1))*T;
     end
     
-    [r, y, e, u, pwm] = deal(zeros(n, 1)); 
+    [ry, r, y, e, u, pwm] = deal(zeros(n, 1));
     ping = nan(n, 1);
     t0 = tic;
 
 %% LOOP DE CONTROLE
+
     for k = 1:n
         %LEITURA
         time = tic;
@@ -62,30 +68,25 @@ for j=1:2
         %REFERENCIA E ERRO
         if j ~= 1
             r(k) = round((1/kc(end) + kp(end))*set);
-        elseif k < n/6
+        elseif k <= mvg
             r(k) = round((1/kc(k) + kp(k))*set);
-        elseif k < n/3
-            ep(k) = y(k-1) - kp(k-1)*set;
+            ry(k) = kp(k)*set;
+        else
+            ry(k) = ry(k-1) + (y(k) - ry(k-1))/mvg;
+            ep(k) = ry(k-1) - kp(k-1)*set;
             ec(k) = 2*d - abs(u(k-1) - u(k-2));
-            kp(k) = kp(k-1) + 0.001*((1 + 10*T/tau)*ep(k) - ep(k-1));
-            kc(k) = kc(k-1);
+            kp(k) = kp(k-1) + 0.003*((1 + 5*T/tau)*ep(k) - ep(k-1));
+            kc(k) = kc(k-1) + 0.001*((1 + 2*T/tau)*ec(k) - ec(k-1));
             r(k) = round((1/kc(k) + kp(k))*set);
-        else 
-            ep(k) = y(k-1) - kp(k-1)*set;
-            ec(k) = 2*d - abs(u(k-1) - u(k-2));
-            kp(k) = kp(k-1);
-            kc(k) = kc(k-1) + 0.001*((1 + 8*T/tau)*ec(k) - ec(k-1));
-            r(k) = r(k-1);
         end
-        
-        if (k == floor(n/3)-1)
-            r(k) = r(k) - kp(k)*d;
+                
+        if k == mvg + 1
+            r(k) = (set + d)/kc(end) + y(k);
         end
-        
         e(k) = r(k) - y(k);
 
         %CONTROLE
-        if k < n/6
+        if k <= mvg
             u(k) = set;
         elseif j ~= 1
             u(k) = kc(end)*e(k);
@@ -128,8 +129,15 @@ for j=1:2
     fig(j) = plotudo(t, y, r, e, u, pwm, 0, 0);
     pause(10*T)
     read();
-    
+        
 end
+
+disp([10 'You wanted d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(Wc) ' rad/s' ', Gjw = ' num2str(pi*sqrt(a^2 + 2*eps^2)/(4*d)) ' <' num2str(atan2(-pi*eps/(4*d), -pi*sqrt(a^2 + eps^2)/(4*d)))])
+fst = mvg + 1;
+d = (mean(findpeaks(pwm(fst:end)-mean(pwm(fst:end)))) + mean(findpeaks(-pwm(fst:end)+mean(pwm(fst:end)))))/2;
+a = (mean(findpeaks(e(fst:end)-mean(e(fst:end)))) + mean(findpeaks(-e(fst:end)+mean(e(fst:end)))))/2;
+wr = 2*pi*meanfreq(pwm - mean(pwm), 1/T);
+disp(['Result was d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(wr) ' rad/s' ', Gjw = ' num2str(pi*sqrt(a^2 + 2*eps^2)/(4*d)) ' <' num2str(atan2(-pi*eps/(4*d), -pi*sqrt(a^2 + eps^2)/(4*d))) 10])
 
 if isa(stop, 'function_handle')
     folder = 'cycling';

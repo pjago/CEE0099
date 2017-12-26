@@ -61,6 +61,7 @@ for k = 1:n
         end
     end
 end
+
 stop();
 fprintf('Duracao: %f seconds\n', toc(t0) - toc(time));
 if sum(ping(1:end-1)' > T)
@@ -70,6 +71,7 @@ end
 %% PLOT & SAVE
 
 fig = plotudo(t, y, r, e, u, pwm, 0, 0);
+pause(10*T)
 
 if isa(stop, 'function_handle')
     folder = 'open_step';
@@ -87,6 +89,5 @@ if isa(stop, 'function_handle')
     save([path '.mat'], toSave{:})
     saveas(fig, [path '.fig'])
     disp(['Plant: ' folder ' Saved at: ' path 10])
-    pause(10*T)
     close(fig)
 end

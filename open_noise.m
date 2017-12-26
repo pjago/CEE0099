@@ -29,6 +29,7 @@ ping = nan(n, 1);
 t0 = tic;
 
 %% LOOP DE CONTROLE
+
 for k = 1:n
     %LEITURA
     time = tic;
@@ -60,6 +61,7 @@ for k = 1:n
         end
     end
 end
+
 stop();
 fprintf('Duracao: %f seconds\n', toc(t0) - toc(time));
 if sum(ping(1:end-1)' > T)
@@ -70,7 +72,6 @@ end
 
 fig = plotudo(t, y, r, e, u, pwm, 0, 0);
 pause(10*T)
-read();
    
 if isa(stop, 'function_handle')
     folder = 'open_noise';
