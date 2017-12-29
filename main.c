@@ -16,185 +16,84 @@
 #pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
-#include <conio.h>
-#include <stdio.h>
 #include <xc.h>
 
-const unsigned long IFOSC = 5000000;  // CLK = 20 Mhz, CLK/4 = 5 Mhz @delay
-const unsigned int T1FOSC = 360;      // T1CLK = B*T1FOSC Hz, CKPS = 0b00 @T1CON
-const unsigned long BAUD = 19200;     // BAUD rate @DeviceManager @RBPRG
+#define _XTAL_FREQ 4000000          // FOSC = 4 Mhz @delay
 
-char PWM @ &CCPR1L;
+char BUF[17] = "                ", RC = 0;
+unsigned int T1ZOH = 0;
+
+char PWM @ &CCPR2L;
 bit  BUZ @ (((unsigned) &PORTA)*8) + 5;
-bit  PUT = 0;
 
-struct {
-    unsigned CH : 8;
-    unsigned RS : 1;     //Register Select
-    unsigned RW : 1;     //Read/Write
-    unsigned EN : 1;     //ENable
-} LCD @ &PORTD;
+// UX
 
-// UI
-
-void beep () {
-    _delay(IFOSC/10);
+void beep () { // todo: rename to bébé
     for (int j = 0; j < 100; ++j) {
-        BUZ = 1; _delay(IFOSC/1000);
-        BUZ = 0; _delay(IFOSC/2000);
-    } 
+        BUZ = 1; __delay_us(1000);
+        BUZ = 0; __delay_us(500);
+    }
 }
 
-void putch (char msg) {    
-    if (PUT) {
-        LCD.RS = 1;
-        LCD.CH = msg;
-        LCD.EN = 1; _delay(IFOSC/1000000);
-        LCD.EN = 0; _delay(IFOSC/20000);
-    }
-    else {
-        while(!TXIF) continue;
-        TXREG = msg;
-    }
-    return;
+void rsend (char msg) {
+    while (!TXIF) continue;
+    TXREG = msg;
 }
 
-char getch () {
-    while(!RCIF) continue;
+char rsget () {
+    while (!RCIF) continue;
     return RCREG;
 }
 
-void prog_lcd (char msg) {
-    LCD.RS = 0;
-    LCD.CH = msg;
-    LCD.EN = 1; _delay(IFOSC/1000000);
-    LCD.EN = 0; _delay(IFOSC/20000);
-    return;
-}
-
-void init_lcd () {
-    PUT = 1;
-    LCD.RW = 0;
-    prog_lcd(0x30); _delay(IFOSC/200);
-    prog_lcd(0x30); _delay(IFOSC/10000);
-    prog_lcd(0x30);
-    prog_lcd(0x38);
-    prog_lcd(0x01); _delay(IFOSC/500);
-    prog_lcd(0x0C);
-    prog_lcd(0x06);
-    prog_lcd(0x80);
-    printf("LAB.CONT.DIGITAL");
-    prog_lcd(0xC0);
-    printf("Seja Bem-Vindo!");
-    return;
-}
-
-void main_lcd (unsigned int value, char duty) {
-    PUT = 1;
-    prog_lcd(0xC0);
-    printf("rps: %3u", value);
-    prog_lcd(0xC8);
-    printf("pwm: %3d%%", duty);
-}
-
-// MEASUREMENT
-
-typedef struct {
-    volatile unsigned int count;
-    unsigned int value;
-} rpm;
-
-rpm FAN = {-1, 0};
-
-void interrupt raycast_intersection_cleared (void) {
-    FAN.count++;
-    INTF = 0;
-    return;
-}
-
-rpm rps_timer1 (rpm x, unsigned int dt) {
-    if (x.count > 0) {
-        x.value = T1FOSC * x.count / dt;
-        x.count = 0;
-    }
-    else {
-        x.count = -1;
-        x.value = 0;
-    }
-    return x;
-}
+// INTERFACE
 
 void read_tmr1 () {
-    PUT = 0;
-    FAN = rps_timer1(FAN, TMR1);
-    printf("%u", FAN.value);
-    TMR1 = 0;
+    T1ZOH = TMR1;
+    rsend(T1ZOH >> 8);   //BKWD: Big -> Little Endian
+    rsend(T1ZOH);
+    TMR1 -= T1ZOH;
     return;
 }
 
-void read_tmr0 () {
-    PUT = 0;
-    printf("%u", TMR0);
-    TMR0 = 0;
-    FAN = rps_timer1(FAN, TMR1);
-    TMR1 = 0;
-    return;
-}
-
-void write (char duty) {
-    PWM = duty;
-}
-
-// PROTOCOL
-
-void io_switch (char *x) {
-	switch (x[0]) {
-		case '7': read_tmr0();               break;
-        case '5': write(x[1]);				 break;
-		case '1': read_tmr0(); write(x[1]);  break;
-        case 'r': read_tmr1();               break;
-        case 'w': write(x[1]);				 break;
-        case 'x': read_tmr1(); write(x[1]);  break;
-        case 's':
-        case '2': write(0);	beep(); beep();  break;
-	}
-    main_lcd(FAN.value, PWM);
-}
-
-int buffer_serial (char *buffer, int idx) {
-    buffer[idx] = getch();
-    if (buffer[idx] == '\n') {
-        idx=0;
-        io_switch(buffer);
-    }
-    else {
-        idx++;
-    }
-    return idx;
+void write (signed char duty) {
+    if (duty > 100) PWM = 100;
+    else if (duty < 0) PWM = 0;
+    else PWM = duty;
 }
 
 int main (void) {
-    T1CON = 0x0B;           // TMR1 external clock, sync, TMR1/1    
+    T1CON = 0x03;           // TMR1 external clock, TMR1/1    
     CCP1CON = 0x0F;         // CCP1 module is on PWM mode
     CCPR1L = 0;             // PWM duty = (CCPR1L:CCP1CON<5:4>)*TOSC*T2CKPS
+    CCP2CON = 0x0F;         // CCP2 module is on PWM mode
+    CCPR2L = 0;             // PWM duty = (CCPR2L:CCP2CON<5:4>)*TOSC*T2CKPS
     PR2 = 100;              // PWM period = [(PR2)+1]*4*TOSC*T2CKPS
     T2CON = 0x04;           // TMR2 enabled at maximum frequency
-    TRISC = 0xFB;           // C2 powers a LED
-    OPTION_REG = 0x38;      // B pull-ups, B0 falling, T0CKI falling, TMR0/1
-    TRISB = 0x7F;           // B0 reads IR, B7 powers a LED
-    INTCON = 0x90;          // enable external interrupt on B0
-    TRISD = 0x00;           // LCD output
-    TRISE = 0xF8;           // LCD register select, read/write, enable
-    TRISA = 0xCF;           // A5 buzz a buzzer, A4 counts rotations
+    ADCON1 = 0x07;          // PORTA is all digital
+    TRISC = 0xFD;           // C0 clock TMR1, C1 duty PWM, C6/C7 = TX/RX 
+    TRISA = 0xDF;           // A5 buzz a buzzer
     RCSTA = 0x90;           // asynchronous 8 bit RS-232
     TXSTA = 0x24;           // asynchronous 8 bit RS-232
-    SPBRG = 64;             // BAUD generator = IFOSC / (4*BAUD) - 1;    
-    init_lcd();
-    beep();
-    beep();
-    beep();    
-    char buffer[6];
-    int idx = 0;
-    while (1) idx = buffer_serial(buffer, idx);
+    SPBRG = 12;             // BAUD generator = FOSC / (16*BAUD) - 1;    
+    beep(); __delay_ms(100);
+    beep(); __delay_ms(100);
+    beep(); __delay_ms(100);   
+    while (1) {
+        // buffer_serial
+        char x = rsget();
+        if (x == '\n') {    //BKWD: bug when we write pwm = 10
+            switch (BUF[0]) {
+                case 'r': case '7': read_tmr1(); break;
+                case 'w': case '5': write(BUF[1]); break;
+                case 'x': case '1': write(BUF[1]); read_tmr1(); break;
+                case 's': case '2': write(0); beep(); beep(); break;
+            }
+            RC = 0;
+        }
+        else {
+            BUF[RC] = x;
+            RC++;
+        }
+    }
     return 0;
 }

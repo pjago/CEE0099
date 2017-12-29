@@ -3,61 +3,27 @@
 [d edition pro ]
 [d chip 16F877A ]
 [d frameptr 6 ]
-"464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
-[v _printf printf `(i  1 e 2 0 ]
 "62 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\float.c
 [v ___ftpack __ftpack `(f  1 e 3 0 ]
 "86 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\ftadd.c
 [v ___ftadd __ftadd `(f  1 e 3 0 ]
-"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
-[v _isdigit isdigit `(b  1 e 0 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
-[v ___lldiv __lldiv `(ul  1 e 4 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
-[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
-[v ___lwmod __lwmod `(ui  1 e 2 0 ]
-"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
-[v ___wmul __wmul `(ui  1 e 2 0 ]
 "6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\pic\eeprom.c
 [v _eecpymem eecpymem `(v  1 e 1 0 ]
 "39
 [v _memcpyee memcpyee `(v  1 e 1 0 ]
-"40 C:\Users\usuario\Documents\Github\CEE0099\main.c
+"31 C:\Users\usuario\Documents\Github\CEE0099\main.c
 [v _beep beep `(v  1 e 1 0 ]
-"48
-[v _putch putch `(v  1 e 1 0 ]
-"62
-[v _getch getch `(uc  1 e 1 0 ]
-"67
-[v _prog_lcd prog_lcd `(v  1 e 1 0 ]
-"75
-[v _init_lcd init_lcd `(v  1 e 1 0 ]
-"92
-[v _main_lcd main_lcd `(v  1 e 1 0 ]
-"109
-[v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
-"102
-[s S39 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
-"115
-[v _rps_timer1 rps_timer1 `(VES39  1 e 4 0 ]
-"127
+"38
+[v _rsend rsend `(v  1 e 1 0 ]
+"43
+[v _rsget rsget `(uc  1 e 1 0 ]
+"50
 [v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
-"135
-[v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
-"144
+"58
 [v _write write `(v  1 e 1 0 ]
-"150
-[v _io_switch io_switch `(v  1 e 1 0 ]
-"164
-[v _buffer_serial buffer_serial `(i  1 e 2 0 ]
-"176
+"64
 [v _main main `(i  1 e 2 0 ]
-"57 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
-[v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
-"452
-[v _INTCON INTCON `VEuc  1 e 1 @11 ]
-"632
+"632 C:\Program Files (x86)\Microchip\xc8\v1.43\include\pic16f877a.h
 [v _TMR1 TMR1 `VEus  1 e 2 @14 ]
 "653
 [v _T1CON T1CON `VEuc  1 e 1 @16 ]
@@ -73,226 +39,72 @@
 [v _TXREG TXREG `VEuc  1 e 1 @25 ]
 "1064
 [v _RCREG RCREG `VEuc  1 e 1 @26 ]
-"1253
-[v _OPTION_REG OPTION_REG `VEuc  1 e 1 @129 ]
+"1078
+[v _CCPR2L CCPR2L `VEuc  1 e 1 @27 ]
+"1092
+[v _CCP2CON CCP2CON `VEuc  1 e 1 @29 ]
 "1323
 [v _TRISA TRISA `VEuc  1 e 1 @133 ]
-"1373
-[v _TRISB TRISB `VEuc  1 e 1 @134 ]
 "1435
 [v _TRISC TRISC `VEuc  1 e 1 @135 ]
-"1497
-[v _TRISD TRISD `VEuc  1 e 1 @136 ]
-"1559
-[v _TRISE TRISE `VEuc  1 e 1 @137 ]
 "1814
 [v _PR2 PR2 `VEuc  1 e 1 @146 ]
 "1997
 [v _TXSTA TXSTA `VEuc  1 e 1 @152 ]
 "2078
 [v _SPBRG SPBRG `VEuc  1 e 1 @153 ]
-"2525
-[v _INTF INTF `VEb  1 e 0 @89 ]
+"2227
+[v _ADCON1 ADCON1 `VEuc  1 e 1 @159 ]
 "2617
 [v _RCIF RCIF `VEb  1 e 0 @101 ]
 "2813
 [v _TXIF TXIF `VEb  1 e 0 @100 ]
-"354 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
-[v _dpowers dpowers `DC[5]ui  1 s 10 dpowers ]
 "23 C:\Users\usuario\Documents\Github\CEE0099\main.c
-[v _IFOSC IFOSC `DCul  1 e 4 0 ]
+[v _BUF BUF `[17]uc  1 e 17 0 ]
+[v _RC RC `uc  1 e 1 0 ]
 "24
-[v _T1FOSC T1FOSC `DCui  1 e 2 0 ]
+[v _T1ZOH T1ZOH `ui  1 e 2 0 ]
+"26
+[v _PWM PWM `uc  1 e 1 @27 ]
 "27
-[v _PWM PWM `uc  1 e 1 @21 ]
-"28
 [v _BUZ BUZ `b  1 e 0 @45 ]
-"29
-[v _PUT PUT `b  1 e 0 0 ]
-[s S19 . 2 `uc 1 CH 1 0 :8:0 
-`uc 1 RS 1 1 :1:0 
-`uc 1 RW 1 1 :1:1 
-`uc 1 EN 1 1 :1:2 
-]
-"36
-[v _LCD LCD `S19  1 e 2 @8 ]
-[s S39 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
-"107
-[v _FAN FAN `VES39  1 e 4 0 ]
-"176
+"64
 [v _main main `(i  1 e 2 0 ]
 {
-"196
-[v main@buffer buffer `[6]uc  1 a 6 44 ]
-"197
-[v main@idx idx `i  1 a 2 50 ]
-"200
+"83
+[v main@x x `uc  1 a 1 5 ]
+"99
 } 0
-"75
-[v _init_lcd init_lcd `(v  1 e 1 0 ]
-{
-"90
-} 0
-"164
-[v _buffer_serial buffer_serial `(i  1 e 2 0 ]
-{
-[v buffer_serial@buffer buffer `*.4uc  1 a 1 wreg ]
-[v buffer_serial@buffer buffer `*.4uc  1 a 1 wreg ]
-[v buffer_serial@idx idx `i  1 p 2 39 ]
-[v buffer_serial@buffer buffer `*.4uc  1 a 1 43 ]
-"174
-} 0
-"150
-[v _io_switch io_switch `(v  1 e 1 0 ]
-{
-[v io_switch@x x `*.4uc  1 a 1 wreg ]
-[v io_switch@x x `*.4uc  1 a 1 wreg ]
-[v io_switch@x x `*.4uc  1 a 1 38 ]
-"162
-} 0
-"144
+"58
 [v _write write `(v  1 e 1 0 ]
 {
-[v write@duty duty `uc  1 a 1 wreg ]
-[v write@duty duty `uc  1 a 1 wreg ]
-[v write@duty duty `uc  1 a 1 4 ]
-"146
+[v write@duty duty `c  1 a 1 wreg ]
+[v write@duty duty `c  1 a 1 wreg ]
+[v write@duty duty `c  1 a 1 0 ]
+"62
 } 0
-"127
-[v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
+"43
+[v _rsget rsget `(uc  1 e 1 0 ]
 {
-"133
-} 0
-"135
-[v _read_tmr0 read_tmr0 `(v  1 e 1 0 ]
-{
-"142
-} 0
-"102
-[s S39 . 4 `VEui 1 count 2 0 `ui 1 value 2 2 ]
-"115
-[v _rps_timer1 rps_timer1 `(VES39  1 e 4 0 ]
-{
-[v rps_timer1@x x `VES39  1 p 4 9 ]
-[v rps_timer1@dt dt `ui  1 p 2 13 ]
-"125
-} 0
-"92
-[v _main_lcd main_lcd `(v  1 e 1 0 ]
-{
-[v main_lcd@value value `ui  1 p 2 32 ]
-[v main_lcd@duty duty `uc  1 p 1 34 ]
-"98
-} 0
-"67
-[v _prog_lcd prog_lcd `(v  1 e 1 0 ]
-{
-[v prog_lcd@msg msg `uc  1 a 1 wreg ]
-[v prog_lcd@msg msg `uc  1 a 1 wreg ]
-[v prog_lcd@msg msg `uc  1 a 1 13 ]
-"73
-} 0
-"464 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\doprnt.c
-[v _printf printf `(i  1 e 2 0 ]
-{
-[v printf@f f `*.24DCuc  1 a 1 wreg ]
-"501
-[v printf@width width `i  1 a 2 29 ]
-"528
-[v printf@val val `ui  1 a 2 26 ]
-"529
-[v printf@len len `ui  1 a 2 23 ]
-"499
-[v printf@c c `c  1 a 1 31 ]
-"508
-[v printf@flag flag `uc  1 a 1 25 ]
-"466
-[v printf@ap ap `[1]*.4v  1 a 1 22 ]
-"506
-[v printf@prec prec `c  1 a 1 21 ]
-"530
-[v printf@cp cp `*.4DCuc  1 a 1 20 ]
-"464
-[v printf@f f `*.24DCuc  1 a 1 wreg ]
-"533
-[v printf@f f `*.24DCuc  1 a 1 28 ]
-"1541
-} 0
-"48 C:\Users\usuario\Documents\Github\CEE0099\main.c
-[v _putch putch `(v  1 e 1 0 ]
-{
-[v putch@msg msg `uc  1 a 1 wreg ]
-[v putch@msg msg `uc  1 a 1 wreg ]
-[v putch@msg msg `uc  1 a 1 13 ]
-"60
-} 0
-"8 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\isdigit.c
-[v _isdigit isdigit `(b  1 e 0 0 ]
-{
-[v isdigit@c c `uc  1 a 1 wreg ]
-[v isdigit@c c `uc  1 a 1 wreg ]
-"14
-[v isdigit@c c `uc  1 a 1 5 ]
-"15
-} 0
-"15 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\Umul16.c
-[v ___wmul __wmul `(ui  1 e 2 0 ]
-{
-"17
-[v ___wmul@product product `ui  1 a 2 0 ]
-"15
-[v ___wmul@multiplier multiplier `ui  1 p 2 4 ]
-[v ___wmul@multiplicand multiplicand `ui  1 p 2 6 ]
-"53
-} 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwmod.c
-[v ___lwmod __lwmod `(ui  1 e 2 0 ]
-{
-"11
-[v ___lwmod@counter counter `uc  1 a 1 14 ]
-"6
-[v ___lwmod@divisor divisor `ui  1 p 2 9 ]
-[v ___lwmod@dividend dividend `ui  1 p 2 11 ]
-"26
-} 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lwdiv.c
-[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
-{
-"11
-[v ___lwdiv@quotient quotient `ui  1 a 2 7 ]
-"12
-[v ___lwdiv@counter counter `uc  1 a 1 6 ]
-"6
-[v ___lwdiv@divisor divisor `ui  1 p 2 2 ]
-[v ___lwdiv@dividend dividend `ui  1 p 2 4 ]
-"31
-} 0
-"40 C:\Users\usuario\Documents\Github\CEE0099\main.c
-[v _beep beep `(v  1 e 1 0 ]
-{
-"42
-[v beep@j j `i  1 a 2 13 ]
 "46
 } 0
-"6 C:\Program Files (x86)\Microchip\xc8\v1.43\sources\common\lldiv.c
-[v ___lldiv __lldiv `(ul  1 e 4 0 ]
+"50
+[v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
 {
-"11
-[v ___lldiv@quotient quotient `ul  1 a 4 8 ]
-"12
-[v ___lldiv@counter counter `uc  1 a 1 12 ]
-"6
-[v ___lldiv@divisor divisor `ul  1 p 4 0 ]
-[v ___lldiv@dividend dividend `ul  1 p 4 4 ]
+"56
+} 0
+"38
+[v _rsend rsend `(v  1 e 1 0 ]
+{
+[v rsend@msg msg `uc  1 a 1 wreg ]
+[v rsend@msg msg `uc  1 a 1 wreg ]
+[v rsend@msg msg `uc  1 a 1 0 ]
+"41
+} 0
 "31
-} 0
-"62 C:\Users\usuario\Documents\Github\CEE0099\main.c
-[v _getch getch `(uc  1 e 1 0 ]
+[v _beep beep `(v  1 e 1 0 ]
 {
-"65
-} 0
-"109
-[v _raycast_intersection_cleared raycast_intersection_cleared `II(v  1 e 1 0 ]
-{
-"113
+"32
+[v beep@j j `i  1 a 2 1 ]
+"36
 } 0

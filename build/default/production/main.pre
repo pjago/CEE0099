@@ -12,69 +12,6 @@
 #pragma config WRT = OFF
 #pragma config CP = OFF
 
-# 29 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\errno.h"
-extern int errno;
-
-# 12 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\conio.h"
-extern void init_uart(void);
-
-extern char getch(void);
-extern char getche(void);
-extern void putch(char);
-extern void ungetch(char);
-
-extern __bit kbhit(void);
-
-# 23
-extern char * cgets(char *);
-extern void cputs(const char *);
-
-# 4 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\__size_t.h"
-typedef unsigned size_t;
-
-# 7 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdarg.h"
-typedef void * va_list[1];
-
-#pragma intrinsic(__va_start)
-extern void * __va_start(void);
-
-#pragma intrinsic(__va_arg)
-extern void * __va_arg(void *, ...);
-
-# 43 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\stdio.h"
-struct __prbuf
-{
-char * ptr;
-void (* func)(char);
-};
-
-# 88
-extern int cprintf(char *, ...);
-#pragma printf_check(cprintf)
-
-
-
-extern int _doprnt(struct __prbuf *, const register char *, register va_list);
-
-
-# 180
-#pragma printf_check(vprintf) const
-#pragma printf_check(vsprintf) const
-
-extern char * gets(char *);
-extern int puts(const char *);
-extern int scanf(const char *, ...) __attribute__((unsupported("scanf() is not supported by this compiler")));
-extern int sscanf(const char *, const char *, ...) __attribute__((unsupported("sscanf() is not supported by this compiler")));
-extern int vprintf(const char *, va_list) __attribute__((unsupported("vprintf() is not supported by this compiler")));
-extern int vsprintf(char *, const char *, va_list) __attribute__((unsupported("vsprintf() is not supported by this compiler")));
-extern int vscanf(const char *, va_list ap) __attribute__((unsupported("vscanf() is not supported by this compiler")));
-extern int vsscanf(const char *, const char *, va_list) __attribute__((unsupported("vsscanf() is not supported by this compiler")));
-
-#pragma printf_check(printf) const
-#pragma printf_check(sprintf) const
-extern int sprintf(char *, const char *, ...);
-extern int printf(const char *, ...);
-
 # 26 "C:\Program Files (x86)\Microchip\xc8\v1.43\include\htc.h"
 extern const char __xc8_OPTIM_SPEED;
 
@@ -1535,181 +1472,80 @@ extern __bit __powerdown;
 extern __bit __timeout;
 
 # 23 "main.c"
-const unsigned long IFOSC = 5000000;
-const unsigned int T1FOSC = 360;
-const unsigned long BAUD = 19200;
+char BUF[17] = "                ", RC = 0;
+unsigned int T1ZOH = 0;
 
-char PWM @ &CCPR1L;
+char PWM @ &CCPR2L;
 bit BUZ @ (((unsigned) &PORTA)*8) + 5;
-bit PUT = 0;
-
-struct {
-unsigned CH : 8;
-unsigned RS : 1;
-unsigned RW : 1;
-unsigned EN : 1;
-} LCD @ &PORTD;
 
 
 
 void beep () {
-_delay(IFOSC/10);
 for (int j = 0; j < 100; ++j) {
-BUZ = 1; _delay(IFOSC/1000);
-BUZ = 0; _delay(IFOSC/2000);
+BUZ = 1; _delay((unsigned long)((1000)*(4000000/4000000.0)));
+BUZ = 0; _delay((unsigned long)((500)*(4000000/4000000.0)));
 }
 }
 
-void putch (char msg) {
-if (PUT) {
-LCD.RS = 1;
-LCD.CH = msg;
-LCD.EN = 1; _delay(IFOSC/1000000);
-LCD.EN = 0; _delay(IFOSC/20000);
-}
-else {
-while(!TXIF) continue;
+void rsend (char msg) {
+while (!TXIF) continue;
 TXREG = msg;
 }
-return;
-}
 
-char getch () {
-while(!RCIF) continue;
+char rsget () {
+while (!RCIF) continue;
 return RCREG;
 }
 
-void prog_lcd (char msg) {
-LCD.RS = 0;
-LCD.CH = msg;
-LCD.EN = 1; _delay(IFOSC/1000000);
-LCD.EN = 0; _delay(IFOSC/20000);
-return;
-}
 
-void init_lcd () {
-PUT = 1;
-LCD.RW = 0;
-prog_lcd(0x30); _delay(IFOSC/200);
-prog_lcd(0x30); _delay(IFOSC/10000);
-prog_lcd(0x30);
-prog_lcd(0x38);
-prog_lcd(0x01); _delay(IFOSC/500);
-prog_lcd(0x0C);
-prog_lcd(0x06);
-prog_lcd(0x80);
-printf("LAB.CONT.DIGITAL");
-prog_lcd(0xC0);
-printf("Seja Bem-Vindo!");
-return;
-}
-
-void main_lcd (unsigned int value, char duty) {
-PUT = 1;
-prog_lcd(0xC0);
-printf("rps: %3u", value);
-prog_lcd(0xC8);
-printf("pwm: %3d%%", duty);
-}
-
-
-
-typedef struct {
-volatile unsigned int count;
-unsigned int value;
-} rpm;
-
-rpm FAN = {-1, 0};
-
-void interrupt raycast_intersection_cleared (void) {
-FAN.count++;
-INTF = 0;
-return;
-}
-
-rpm rps_timer1 (rpm x, unsigned int dt) {
-if (x.count > 0) {
-x.value = T1FOSC * x.count / dt;
-x.count = 0;
-}
-else {
-x.count = -1;
-x.value = 0;
-}
-return x;
-}
 
 void read_tmr1 () {
-PUT = 0;
-FAN = rps_timer1(FAN, TMR1);
-printf("%u", FAN.value);
-TMR1 = 0;
+T1ZOH = TMR1;
+rsend(T1ZOH >> 8);
+rsend(T1ZOH);
+TMR1 -= T1ZOH;
 return;
 }
 
-void read_tmr0 () {
-PUT = 0;
-printf("%u", TMR0);
-TMR0 = 0;
-FAN = rps_timer1(FAN, TMR1);
-TMR1 = 0;
-return;
-}
-
-void write (char duty) {
-PWM = duty;
-}
-
-
-
-void io_switch (char *x) {
-switch (x[0]) {
-case '7': read_tmr0(); break;
-case '5': write(x[1]); break;
-case '1': read_tmr0(); write(x[1]); break;
-case 'r': read_tmr1(); break;
-case 'w': write(x[1]); break;
-case 'x': read_tmr1(); write(x[1]); break;
-case 's':
-case '2': write(0); beep(); beep(); break;
-}
-main_lcd(FAN.value, PWM);
-}
-
-int buffer_serial (char *buffer, int idx) {
-buffer[idx] = getch();
-if (buffer[idx] == '\n') {
-idx=0;
-io_switch(buffer);
-}
-else {
-idx++;
-}
-return idx;
+void write (signed char duty) {
+if (duty > 100) PWM = 100;
+else if (duty < 0) PWM = 0;
+else PWM = duty;
 }
 
 int main (void) {
-T1CON = 0x0B;
+T1CON = 0x03;
 CCP1CON = 0x0F;
 CCPR1L = 0;
+CCP2CON = 0x0F;
+CCPR2L = 0;
 PR2 = 100;
 T2CON = 0x04;
-TRISC = 0xFB;
-OPTION_REG = 0x38;
-TRISB = 0x7F;
-INTCON = 0x90;
-TRISD = 0x00;
-TRISE = 0xF8;
-TRISA = 0xCF;
+ADCON1 = 0x07;
+TRISC = 0xFD;
+TRISA = 0xDF;
 RCSTA = 0x90;
 TXSTA = 0x24;
-SPBRG = 64;
-init_lcd();
-beep();
-beep();
-beep();
-char buffer[6];
-int idx = 0;
-while (1) idx = buffer_serial(buffer, idx);
+SPBRG = 12;
+beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+beep(); _delay((unsigned long)((100)*(4000000/4000.0)));
+while (1) {
+
+char x = rsget();
+if (x == '\n') {
+switch (BUF[0]) {
+case 'r': case '7': read_tmr1(); break;
+case 'w': case '5': write(BUF[1]); break;
+case 'x': case '1': write(BUF[1]); read_tmr1(); break;
+case 's': case '2': write(0); beep(); beep(); break;
+}
+RC = 0;
+}
+else {
+BUF[RC] = x;
+RC++;
+}
+}
 return 0;
 }
