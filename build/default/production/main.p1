@@ -1346,9 +1346,9 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 81: int main (void) {
 [e :U _main ]
 [f ]
-[; ;main.c: 82: OPTION_REG = 0x85;
+[; ;main.c: 82: OPTION_REG = 0x83;
 "82
-[e = _OPTION_REG -> -> 133 `i `uc ]
+[e = _OPTION_REG -> -> 131 `i `uc ]
 [; ;main.c: 83: INTCON = 0x80;
 "83
 [e = _INTCON -> -> 128 `i `uc ]
@@ -1426,32 +1426,29 @@ Version 3.2 HI-TECH Software Intermediate Code
 "109
 [e $U 127  ]
 {
-[; ;main.c: 110: case 'r': case '7': read_tmr1(); break;
+[; ;main.c: 110: case '7': read_tmr1(); break;
 "110
 [e :U 128 ]
-[e :U 129 ]
 [e ( _read_tmr1 ..  ]
 [e $U 126  ]
-[; ;main.c: 111: case 'w': case '5': write(BUF[1]); break;
+[; ;main.c: 111: case '5': write(BUF[1]); break;
 "111
-[e :U 130 ]
-[e :U 131 ]
+[e :U 129 ]
 [e ( _write (1 -> *U + &U _BUF * -> -> -> 1 `i `ui `ux -> -> # *U &U _BUF `ui `ux `c ]
 [e $U 126  ]
-[; ;main.c: 112: case 'x': case '1': write(BUF[1]); read_tmr1(); break;
+[; ;main.c: 112: case '1': write(BUF[1]); read_tmr1(); break;
 "112
-[e :U 132 ]
-[e :U 133 ]
+[e :U 130 ]
 [e ( _write (1 -> *U + &U _BUF * -> -> -> 1 `i `ui `ux -> -> # *U &U _BUF `ui `ux `c ]
 [e ( _read_tmr1 ..  ]
 [e $U 126  ]
-[; ;main.c: 113: case 's': case '2': write(0); beep(0); beep(0); break;
+[; ;main.c: 113: case '2': write(0); _delay((unsigned long)((4000)*(4000000/4000.0))); beep(0); TMR1 = 0; break;
 "113
-[e :U 134 ]
-[e :U 135 ]
+[e :U 131 ]
 [e ( _write (1 -> -> 0 `i `c ]
+[e ( __delay (1 -> * -> -> 4000 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
 [e ( _beep (1 -> -> 0 `i `uc ]
-[e ( _beep (1 -> -> 0 `i `uc ]
+[e = _TMR1 -> -> 0 `i `us ]
 [e $U 126  ]
 "114
 }
@@ -1459,14 +1456,10 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e $U 126  ]
 "109
 [e :U 127 ]
-[e [\ *U + &U _BUF * -> -> -> 0 `i `ui `ux -> -> # *U &U _BUF `ui `ux , $ -> -> 114 `ui `uc 128
- , $ -> -> 55 `ui `uc 129
- , $ -> -> 119 `ui `uc 130
- , $ -> -> 53 `ui `uc 131
- , $ -> -> 120 `ui `uc 132
- , $ -> -> 49 `ui `uc 133
- , $ -> -> 115 `ui `uc 134
- , $ -> -> 50 `ui `uc 135
+[e [\ *U + &U _BUF * -> -> -> 0 `i `ui `ux -> -> # *U &U _BUF `ui `ux , $ -> -> 55 `ui `uc 128
+ , $ -> -> 53 `ui `uc 129
+ , $ -> -> 49 `ui `uc 130
+ , $ -> -> 50 `ui `uc 131
  126 ]
 "114
 [e :U 126 ]
@@ -1476,7 +1469,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 "116
 }
 [; ;main.c: 116: }
-[e $U 136  ]
+[e $U 132  ]
 "117
 [e :U 125 ]
 [; ;main.c: 117: else {
@@ -1489,7 +1482,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e ++ _RC -> -> 1 `i `uc ]
 "120
 }
-[e :U 136 ]
+[e :U 132 ]
 "121
 }
 [e :U 122 ]
@@ -1501,7 +1494,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 120: }
 [; ;main.c: 121: }
 [; ;main.c: 122: }
-[e $U 137  ]
+[e $U 133  ]
 "124
 [e :U 121 ]
 [; ;main.c: 124: else {
@@ -1516,7 +1509,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e ( __delay (1 -> * -> -> 100 `i `d / -> -> 4000000 `l `d .4000.0 `ul ]
 [; ;main.c: 127: while (1) {
 "127
-[e :U 139 ]
+[e :U 135 ]
 {
 "129
 [v _cmd `uc ~T0 @X0 1 a ]
@@ -1528,7 +1521,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e = _msg ( _rsget ..  ]
 [; ;main.c: 131: if (cmd == 'x') {
 "131
-[e $ ! == -> _cmd `ui -> 120 `ui 141  ]
+[e $ ! == -> _cmd `ui -> 120 `ui 137  ]
 {
 [; ;main.c: 132: PWMZOH = msg;
 "132
@@ -1542,11 +1535,11 @@ Version 3.2 HI-TECH Software Intermediate Code
 "135
 }
 [; ;main.c: 135: }
-[e $U 142  ]
+[e $U 138  ]
 "136
-[e :U 141 ]
+[e :U 137 ]
 [; ;main.c: 136: else if (cmd == 't') {
-[e $ ! == -> _cmd `ui -> 116 `ui 143  ]
+[e $ ! == -> _cmd `ui -> 116 `ui 139  ]
 {
 [; ;main.c: 137: T0PS = msg;
 "137
@@ -1554,23 +1547,23 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 138: TMR1 = 0;
 "138
 [e = _TMR1 -> -> 0 `i `us ]
-[; ;main.c: 139: asm("CLRF TMR0");
+[; ;main.c: 139: asm("BSF T1CON, 0");
 "139
-[; <" CLRF TMR0 ;# ">
-[; ;main.c: 140: asm("BSF INTCON, 5");
-"140
-[; <" BSF INTCON, 5 ;# ">
-[; ;main.c: 141: asm("BSF T1CON, 0");
-"141
 [; <" BSF T1CON, 0 ;# ">
+[; ;main.c: 140: asm("CLRF TMR0");
+"140
+[; <" CLRF TMR0 ;# ">
+[; ;main.c: 141: asm("BSF INTCON, 5");
+"141
+[; <" BSF INTCON, 5 ;# ">
 "142
 }
 [; ;main.c: 142: }
-[e $U 144  ]
+[e $U 140  ]
 "143
-[e :U 143 ]
+[e :U 139 ]
 [; ;main.c: 143: else if (cmd == 's') {
-[e $ ! == -> _cmd `ui -> 115 `ui 145  ]
+[e $ ! == -> _cmd `ui -> 115 `ui 141  ]
 {
 [; ;main.c: 144: T1CON &= 0xFE;
 "144
@@ -1584,28 +1577,31 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 147: T1ZOH = 0;
 "147
 [e = _T1ZOH -> -> 0 `i `ui ]
+[; ;main.c: 148: beep(0);
 "148
-}
-[e :U 145 ]
+[e ( _beep (1 -> -> 0 `i `uc ]
 "149
-[e :U 144 ]
-[e :U 142 ]
 }
-[e :U 138 ]
-"127
-[e $U 139  ]
-[e :U 140 ]
+[e :U 141 ]
 "150
+[e :U 140 ]
+[e :U 138 ]
 }
-[e :U 137 ]
-[; ;main.c: 148: }
+[e :U 134 ]
+"127
+[e $U 135  ]
+[e :U 136 ]
+"151
+}
+[e :U 133 ]
 [; ;main.c: 149: }
 [; ;main.c: 150: }
-[; ;main.c: 151: return 0;
-"151
+[; ;main.c: 151: }
+[; ;main.c: 152: return 0;
+"152
 [e ) -> 0 `i ]
 [e $UE 120  ]
-[; ;main.c: 152: }
-"152
+[; ;main.c: 153: }
+"153
 [e :UE 120 ]
 }

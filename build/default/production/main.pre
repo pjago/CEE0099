@@ -1531,7 +1531,7 @@ TMR0IF = 0;
 }
 
 int main (void) {
-OPTION_REG = 0x85;
+OPTION_REG = 0x83;
 INTCON = 0x80;
 T1CON = 0x03;
 CCP1CON = 0x0F;
@@ -1559,10 +1559,10 @@ while (1) {
 char x = rsget();
 if (x == '\n') {
 switch (BUF[0]) {
-case 'r': case '7': read_tmr1(); break;
-case 'w': case '5': write(BUF[1]); break;
-case 'x': case '1': write(BUF[1]); read_tmr1(); break;
-case 's': case '2': write(0); beep(0); beep(0); break;
+case '7': read_tmr1(); break;
+case '5': write(BUF[1]); break;
+case '1': write(BUF[1]); read_tmr1(); break;
+case '2': write(0); _delay((unsigned long)((4000)*(4000000/4000.0))); beep(0); TMR1 = 0; break;
 }
 RC = 0;
 }
@@ -1588,15 +1588,16 @@ rsend(T1ZOH >> 8);
 else if (cmd == 't') {
 T0PS = msg;
 TMR1 = 0;
+asm("BSF T1CON, 0");
 asm("CLRF TMR0");
 asm("BSF INTCON, 5");
-asm("BSF T1CON, 0");
 }
 else if (cmd == 's') {
 T1CON &= 0xFE;
 INTCON &= 0xDF;
 PWM = 0;
 T1ZOH = 0;
+beep(0);
 }
 }
 }

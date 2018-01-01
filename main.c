@@ -18,7 +18,7 @@
 
 #include <xc.h>
 
-#define _XTAL_FREQ 4000000          // FOSC = 4 Mhz @delay
+#define _XTAL_FREQ 4000000      // FOSC = 4 Mhz @delay
 
 char BUF[17] = "                ", RC = 0;
 unsigned int T1ZOH = 0;
@@ -79,7 +79,7 @@ void interrupt sampling () {
 }
 
 int main (void) {
-    OPTION_REG = 0x85;      // Disable PORTB pull-ups, TMR0 internal clock 1/64
+    OPTION_REG = 0x83;      // Disable PORTB pull-ups, TMR0 internal clock 1/16
     INTCON = 0x80;          // Enable global interrupts
     T1CON = 0x03;           // TMR1 external clock, TMR1/1
     CCP1CON = 0x0F;         // CCP1 module is on PWM mode
@@ -107,10 +107,10 @@ int main (void) {
             char x = rsget();
             if (x == '\n') {    // BKWD: won't write PWM = 10
                 switch (BUF[0]) {
-                    case 'r': case '7': read_tmr1(); break;
-                    case 'w': case '5': write(BUF[1]); break;
-                    case 'x': case '1': write(BUF[1]); read_tmr1(); break;
-                    case 's': case '2': write(0); beep(0); beep(0); break;
+                    case '7': read_tmr1(); break;
+                    case '5': write(BUF[1]); break;
+                    case '1': write(BUF[1]); read_tmr1(); break;
+                    case '2': write(0); __delay_ms(4000); beep(0); TMR1 = 0; break;
                 }
                 RC = 0;
             }
@@ -136,15 +136,16 @@ int main (void) {
             else if (cmd == 't') {
                 T0PS = msg;
                 TMR1 = 0;
+                asm("BSF T1CON, 0");   // start TMR1
                 asm("CLRF TMR0");      // takes two cycles to count again
                 asm("BSF INTCON, 5");  // enable interrupt on TOIF
-                asm("BSF T1CON, 0");   // start TMR1
             }
             else if (cmd == 's') {
                 T1CON &= 0xFE;   // stop TMR1
                 INTCON &= 0xDF;  // stop T0IF interrupts
                 PWM = 0;         // stop PWM immediately
                 T1ZOH = 0;       // clear TMR1 zero-hold
+                beep(0);
             }
         }
     }
