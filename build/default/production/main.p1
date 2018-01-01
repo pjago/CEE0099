@@ -1572,19 +1572,22 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 143: else if (cmd == 's') {
 [e $ ! == -> _cmd `ui -> 115 `ui 145  ]
 {
-[; ;main.c: 144: PWM = 0;
+[; ;main.c: 144: T1CON &= 0xFE;
 "144
-[e = _PWM -> -> 0 `i `uc ]
+[e =& _T1CON -> -> 254 `i `uc ]
 [; ;main.c: 145: INTCON &= 0xDF;
 "145
 [e =& _INTCON -> -> 223 `i `uc ]
-[; ;main.c: 146: T1CON &= 0xFE;
+[; ;main.c: 146: PWM = 0;
 "146
-[e =& _T1CON -> -> 254 `i `uc ]
+[e = _PWM -> -> 0 `i `uc ]
+[; ;main.c: 147: T1ZOH = 0;
 "147
+[e = _T1ZOH -> -> 0 `i `ui ]
+"148
 }
 [e :U 145 ]
-"148
+"149
 [e :U 144 ]
 [e :U 142 ]
 }
@@ -1592,17 +1595,17 @@ Version 3.2 HI-TECH Software Intermediate Code
 "127
 [e $U 139  ]
 [e :U 140 ]
-"149
+"150
 }
 [e :U 137 ]
-[; ;main.c: 147: }
 [; ;main.c: 148: }
 [; ;main.c: 149: }
-[; ;main.c: 150: return 0;
-"150
+[; ;main.c: 150: }
+[; ;main.c: 151: return 0;
+"151
 [e ) -> 0 `i ]
 [e $UE 120  ]
-[; ;main.c: 151: }
-"151
+[; ;main.c: 152: }
+"152
 [e :UE 120 ]
 }

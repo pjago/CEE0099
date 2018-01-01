@@ -67,7 +67,7 @@ void write (signed char duty) {
 volatile unsigned char kT0 = 0;
 unsigned char T0PS = 0;
 unsigned char PWMZOH = 0;
-void interrupt sampling () { //maybe write this in asm
+void interrupt sampling () {
     kT0++;
     if (kT0 > T0PS) {
         kT0 = 0;
@@ -141,9 +141,10 @@ int main (void) {
                 asm("BSF T1CON, 0");   // start TMR1
             }
             else if (cmd == 's') {
-                PWM = 0;         // stop PWM immediately
-                INTCON &= 0xDF;  // stop T0IF interrupts
                 T1CON &= 0xFE;   // stop TMR1
+                INTCON &= 0xDF;  // stop T0IF interrupts
+                PWM = 0;         // stop PWM immediately
+                T1ZOH = 0;       // clear TMR1 zero-hold
             }
         }
     }

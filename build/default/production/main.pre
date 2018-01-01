@@ -1593,9 +1593,10 @@ asm("BSF INTCON, 5");
 asm("BSF T1CON, 0");
 }
 else if (cmd == 's') {
-PWM = 0;
-INTCON &= 0xDF;
 T1CON &= 0xFE;
+INTCON &= 0xDF;
+PWM = 0;
+T1ZOH = 0;
 }
 }
 }
