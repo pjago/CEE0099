@@ -35,22 +35,20 @@ Gz = filt([0 0.1 0.05], [1 -1.1 0.2125], T);
 %% LOOP DE CONTROLE
 
 for k = 3:n
-    %LEITURA
     time = tic;
-    y(k) = read();
 
-    %REFERENCIA E ERRO
+    %LEITURA
+    y(k) = read();
     
+    %REFERENCIA
     % Setpoint emergência
     r(k) = round(80*7*T);
-     
 %     % Reduz atuação de pico
 %     if k < 15
 %         r(k) = round(30*7*T);
 %     else
 %         r(k) = round(80*7*T);
-%     end
-    
+%     end    
 %     % Soft Start
 %     if k < 7
 %         r(k) = round(30*7*T) + (k-3)/4*round(50*7*T);
@@ -58,16 +56,14 @@ for k = 3:n
 %         r(k) = round(80*7*T);
 %     end
 
+    %ERRO
     e(k) = r(k) - y(k);
 
-    %CONTROLE
-    
+    %CONTROLE    
 %     if k == 3
 %        u(k) = 100;
 %     end
-
 %     u(k) = 60;
-
     u(k) = u(k-1) + kc*(e(k) - e(k-1)) + kc/ti*(e(k) + e(k-1))/2*T ...
                   - kc*td*(y(k) - 2*y(k-1) + y(k-2))/T;
 
@@ -82,9 +78,9 @@ for k = 3:n
     
     %ESCRITA
     write(pwm(k));
-    ping(k) = toc(time);
-    
+        
     %DELAY
+    ping(k) = toc(time);
     if isa(stop, 'function_handle') && T > ping(k)
         java.lang.Thread.sleep(1000*(T - ping(k)))
     end

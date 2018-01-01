@@ -11,9 +11,9 @@ fopen(s);
 fwrite(s, 't')
 fwrite(s, 0)
 for j = 1:10000
-    echo = fread(s, 2)
     fwrite(s, 'x')
     fwrite(s, 100)
+    echo = fread(s, 2)
 end
 fwrite(s, 's')
 fwrite(s, 0)

@@ -45,7 +45,7 @@ function [stop, read, write] = startcom(COM, varargin)
             fwrite(s, 't'); % Enable sampling interrupts
             fwrite(s, T0PS); % Configure sampling interval
             write(0); % Will only write on next read
-            read(); % Blocks until next read
+%             read(); % Blocks until next read
         end
     catch ME1
         if isa(Gz, 'tf')
