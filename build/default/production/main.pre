@@ -1520,14 +1520,12 @@ volatile unsigned char kT0 = 0;
 unsigned char T0PS = 0;
 unsigned char PWMZOH = 0;
 void interrupt sampling () {
-if (kT0 < T0PS) kT0++;
-else {
+kT0++;
+if (kT0 > T0PS) {
 kT0 = 0;
 T1ZOH = TMR1;
-while (!TXIF) continue; TXREG = T1ZOH;
-while (!TXIF) continue; TXREG = T1ZOH >> 8;
-TMR1 -= T1ZOH;
 PWM = PWMZOH;
+TMR1 -= T1ZOH;
 }
 TMR0IF = 0;
 }
@@ -1584,6 +1582,8 @@ char cmd = rsget();
 char msg = rsget();
 if (cmd == 'x') {
 PWMZOH = msg;
+rsend(T1ZOH);
+rsend(T1ZOH >> 8);
 }
 else if (cmd == 't') {
 T0PS = msg;

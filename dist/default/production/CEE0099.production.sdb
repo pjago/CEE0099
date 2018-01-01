@@ -23,7 +23,7 @@
 [v _write write `(v  1 e 1 0 ]
 "70
 [v _sampling sampling `II(v  1 e 1 0 ]
-"83
+"81
 [v _main main `(i  1 e 2 0 ]
 "214 /opt/microchip/xc8/v1.43/include/pic16f877a.h
 [v _PORTB PORTB `VEuc  1 e 1 @6 ]
@@ -86,15 +86,15 @@
 [v _T0PS T0PS `uc  1 e 1 0 ]
 "69
 [v _PWMZOH PWMZOH `uc  1 e 1 0 ]
-"83
+"81
 [v _main main `(i  1 e 2 0 ]
 {
-"131
-[v main@cmd cmd `uc  1 a 1 9 ]
-"132
-[v main@msg msg `uc  1 a 1 8 ]
-"109
-[v main@x x `uc  1 a 1 7 ]
+"129
+[v main@cmd cmd `uc  1 a 1 7 ]
+"130
+[v main@msg msg `uc  1 a 1 6 ]
+"107
+[v main@x x `uc  1 a 1 5 ]
 "151
 } 0
 "61
@@ -139,5 +139,5 @@
 "70
 [v _sampling sampling `II(v  1 e 1 0 ]
 {
-"81
+"79
 } 0

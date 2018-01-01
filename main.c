@@ -68,14 +68,12 @@ volatile unsigned char kT0 = 0;
 unsigned char T0PS = 0;
 unsigned char PWMZOH = 0;
 void interrupt sampling () { //maybe write this in asm
-    if (kT0 < T0PS) kT0++;
-    else {
+    kT0++;
+    if (kT0 > T0PS) {
         kT0 = 0;
         T1ZOH = TMR1;
-        while (!TXIF) continue; TXREG = T1ZOH;
-        while (!TXIF) continue; TXREG = T1ZOH >> 8;
-        TMR1 -= T1ZOH;
         PWM = PWMZOH;
+        TMR1 -= T1ZOH;
     }
     TMR0IF = 0;
 }
@@ -131,7 +129,9 @@ int main (void) {
             char cmd = rsget();
             char msg = rsget();
             if (cmd == 'x') {
-                PWMZOH = msg;    // to write on interrupt
+                PWMZOH = msg;          // to write on interrupt
+                rsend(T1ZOH);          // little endian
+                rsend(T1ZOH >> 8);
             }
             else if (cmd == 't') {
                 T0PS = msg;
