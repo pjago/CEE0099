@@ -1,4 +1,4 @@
-function cycling (set, COM, Gz)
+function [ry, sup, inf, kc] = cycling (set, COM, Gz) % todo: ???
 % continuos cycling (zigler nichols method)
 addpath(genpath('src'))
 
@@ -8,15 +8,14 @@ global t y r e u pwm k
 
 duration = 30;
 d = 10; % target oscilation
-eps = 0;
-a = 4/pi*d/margin(Gz);
+a = d/margin(Gz)*4/pi;
 
 kp = sum(Gz.num{1})/sum(Gz.den{1});
 Gz.TimeUnit = 'seconds';
-[kc, ~, Wc, ~] = margin(Gz);
+[kc, ~, w, ~] = margin(Gz);
 
 % Adicione o nome de variaveis que queira salvar
-toSave = {'ping', 'kp', 'kc', 't', 'y', 'r', 'e', 'u', 'pwm'};
+toSave = {'ping', 'd', 'a', 'w', 'kp', 'kc', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
 T = Gz.Ts;                          %tempo de amostragem
 n = round(duration/T) + 1;          %numero de amostras
@@ -24,11 +23,12 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 %% TUNING
 
+mg = margin(Gz);
 [wn,~,poles] = damp(Gz);
 [~, dp] = min(abs(abs(poles) - 1));
 dominant = poles(dp);
 tau = -Gz.Ts/log(dominant);
-mvg = ceil(2*pi/(wn(dp)))*3;
+mvg = round(2*pi/(wn(dp)*Gz.Ts)) + 1;
 
 %% I/O
 
@@ -39,8 +39,7 @@ mvg = ceil(2*pi/(wn(dp)))*3;
 
 kp = kp*ones(n, 1);
 kc = kc*ones(n, 1);
-ep = zeros(n, 1);
-ec = zeros(n, 1);
+ed = zeros(n, 1);
 
 for j=1:2
     
@@ -54,7 +53,13 @@ for j=1:2
         t = (0:(n-1))*T;
     end
     
-    [ry, r, y, e, u, pwm] = deal(zeros(n, 1));
+    if j == 1
+        ry = kp*set;
+        sup = (set + d)*ones(n, 1);
+        inf = (set - d)*ones(n, 1);
+    end
+    
+    [r, y, e, u, pwm] = deal(zeros(n, 1));
     ping = nan(n, 1);
     t0 = tic;
 
@@ -67,33 +72,53 @@ for j=1:2
 
         %REFERENCIA E ERRO
         if j ~= 1
-            r(k) = round((1/kc(end) + kp(end))*set);
-        elseif k <= mvg
-            r(k) = round((1/kc(k) + kp(k))*set);
-            ry(k) = kp(k)*set;
+            r(k) = (1/kc(1) + kp(end))*set;
+        elseif k < mvg
+            r(k) = (1/kc(1) + kp(k))*set;
         else
-            ry(k) = ry(k-1) + (y(k) - ry(k-1))/mvg;
-            ep(k) = ry(k-1) - kp(k-1)*set;
-            ec(k) = 2*d - abs(u(k-1) - u(k-2));
-            kp(k) = kp(k-1) + 0.003*((1 + 5*T/tau)*ep(k) - ep(k-1));
-            kc(k) = kc(k-1) + 0.001*((1 + 2*T/tau)*ec(k) - ec(k-1));
-            r(k) = round((1/kc(k) + kp(k))*set);
+            ry(k) = ry(k-1) + (y(k) - ry(k-1))/(mvg - 1);
+            ed(k) = d - (sup(k-1) - inf(k-1))/2;
+            if abs(ed(k)) < 0.1*d
+                kc(k) = kc(k-1);
+            else
+                kc(k) = kc(k-1) + 0.01*mg*((1 + 0.01*T/tau)*ed(k) - ed(k-1));
+            end
+            kp(k) = ry(k)/set;
+            r(k) = set/kc(1) + ry(k);
         end
-                
-        if k == mvg + 1
-            r(k) = (set + d)/kc(end) + y(k);
+
+        if k == mvg
+            if y(k) > y(k-1)
+                r(k) = (set + d)/kc(1) + y(k);
+            else
+                r(k) = (set - d)/kc(1) + y(k);
+            end
         end
+
         e(k) = r(k) - y(k);
 
         %CONTROLE
-        if k <= mvg
+        if k < mvg
             u(k) = set;
         elseif j ~= 1
             u(k) = kc(end)*e(k);
         else
             u(k) = kc(k)*e(k);
         end
-
+        
+        if j == 1 && k > mvg + 1
+            if u(k) < u(k-1) && u(k-1) >= u(k-2)
+                sup(k) = sup(k-1) + (u(k-1) - sup(k-1))/(mvg - 1);
+            else
+                sup(k) = sup(k-1);
+            end
+            if u(k) > u(k-1) && u(k-1) <= u(k-2)
+                inf(k) = inf(k-1) + (u(k-1) - inf(k-1))/(mvg - 1);
+            else
+                inf(k) = inf(k-1);
+            end
+        end
+        
         %SATURACAO
         if u(k) > 100
             pwm(k) = 100;
@@ -108,14 +133,9 @@ for j=1:2
         ping(k) = toc(time);
 
         %DELAY
-        if isa(stop, 'function_handle')
-            while toc(time) < T
-            end
+        if isa(stop, 'function_handle') && T > ping(k)
+            java.lang.Thread.sleep(1000*(T - ping(k)))
         end
-    end
-    
-    if j == 1
-        kc(end + 1) = mean(kc);
     end
     
     stop();
@@ -127,17 +147,18 @@ for j=1:2
 %% PLOT & SAVE
 
     fig(j) = plotudo(t, y, r, e, u, pwm, 0, 0);
-    pause(10*T)
+    if isa(stop, 'function_handle')
+        pause(mvg*T)
+    end
     read();
         
 end
 
-disp([10 'You wanted d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(Wc) ' rad/s' ', Gjw = ' num2str(pi*sqrt(a^2 + 2*eps^2)/(4*d)) ' <' num2str(atan2(-pi*eps/(4*d), -pi*sqrt(a^2 + eps^2)/(4*d)))])
-fst = mvg + 1;
-d = (mean(findpeaks(pwm(fst:end)-mean(pwm(fst:end)))) + mean(findpeaks(-pwm(fst:end)+mean(pwm(fst:end)))))/2;
-a = (mean(findpeaks(e(fst:end)-mean(e(fst:end)))) + mean(findpeaks(-e(fst:end)+mean(e(fst:end)))))/2;
-wr = 2*pi*meanfreq(pwm - mean(pwm), 1/T);
-disp(['Result was d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(wr) ' rad/s' ', Gjw = ' num2str(pi*sqrt(a^2 + 2*eps^2)/(4*d)) ' <' num2str(atan2(-pi*eps/(4*d), -pi*sqrt(a^2 + eps^2)/(4*d))) 10])
+disp([10 'You wanted d = ' num2str(d) ', a = ' num2str(a) ', w = ' num2str(w) ' rad/s' ', Gjw = ' num2str(pi*a/(4*d)) ' <' num2str(-pi)])
+d = (mean(findpeaks(pwm(mvg:end)-mean(pwm(mvg:end)))) + mean(findpeaks(-pwm(mvg:end)+mean(pwm(mvg:end)))))/2;
+a = (mean(findpeaks(e(mvg:end)-mean(e(mvg:end)))) + mean(findpeaks(-e(mvg:end)+mean(e(mvg:end)))))/2;
+w = 2*pi*meanfreq(pwm - mean(pwm), 1/T);
+disp(['Result was d = ' num2str(d) ', a = ' num2str(a) ', w = ' num2str(w) ' rad/s' ', Gjw = ' num2str(pi*a/(4*d)) ' <' num2str(-pi) 10])
 
 if isa(stop, 'function_handle')
     folder = 'cycling';

@@ -1,5 +1,5 @@
-function [Gjw, w] = relay (set, COM, Gz) % todo: delay, integrator
-% relay
+function [Gjw, w] = open_sine (set, COM, Gz) % todo: compare with relay
+% open_sine
 addpath(genpath('src'))
 
 global t y r e u pwm k
@@ -33,6 +33,7 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 [wn,~,poles] = damp(Gz);
 [~, dp] = min(abs(abs(poles) - 1));
+N = 2*pi/(W(ws)*Gz.Ts);
 mvg = round(2*pi/(wn(dp)*Gz.Ts)) + 1;
 
 %% ESTADO INCIAL
@@ -59,14 +60,8 @@ for k = 1:n
     %CONTROLE
     if k < mvg
         u(k) = set;
-    elseif k == mvg
-        u(k) = set + d;
-    elseif e(k) >= eps
-        u(k) = set + d;
-    elseif e(k) <= -eps
-        u(k) = set - d;
     else
-        u(k) = u(k-1);
+        u(k) = set + d*sin(2*k*pi/N);
     end
 
     %SATURACAO
@@ -99,18 +94,17 @@ end
 try %cleaning this once
     Gjw = -pi*sqrt(a^2 - eps^2)/(4*d) - 1j*pi*eps/(4*d);
     disp([10 'You wanted d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(W(ws)) ' rad/s' ', Gjw = ' num2str(abs(Gjw)) ' <' num2str(angle(Gjw))])
-    edg = [0; diff(u - set)/(2*d)];
-    edg = edg.*(abs(edg) >= 1)./(abs(edg));
+    % find high peaks, find low peaks, edg is at the middle
+    idx = knnsearch(pwm, set, 'IncludeTies', true);
+    lgx = zeros(n, 1);
+    lgx(idx{:}) = 1;
+    edg = [0; diff(pwm - set)/(2*d)];
+    edg = edg.*(lgx)./(abs(edg)); % should be the nearest equal
     edg(isnan(edg)) = 0;
     edg((1:end) < mvg) = 0;
-    d = mean((u(logical(edg)) - set).*edg(logical(edg)));
     eps = e(logical(edg)).*edg(logical(edg));
     if ~isempty(eps)
-        eps(1) = [];
         eps(end) = [];
-        if mod(length(eps), 2)
-            disp('EPS not symetrical')
-        end
     end
     eps = mean(eps);
     % for measuring a, find the corresponding peak in beetween two edges!
@@ -130,13 +124,9 @@ try %cleaning this once
     if isnan(eps)
         a = NaN;
     else
-        a(1) = [];
-        if mod(length(a), 2)
-            disp('A not symetrical')
-        end
         a = mean(a);
     end
-    w = 2*pi*maxfreq(u(mvg:end))/T;
+    w = 2*pi*maxfreq(pwm(mvg:end))/T;
     Gjw = -pi*sqrt(a^2 - eps^2)/(4*d) - 1j*pi*eps/(4*d);
     disp(['Result was d = ' num2str(d) ', eps = ' num2str(eps) ', a = ' num2str(a) ', w = ' num2str(w) ' rad/s' ', Gjw = ' num2str(abs(Gjw)) ' <' num2str(angle(Gjw)) 10])
 catch ME % todo: find the Black Swan
@@ -144,7 +134,7 @@ catch ME % todo: find the Black Swan
     a = NaN;
     disp(['Broke! ' ME.message])
 end
-    
+
 %% PLOT & SAVE
 
 fig = plotudo(t, y, r, e, u, pwm);
@@ -153,7 +143,7 @@ if isa(stop, 'function_handle')
 end
     
 if isa(stop, 'function_handle')
-    folder = 'relay';
+    folder = 'open_sine';
     if ~exist(folder, 'dir')
         mkdir(folder);
     end

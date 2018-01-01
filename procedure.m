@@ -1,22 +1,24 @@
-clear
+function procedure ()
+
 addpath(genpath('src'))
     
 %% CONFIGURACAO
 
-COM = 'COM20';
+COM = '/dev/ttyUSB0';
 
-Gzz = {filt([0 0.0378 0.0785], [1 -0.6491 -0.1966], 0.1);
-       filt([0 0.1696 0.2306], [1 -0.6761 -0.06456], 0.2);
-       filt([0 0.4159 0.394], [1 -0.6629 -0.01249], 0.3); 
- 	   filt([0 0.7334 0.6183], [1 -0.5764 -0.01157], 0.4); 
-	   filt([0 1.096 0.9359], [1 -0.4376 -0.02607], 0.5); 
-       filt([0 0.02258 -0.005138], [1 -0.5751 -0.3476], 0.03)}; 
+Gz = {filt([0 0.0378 0.0785], [1 -0.6491 -0.1966], 0.1);
+      filt([0 0.1696 0.2306], [1 -0.6761 -0.06456], 0.2);
+      filt([0 0.4159 0.394], [1 -0.6629 -0.01249], 0.3); 
+ 	  filt([0 0.7334 0.6183], [1 -0.5764 -0.01157], 0.4); 
+	  filt([0 1.096 0.9359], [1 -0.4376 -0.02607], 0.5); 
+      filt([0 0.009395 0.02612], [1 -0.5889 -0.3185], 0.05)
+      filt([0 0.1 0.05], [1 -1.1 0.2125], 1/7)};
 
 %% PROCEDIMENTO
 
-for id = 1:length(Gzz)
+for id = 1:length(Gz)
     itag = num2str(id);
-    for folder = {'relay' 'open_step' 'closed_step' 'open_noise' 'cycling'}
+    for folder = {'open_sine' 'relay' 'open_square' 'open_noise' 'open_step'}
         folder = folder{1};
         while length(dir([folder '/' itag '*'])) < 3         
             %% create folder
@@ -38,15 +40,16 @@ for id = 1:length(Gzz)
                 mkdir([folder '/' itag next])
             end
 
-            %% 2 points of operation: (300 +- 10)  e (230 +- 10)
-
-            eval([folder '(30, COM, Gzz{id})']) % 107.03 +- 1.09
-            eval([folder '(40, COM, Gzz{id})']) % 153.47 +- 1.32
-            eval([folder '(50, COM, Gzz{id})']) % 200.06 +- 1.37
-            eval([folder '(60, COM, Gzz{id})']) % 241.44 +- 2.46
-            eval([folder '(70, COM, Gzz{id})']) % 281.56 +- 2.31
-            eval([folder '(80, COM, Gzz{id})']) % 314.59 +- 2.30
-            eval([folder '(90, COM, Gzz{id})']) % 341.09 +- 2.04
+            try
+                eval([folder '(30, COM, Gz{id})']) 
+                eval([folder '(40, COM, Gz{id})']) 
+                eval([folder '(50, COM, Gz{id})']) 
+                eval([folder '(60, COM, Gz{id})']) 
+                eval([folder '(70, COM, Gz{id})']) 
+                eval([folder '(80, COM, Gz{id})']) 
+                eval([folder '(90, COM, Gz{id})'])
+            catch ME
+            end
 
         end
     end

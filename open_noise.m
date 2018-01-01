@@ -1,4 +1,4 @@
-function open_noise (set, COM, Gz)
+function open_noise (set, COM, Gz) % todo: return std analysis
 % open_noise
 addpath(genpath('src'))
 
@@ -6,12 +6,12 @@ global t y r e u pwm k
 
 %% CONFIGURACAO
 
-duration = 30;
-REF = round(set*sum(Gz.num{1})/sum(Gz.den{1}));
-d = 10;
+d = 20;
 
 % Adicione o nome de varieveis que queira salvar
 toSave = {'ping', 'd', 't', 'y', 'r', 'e', 'u', 'pwm'};
+
+duration = 30;
 
 T = Gz.Ts;                          %tempo de amostragem
 n = round(duration/T) + 1;          %numero de amostras
@@ -21,6 +21,13 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
 [stop, read, write] = startcom(COM, Gz);
+
+%% TUNING
+
+REF = set*sum(Gz.num{1})/sum(Gz.den{1});
+[wn,~,poles] = damp(Gz);
+[~, dp] = min(abs(abs(poles) - 1));
+mvg = round(2*pi/(wn(dp)*Gz.Ts)) + 1;
 
 %% ESTADO INCIAL
 
@@ -56,9 +63,8 @@ for k = 1:n
     ping(k) = toc(time);
 
     %DELAY
-    if isa(stop, 'function_handle')
-        while toc(time) < T
-        end
+    if isa(stop, 'function_handle') && T > ping(k)
+        java.lang.Thread.sleep(1000*(T - ping(k)))
     end
 end
 
@@ -71,8 +77,10 @@ end
 %% PLOT & SAVE
 
 fig = plotudo(t, y, r, e, u, pwm, 0, 0);
-pause(10*T)
-   
+if isa(stop, 'function_handle')
+    pause(mvg*T)
+end
+
 if isa(stop, 'function_handle')
     folder = 'open_noise';
     if ~exist(folder, 'dir')

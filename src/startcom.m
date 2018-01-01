@@ -17,6 +17,9 @@ function [stop, read, write] = startcom(COM, varargin)
         s.terminator = 'LF';
         s.RecordDetail = 'verbose';
         s.RecordName = 'comlog.txt';
+        if isa(Gz, 'tf')
+            s.Timeout = Gz.Ts;
+        end
         fopen(s);
         record(s, 'off');
         read   = @() readlino(s);
@@ -33,7 +36,7 @@ function [stop, read, write] = startcom(COM, varargin)
             write  = @(duty) writesim(duty);
             stop   = 0;
         else
-            throw(ME1); 
+            disp(ME1)
         end
     end
 end

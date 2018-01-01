@@ -10,18 +10,17 @@ global t y r e u pwm k
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-T = 0.5;          %tempo de amostragem
-n =  21;          %numero de amostras
+T = 1/7;          %tempo de amostragem
+n = 101;           %numero de amostras
 t = (0:(n-1))*T;  %vetor de tempo
 
 %% I/O
 
 %caso nao ache a planta, o programa simula pela funcao de transferencia Gz
-z = tf('z', T, 'variable', 'z^-1');
-Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
+Gz = filt([0 0.1 0.05], [1 -1.1 0.2125], T);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom('/dev/ttyUSB2', Gz);
+[stop, read, write] = startcom('/dev/ttyUSB0', Gz);
 
 %% ESTADO INCIAL
 
@@ -29,24 +28,51 @@ Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
 ping = nan(n, 1);
 t0 = tic;
 
+% ~ astron( 0.25*exp(-1j*pi/2), 0.30*exp(-1j*pi/2 +1j*pi/6), 5, 0.15 )
+kc = 1;
+ti = 1;
+td = T;
+
 %% LOOP DE CONTROLE
 
-for k = 1:n
+for k = 3:n
     %LEITURA
     time = tic;
     y(k) = read();
 
     %REFERENCIA E ERRO
-    r(k) = round(40*(7*T));
+    
+    % Setpoint emergência
+    r(k) = round(80*7*T);
+     
+    % Reduz atuação de pico
+%     if k < 15
+%         r(k) = round(30*7*T);
+%     else
+%         r(k) = round(80*7*T);
+%     end
+    
+%     % Soft Start
+%     if k < 7
+%         r(k) = round(30*7*T) + (k-3)/4*round(50*7*T);
+%     else
+%         r(k) = round(80*7*T);
+%     end
+
     e(k) = r(k) - y(k);
 
     %CONTROLE
-%     if k == 1
+    
+%     if k == 3
 %        u(k) = 100;
 %     end
-    u(k) = 0.4616*(e(k) + T*sum(e)/1.3756);
-    
-%     %SATURACAO
+
+%     u(k) = 60;
+
+    u(k) = u(k-1) + kc*(e(k) - e(k-1)) + kc/ti*(e(k) + e(k-1))/2*T ...
+                  - kc*td*(y(k) - 2*y(k-1) + y(k-2))/T;
+
+    %SATURACAO
     if u(k) > 100
         pwm(k) = 100;
     elseif u(k) < 0
@@ -60,11 +86,11 @@ for k = 1:n
     ping(k) = toc(time);
     
     %DELAY
-    if isa(stop, 'function_handle')
-        while toc(time) < T
-        end
+    if isa(stop, 'function_handle') && T > ping(k)
+        java.lang.Thread.sleep(1000*(T - ping(k)))
     end
 end
+
 stop();
 fprintf('Duracao: %f seconds\n', toc(t0) - toc(time));
 if sum(ping(1:end-1)' > T)

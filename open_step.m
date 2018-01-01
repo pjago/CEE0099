@@ -1,4 +1,4 @@
-function open_step (set, COM, Gz)
+function open_step (set, COM, Gz) % todo: return open loop analysis
 % open_step
 addpath(genpath('src'))
 
@@ -7,7 +7,7 @@ global t y r e u pwm k
 %% CONFIGURACAO
 
 duration = 30;
-
+REF = set*sum(Gz.num{1})/sum(Gz.den{1});
 
 
 % Adicione o nome de variaveis que queira salvar
@@ -21,6 +21,12 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
 [stop, read, write] = startcom(COM, Gz);
+
+%% TUNING
+
+[wn,~,poles] = damp(Gz);
+[~, dp] = min(abs(abs(poles) - 1));
+mvg = round(2*pi/(wn(dp)*Gz.Ts)) + 1;
 
 %% ESTADO INCIAL
 
@@ -36,7 +42,7 @@ for k = 1:n
     y(k) = read();
 
     %REFERENCIA E ERRO
-    r(k) = set;
+    r(k) = REF;
     e(k) = r(k) - y(k);
 
     %CONTROLE
@@ -56,9 +62,8 @@ for k = 1:n
     ping(k) = toc(time);
     
     %DELAY
-    if isa(stop, 'function_handle')
-        while toc(time) < T
-        end
+    if isa(stop, 'function_handle') && T > ping(k)
+        java.lang.Thread.sleep(1000*(T - ping(k)))
     end
 end
 
@@ -71,7 +76,9 @@ end
 %% PLOT & SAVE
 
 fig = plotudo(t, y, r, e, u, pwm, 0, 0);
-pause(10*T)
+if isa(stop, 'function_handle')
+    pause(mvg*T)
+end
 
 if isa(stop, 'function_handle')
     folder = 'open_step';

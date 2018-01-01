@@ -1,5 +1,5 @@
-function [Gjw, w] = relay (set, COM, Gz) % todo: delay, integrator
-% relay
+function [Gjw, w] = open_square (set, COM, Gz) % todo: compare with relay
+% open_square
 addpath(genpath('src'))
 
 global t y r e u pwm k
@@ -33,6 +33,7 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 [wn,~,poles] = damp(Gz);
 [~, dp] = min(abs(abs(poles) - 1));
+N = 2*pi/(W(ws)*Gz.Ts);
 mvg = round(2*pi/(wn(dp)*Gz.Ts)) + 1;
 
 %% ESTADO INCIAL
@@ -59,14 +60,10 @@ for k = 1:n
     %CONTROLE
     if k < mvg
         u(k) = set;
-    elseif k == mvg
+    elseif mod(k, N) < N/2
         u(k) = set + d;
-    elseif e(k) >= eps
-        u(k) = set + d;
-    elseif e(k) <= -eps
-        u(k) = set - d;
     else
-        u(k) = u(k-1);
+        u(k) = set - d;
     end
 
     %SATURACAO
@@ -106,11 +103,7 @@ try %cleaning this once
     d = mean((u(logical(edg)) - set).*edg(logical(edg)));
     eps = e(logical(edg)).*edg(logical(edg));
     if ~isempty(eps)
-        eps(1) = [];
         eps(end) = [];
-        if mod(length(eps), 2)
-            disp('EPS not symetrical')
-        end
     end
     eps = mean(eps);
     % for measuring a, find the corresponding peak in beetween two edges!
@@ -130,10 +123,6 @@ try %cleaning this once
     if isnan(eps)
         a = NaN;
     else
-        a(1) = [];
-        if mod(length(a), 2)
-            disp('A not symetrical')
-        end
         a = mean(a);
     end
     w = 2*pi*maxfreq(u(mvg:end))/T;
@@ -144,7 +133,7 @@ catch ME % todo: find the Black Swan
     a = NaN;
     disp(['Broke! ' ME.message])
 end
-    
+
 %% PLOT & SAVE
 
 fig = plotudo(t, y, r, e, u, pwm);
@@ -153,7 +142,7 @@ if isa(stop, 'function_handle')
 end
     
 if isa(stop, 'function_handle')
-    folder = 'relay';
+    folder = 'open_square';
     if ~exist(folder, 'dir')
         mkdir(folder);
     end
