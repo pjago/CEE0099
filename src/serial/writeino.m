@@ -1,5 +1,5 @@
 %writelino(serial_port, duty_percent)
-function writelino(s, value)
+function writeino(s, value)
     if value == 10
         value = 11; % BKWD: protocol issue 10 is reserved
     end

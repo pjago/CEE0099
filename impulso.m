@@ -10,9 +10,19 @@ global t y r e u pwm k
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-T = 1/7;          %tempo de amostragem
+T = 0.147456;      %tempo de amostragem
 n = 101;           %numero de amostras
-t = (0:(n-1))*T;  %vetor de tempo
+t = (0:(n-1))*T;   %vetor de tempo
+
+%% ESTADO INCIAL
+
+[r, y, e, u, pwm] = deal(zeros(n, 1)); 
+ping = nan(n, 1);
+t0 = tic;
+
+kc = 1;
+ti = 1;
+td = T;
 
 %% I/O
 
@@ -21,17 +31,6 @@ Gz = filt([0 0.1 0.05], [1 -1.1 0.2125], T);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
 [stop, read, write] = startcom('/dev/ttyUSB0', Gz);
-
-%% ESTADO INCIAL
-
-[r, y, e, u, pwm] = deal(zeros(n, 1)); 
-ping = nan(n, 1);
-t0 = tic;
-
-% ~ astron( 0.25*exp(-1j*pi/2), 0.30*exp(-1j*pi/2 +1j*pi/6), 5, 0.15 )
-kc = 1;
-ti = 1;
-td = T;
 
 %% LOOP DE CONTROLE
 
@@ -45,7 +44,7 @@ for k = 3:n
     % Setpoint emergência
     r(k) = round(80*7*T);
      
-    % Reduz atuação de pico
+%     % Reduz atuação de pico
 %     if k < 15
 %         r(k) = round(30*7*T);
 %     else

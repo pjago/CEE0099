@@ -17,7 +17,7 @@ function ventilador(block)
 %% S-function such as ports, parameters, etc. Do not add any other
 %% calls to the main body of the function.
 %%
-addpath(genpath('src')); % add readlino and writelino functions
+addpath(genpath('src')); % add readino and writeino functions
 setup(block);
 
 %endfunction
@@ -107,9 +107,9 @@ if strcmp(out.status, 'closed')
   fopen(s);
 end
 set_param(block.BlockHandle, 'UserData', s);
-writelino(s, 0); % write to stop plant
-writelino(s, 0); % write to stop plant
-readlino(s); % read from plant, in order to clear TMR count
+writeino(s, 0); % write to stop plant
+writeino(s, 0); % write to stop plant
+readino(s); % read from plant, in order to clear TMR count
 
 %end Start
 
@@ -122,8 +122,8 @@ readlino(s); % read from plant, in order to clear TMR count
 %%
 function Outputs(block)
 s = get_param(block.BlockHandle, 'UserData'); % get serial handler
-writelino(s, block.InputPort(1).Data) % write to plant
-block.OutputPort(1).Data = readlino(s); % read from plant
+writeino(s, block.InputPort(1).Data) % write to plant
+block.OutputPort(1).Data = readino(s); % read from plant
 
 %end Outputs
 

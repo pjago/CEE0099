@@ -1,5 +1,5 @@
 %readlino(serial_port)
-function y = readlino(s)
+function y = readino(s)
     flushinput(s);
     fwrite(s, '7', 'uint8');
     fwrite(s, 10, 'uint8');

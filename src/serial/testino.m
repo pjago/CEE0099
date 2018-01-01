@@ -10,7 +10,7 @@ fopen(s);
 %% RUN
 for j = 1:10000
     fwrite(s, '5')
-    fwrite(s, 50)
+    fwrite(s, 100)
     fwrite(s, 10)
     fwrite(s, '7')
     fwrite(s, 10)
