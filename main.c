@@ -64,16 +64,20 @@ void write (signed char duty) {
     else PWM = duty;
 }
 
+volatile unsigned int T1FOH = 0;
 volatile unsigned char kT0 = 0;
 unsigned char T0PS = 0;
 unsigned char PWMZOH = 0;
-void interrupt sampling () {
+void interrupt oversampling () {
     kT0++;
     if (kT0 > T0PS) {
         kT0 = 0;
-        T1ZOH = TMR1;
+        T1FOH = TMR1;
         PWM = PWMZOH;
-        TMR1 -= T1ZOH;
+        TMR1 -= T1FOH;
+    }
+    else if (kT0 == (T0PS >> 1)) {
+        T1FOH = (T1FOH >> 1) + TMR1;
     }
     TMR0IF = 0;
 }
@@ -130,8 +134,8 @@ int main (void) {
             char msg = rsget();
             if (cmd == 'x') {
                 PWMZOH = msg;          // to write on interrupt
-                rsend(T1ZOH);          // little endian
-                rsend(T1ZOH >> 8);
+                rsend(T1FOH);          // little endian
+                rsend(T1FOH >> 8);
             }
             else if (cmd == 't') {
                 T0PS = msg;
@@ -144,7 +148,7 @@ int main (void) {
                 T1CON &= 0xFE;   // stop TMR1
                 INTCON &= 0xDF;  // stop T0IF interrupts
                 PWM = 0;         // stop PWM immediately
-                T1ZOH = 0;       // clear TMR1 zero-hold
+                T1FOH = 0;       // clear TMR1 first-hold
                 beep(0);
             }
         }
