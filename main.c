@@ -64,6 +64,8 @@ void write (signed char duty) {
     else PWM = duty;
 }
 
+volatile char RUN = 0;
+unsigned char PWMZOH = 0;
 unsigned char kT0 = 0;
 unsigned char T0PS = 0;
 void interrupt sampling () {
@@ -71,7 +73,13 @@ void interrupt sampling () {
     if (kT0 > T0PS) {
         kT0 = 0;
         T1ZOH = TMR1;
+        PWM = PWMZOH;
         TMR1 -= T1ZOH;
+        if (RUN) {
+            rsend(T1ZOH);
+            rsend(T1ZOH >> 8);
+            RUN = 0;
+        }
     }
     TMR0IF = 0;
 }
@@ -108,7 +116,7 @@ int main (void) {
                     case '7': read_tmr1(); break;
                     case '5': write(BUF[1]); break;
                     case '1': write(BUF[1]); read_tmr1(); break;
-                    case '2': write(0); __delay_ms(4000); beep(0); TMR1 = 0; break;
+                    case '2': write(0); beep(0); TMR1 = 0; break; // BKWD: can't really stop
                 }
                 RC = 0;
             }
@@ -124,13 +132,23 @@ int main (void) {
         beep(1); __delay_ms(100);
         while (1) {
             // ping_pong
-            TMR0 = 0;
             char cmd = rsget();
             char msg = rsget();
             if (cmd == 'x') {
-                PWM = msg;
-                rsend(T1ZOH);          // little endian
-                rsend(T1ZOH >> 8);
+                RUN = 1;
+                PWMZOH = msg;
+            }
+            else if (cmd == 'r') {
+                read_tmr1();
+                write(msg);
+            }
+            else if (cmd == 's') {
+                PWM = 0;         // stop PWM now
+                PWMZOH = 0;      // stop PWM later
+                T1CON &= 0xFE;   // stop TMR1
+                INTCON &= 0xDF;  // stop T0IF interrupts
+                T1ZOH = 0;       // clear TMR1 first-hold
+                beep(0);
             }
             else if (cmd == 't') {
                 T0PS = msg;
@@ -139,13 +157,6 @@ int main (void) {
                 T1CON |= 0x01;         // start TMR1
                 TMR0 = 255;            // takes two cycles to count again
                 asm("BSF INTCON, 5");  // enable interrupt on TOIF
-            }
-            else if (cmd == 's') {
-                T1CON &= 0xFE;   // stop TMR1
-                INTCON &= 0xDF;  // stop T0IF interrupts
-                PWM = 0;         // stop PWM immediately
-                T1ZOH = 0;       // clear TMR1 first-hold
-                beep(0);
             }
         }
     }
