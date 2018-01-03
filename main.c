@@ -136,9 +136,10 @@ int main (void) {
             char msg = rsget();
             if (cmd == 'x') {
                 RUN = 1;
-                PWMZOH = msg;
+                write(msg);      // PWMZOH = msg;
             }
             else if (cmd == 'r') {
+                INTCON &= 0xDF;  // stop T0IF interrupts
                 read_tmr1();
                 write(msg);
             }
