@@ -69,13 +69,11 @@ unsigned int T1ACC = 0;
 unsigned int TMR1R = 0;
 unsigned char kT0 = 0;
 unsigned char T0PS = 0;
-unsigned char PWMZOH = 0;
 void interrupt oversampling () {
     kT0++;
     if (kT0 > T0PS) {
         kT0 = 0;
         T1FOH = TMR1;
-        PWM = PWMZOH;
         TMR1 -= T1FOH;
     }
     else {
@@ -137,24 +135,24 @@ int main (void) {
             char cmd = rsget();
             char msg = rsget();
             if (cmd == 'x') {
-                PWMZOH = msg;          // to write on interrupt
+                PWM = msg;
                 rsend(T1FOH);          // little endian
                 rsend(T1FOH >> 8);
             }
             else if (cmd == 't') {
                 T0PS = msg;
                 kT0 = T0PS;
+                T1ACC = 0;
+                TMR1R = 0;
                 TMR1 = 0;
-                asm("BSF T1CON, 0");   // start TMR1
-                asm("CLRF TMR0");      // takes two cycles to count again
-                asm("DECF TMR0, f");   // let's force a interrupt to sync
-                asm("BSF INTCON, 5");  // enable interrupt on TOIF
+                T1CON |= 0x01;   // start TMR1
+                TMR0 = 254;      // takes two cycles to count again
+                INTCON |= 0x20;  // enable interrupt on TOIF
             }
             else if (cmd == 's') {
                 T1CON &= 0xFE;   // stop TMR1
                 INTCON &= 0xDF;  // stop T0IF interrupts
                 PWM = 0;         // stop PWM immediately
-                PWMZOH = 0;      // stop PWM zero hold
                 T1FOH = 0;       // clear TMR1 first-hold
                 beep(0);
             }
