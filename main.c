@@ -21,7 +21,7 @@
 #define _XTAL_FREQ 4000000      // FOSC = 4 Mhz @delay
 
 char BUF[17] = "                ", RC = 0;
-unsigned int T1ZOH = 0;
+volatile unsigned int T1ZOH = 0;
 
 char PWM @ &CCPR2L;
 bit  BUZ @ (((unsigned) &PORTA)*8) + 5;
@@ -64,23 +64,15 @@ void write (signed char duty) {
     else PWM = duty;
 }
 
-volatile unsigned int T1FOH = 0;
-unsigned int T1ACC = 0;
-unsigned int TMR1R = 0;
 unsigned char kT0 = 0;
 unsigned char T0PS = 0;
-void interrupt oversampling () {
+void interrupt sampling () {
     kT0++;
     if (kT0 > T0PS) {
         kT0 = 0;
-        T1FOH = TMR1;
-        TMR1 -= T1FOH;
+        T1ZOH = TMR1;
+        TMR1 -= T1ZOH;
     }
-    else {
-        T1FOH = T1FOH + ((TMR1 - TMR1R) - T1ACC);
-        T1ACC = TMR1 - TMR1R;
-    }
-    TMR1R = TMR1;
     TMR0IF = 0;
 }
 
@@ -132,28 +124,27 @@ int main (void) {
         beep(1); __delay_ms(100);
         while (1) {
             // ping_pong
+            TMR0 = 0;
             char cmd = rsget();
             char msg = rsget();
             if (cmd == 'x') {
                 PWM = msg;
-                rsend(T1FOH);          // little endian
-                rsend(T1FOH >> 8);
+                rsend(T1ZOH);          // little endian
+                rsend(T1ZOH >> 8);
             }
             else if (cmd == 't') {
                 T0PS = msg;
                 kT0 = T0PS;
-                T1ACC = 0;
-                TMR1R = 0;
                 TMR1 = 0;
-                T1CON |= 0x01;   // start TMR1
-                TMR0 = 254;      // takes two cycles to count again
-                INTCON |= 0x20;  // enable interrupt on TOIF
+                T1CON |= 0x01;         // start TMR1
+                TMR0 = 255;            // takes two cycles to count again
+                asm("BSF INTCON, 5");  // enable interrupt on TOIF
             }
             else if (cmd == 's') {
                 T1CON &= 0xFE;   // stop TMR1
                 INTCON &= 0xDF;  // stop T0IF interrupts
                 PWM = 0;         // stop PWM immediately
-                T1FOH = 0;       // clear TMR1 first-hold
+                T1ZOH = 0;       // clear TMR1 first-hold
                 beep(0);
             }
         }

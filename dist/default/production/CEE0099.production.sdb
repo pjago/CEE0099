@@ -21,9 +21,9 @@
 [v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
 "61
 [v _write write `(v  1 e 1 0 ]
-"72
-[v _oversampling oversampling `II(v  1 e 1 0 ]
-"87
+"69
+[v _sampling sampling `II(v  1 e 1 0 ]
+"79
 [v _main main `(i  1 e 2 0 ]
 "57 /opt/microchip/xc8/v1.43/include/pic16f877a.h
 [v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
@@ -77,38 +77,32 @@
 [v _BUF BUF `[17]uc  1 e 17 0 ]
 [v _RC RC `uc  1 e 1 0 ]
 "24
-[v _T1ZOH T1ZOH `ui  1 e 2 0 ]
+[v _T1ZOH T1ZOH `VEui  1 e 2 0 ]
 "26
 [v _PWM PWM `uc  1 e 1 @27 ]
 "27
 [v _BUZ BUZ `b  1 e 0 @45 ]
 "67
-[v _T1FOH T1FOH `VEui  1 e 2 0 ]
-"68
-[v _T1ACC T1ACC `ui  1 e 2 0 ]
-"69
-[v _TMR1R TMR1R `ui  1 e 2 0 ]
-"70
 [v _kT0 kT0 `uc  1 e 1 0 ]
-"71
+"68
 [v _T0PS T0PS `uc  1 e 1 0 ]
-"87
+"79
 [v _main main `(i  1 e 2 0 ]
 {
-"135
-[v main@cmd cmd `uc  1 a 1 11 ]
-"136
-[v main@msg msg `uc  1 a 1 10 ]
-"113
-[v main@x x `uc  1 a 1 9 ]
-"162
+"128
+[v main@cmd cmd `uc  1 a 1 7 ]
+"129
+[v main@msg msg `uc  1 a 1 6 ]
+"105
+[v main@x x `uc  1 a 1 5 ]
+"153
 } 0
 "61
 [v _write write `(v  1 e 1 0 ]
 {
 [v write@duty duty `c  1 a 1 wreg ]
 [v write@duty duty `c  1 a 1 wreg ]
-[v write@duty duty `c  1 a 1 0 ]
+[v write@duty duty `c  1 a 1 5 ]
 "65
 } 0
 "47
@@ -126,7 +120,7 @@
 {
 [v rsend@msg msg `uc  1 a 1 wreg ]
 [v rsend@msg msg `uc  1 a 1 wreg ]
-[v rsend@msg msg `uc  1 a 1 0 ]
+[v rsend@msg msg `uc  1 a 1 5 ]
 "45
 } 0
 "31
@@ -134,16 +128,16 @@
 {
 [v beep@dash dash `uc  1 a 1 wreg ]
 "36
-[v beep@j_57 j `i  1 a 2 4 ]
+[v beep@j_57 j `i  1 a 2 3 ]
 "32
-[v beep@j j `i  1 a 2 2 ]
+[v beep@j j `i  1 a 2 1 ]
 "31
 [v beep@dash dash `uc  1 a 1 wreg ]
-[v beep@dash dash `uc  1 a 1 1 ]
+[v beep@dash dash `uc  1 a 1 0 ]
 "40
 } 0
-"72
-[v _oversampling oversampling `II(v  1 e 1 0 ]
+"69
+[v _sampling sampling `II(v  1 e 1 0 ]
 {
-"85
+"77
 } 0
