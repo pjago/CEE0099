@@ -64,7 +64,6 @@ void write (signed char duty) {
     else PWM = duty;
 }
 
-volatile char RUN = 0;
 unsigned char PWMZOH = 0;
 unsigned char kT0 = 0;
 unsigned char T0PS = 0;
@@ -74,12 +73,9 @@ void interrupt sampling () {
         kT0 = 0;
         T1ZOH = TMR1;
         PWM = PWMZOH;
+        rsend(T1ZOH);
+        rsend(T1ZOH >> 8);
         TMR1 -= T1ZOH;
-        if (RUN) {
-            rsend(T1ZOH);
-            rsend(T1ZOH >> 8);
-            RUN = 0;
-        }
     }
     TMR0IF = 0;
 }
@@ -135,13 +131,15 @@ int main (void) {
             char cmd = rsget();
             char msg = rsget();
             if (cmd == 'x') {
-                RUN = 1;
-                write(msg);      // PWMZOH = msg;
+                PWMZOH = msg;
             }
             else if (cmd == 'r') {
-                INTCON &= 0xDF;  // stop T0IF interrupts
-                read_tmr1();
+                INTCON &= 0xDF;  
+                T1ZOH = TMR1;
                 write(msg);
+                rsend(T1ZOH); 
+                rsend(T1ZOH >> 8);
+                TMR1 -= T1ZOH;
             }
             else if (cmd == 's') {
                 PWM = 0;         // stop PWM now

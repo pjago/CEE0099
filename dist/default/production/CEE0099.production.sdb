@@ -22,9 +22,9 @@
 [v _read_tmr1 read_tmr1 `(v  1 e 1 0 ]
 "61
 [v _write write `(v  1 e 1 0 ]
-"71
+"70
 [v _sampling sampling `II(v  1 e 1 0 ]
-"87
+"83
 [v _main main `(i  1 e 2 0 ]
 "57 /opt/microchip/xc8/v1.43/include/pic16f877a.h
 [v _TMR0 TMR0 `VEuc  1 e 1 @1 ]
@@ -84,23 +84,21 @@
 "27
 [v _BUZ BUZ `b  1 e 0 @45 ]
 "67
-[v _RUN RUN `VEuc  1 e 1 0 ]
-"68
 [v _PWMZOH PWMZOH `uc  1 e 1 0 ]
-"69
+"68
 [v _kT0 kT0 `uc  1 e 1 0 ]
-"70
+"69
 [v _T0PS T0PS `uc  1 e 1 0 ]
-"87
+"83
 [v _main main `(i  1 e 2 0 ]
 {
-"135
+"131
 [v main@cmd cmd `uc  1 a 1 9 ]
-"136
+"132
 [v main@msg msg `uc  1 a 1 8 ]
-"113
+"109
 [v main@x x `uc  1 a 1 7 ]
-"165
+"163
 } 0
 "61
 [v _write write `(v  1 e 1 0 ]
@@ -141,10 +139,10 @@
 [v beep@dash dash `uc  1 a 1 0 ]
 "40
 } 0
-"71
+"70
 [v _sampling sampling `II(v  1 e 1 0 ]
 {
-"85
+"81
 } 0
 "42
 [v i1_rsend rsend `(v  1 e 1 0 ]
