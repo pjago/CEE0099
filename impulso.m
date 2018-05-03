@@ -1,5 +1,4 @@
 clc
-clear
 format shortg
 addpath(genpath('src'))
 
@@ -10,7 +9,7 @@ global t y r e u pwm k
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-T = 0.147456;      %tempo de amostragem
+T = 0.25;       %tempo de amostragem
 n = 101;           %numero de amostras
 t = (0:(n-1))*T;   %vetor de tempo
 
@@ -28,9 +27,10 @@ td = T;
 
 %caso nao ache a planta, o programa simula pela funcao de transferencia Gz
 Gz = filt([0 0.1 0.05], [1 -1.1 0.2125], T);
+% Gz = filt([0 0 0.1 0.088], [1 -0.68 -0.2], T);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom('/dev/ttyUSB0', Gz);
+[stop, read, write] = startcom('/dev/ttyUSB0', minreal(Gz));
 
 %% LOOP DE CONTROLE
 
@@ -43,7 +43,7 @@ for k = 3:n
     %REFERENCIA
     % Setpoint emergência
     r(k) = round(80*7*T);
-%     % Reduz atuação de pico
+    % Reduz atuação de pico
 %     if k < 15
 %         r(k) = round(30*7*T);
 %     else
@@ -63,9 +63,10 @@ for k = 3:n
 %     if k == 3
 %        u(k) = 100;
 %     end
-%     u(k) = 60;
-    u(k) = u(k-1) + kc*(e(k) - e(k-1)) + kc/ti*(e(k) + e(k-1))/2*T ...
-                  - kc*td*(y(k) - 2*y(k-1) + y(k-2))/T;
+%     u(k) = 50;
+%     u(k) = u(k-1) + kc*(e(k) - e(k-1)) + kc/ti*(e(k) + e(k-1))/2*T ...
+%                   - kc*td*(y(k) - 2*y(k-1) + y(k-2))/T;
+    u(k) = 50;
 
     %SATURACAO
     if u(k) > 100
@@ -75,10 +76,10 @@ for k = 3:n
     else
         pwm(k) = round(u(k));
     end
-    
+        
     %ESCRITA
     write(pwm(k));
-        
+    
     %DELAY
     ping(k) = toc(time);
     if isa(stop, 'function_handle') && T > ping(k)
@@ -99,7 +100,7 @@ fig = plotudo(t, y, r, e, u, pwm, 0, 0);
 if isa(stop, 'function_handle')
     folder = 'pratica';
 else
-    folder = 'teoria';
+    folder = 'simulacao';
 end
 if ~exist(folder, 'dir')
     mkdir(folder);

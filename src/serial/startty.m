@@ -1,7 +1,7 @@
-%Attempts to connect with plant or model, in that order
-%[stop, read, write] = startcom(COM)
-%[stop, read, write] = startcom(COM, Gz)
-function [stop, read, write] = startcom(COM, varargin)
+% TODO: DELETE THIS IN FAVOR OF STARTCOM (REFACTOR)
+%[stop, read, write] = startty(COM)
+%[stop, read, write] = startty(COM, Gz)
+function [hold, read, write] = startty(COM, varargin)
     if nargin == 2
         Gz = varargin{1};
     else 
@@ -28,7 +28,7 @@ function [stop, read, write] = startcom(COM, varargin)
         try
             read   = @() readino(s);
             write  = @(duty) writeino(s, duty);
-            stop   = @() stopino(s);
+            hold   = @(period) holdino(s, period);
             warning('off', 'MATLAB:serial:fread:unsuccessfulRead');
             read();
             warning('on', 'MATLAB:serial:fread:unsuccessfulRead');
@@ -40,7 +40,7 @@ function [stop, read, write] = startcom(COM, varargin)
             s.Timeout = T0PS*16384/FOSC;
             read   = @() readpic(s);
             write  = @(duty) writepic(s, duty);
-            stop   = @() stopic(s);
+            hold   = @(period) holdpic(s, period);
             fwrite(s, 't'); % Enable sampling interrupts
             fwrite(s, T0PS); % Configure sampling interval
             write(0); % Will only write on next read
@@ -50,11 +50,11 @@ function [stop, read, write] = startcom(COM, varargin)
         if isa(Gz, 'tf') || isa(Gz, 'zpk') || isa(Gz, 'ss')
             Gz = tf(Gz);
             errors = textscan(ME1.message, '%[^\n]', 1);
-            disp([errors{end}{:} 10]);
-            disp(['Using transfer function model.' 10])
+            disp([errors{end}{:}]);
+            disp('Using transfer function model.')
             read   = @() readsim(Gz); 
             write  = @(duty) writesim(duty);
-            stop   = 0;
+            hold   = @(period) [];
         else
             disp(ME1)
         end

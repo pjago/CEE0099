@@ -1,5 +1,5 @@
-%Gz = mqnr(y, u, T) não recursivo
-function Gz = mqnr(y, u, T)    
+%Gz = mqnr(y, u, T) nao recursivo
+function Gz = mqnr1(y, u, T)    
     n = size(y, 1);
     for i = 1:size(y, 2)
         Y=[];
@@ -11,7 +11,7 @@ function Gz = mqnr(y, u, T)
             fi = [fi; -y1 u1];   
         end
         teta(:, i) = (fi'*fi)\fi'*Y;
-    end;
+    end
     
     uxi = (1:size(u, 2))';
     

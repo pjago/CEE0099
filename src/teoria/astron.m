@@ -1,5 +1,5 @@
-function [ kc, td, ti ] = astron( aGjw, bGjw, w, alpha )
-%ASTRON [ kp, td, ti ] = astron( aGjw, bGjw, w, alpha )
+function [ kc, ti, td ] = astron( aGjw, bGjw, w, alpha )
+%ASTRON [ kp, ti, td ] = astron( aGjw, bGjw, w, alpha )
 %   PID parameters that move Gjw from a to b
 ra = abs(aGjw);
 rb = abs(bGjw);

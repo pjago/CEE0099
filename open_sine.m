@@ -9,16 +9,15 @@ global t y r e u pwm k
 [absG, phaG, W] = bode(Gz);
 Gjw = absG.*exp(1j*phaG*pi/180);
 [~, ws] = min(abs(-1 - Gjw)); % most sensibility
-% [~, ws] = min(real(Gjw)); % most resolution
-
-d = 20;
-eps = -d*imag(Gjw(ws))*4/pi;
-a = d*abs(Gjw(ws))*4/pi;
 
 % Adicione o nome de variaveis que queira salvar
 toSave = {'ping', 'eps', 'd', 'a', 't', 'y', 'r', 'e', 'u', 'pwm'};
 
-duration = 30;
+duration = 30; % todo: calculate from tf
+d = 20;
+
+eps = -d*imag(Gjw(ws))*4/pi;
+a = d*abs(Gjw(ws))*4/pi;
 
 T = Gz.Ts;                          %tempo de amostragem
 n = round(duration/T) + 1;          %numero de amostras
@@ -33,12 +32,17 @@ t = (0:(n-1))*T;                    %vetor de tempo
 
 [wn,~,poles] = damp(Gz);
 [~, dp] = min(abs(abs(poles) - 1));
+wc = geomean([wn(dp) W(ws)]);
+mvg = round(2*pi/(wc*Gz.Ts));
+sup = round(2*pi/(wn(2)*Gz.Ts));
 N = 2*pi/(W(ws)*Gz.Ts);
-mvg = round(2*pi/(wn(dp)*Gz.Ts)) + 1;
+[bb, ba] = butter(1, [1/mvg 1/sup]);
+bo = length(bb);
+kp = abs(Gjw(ws));
 
 %% ESTADO INCIAL
 
-[r, y, e, u, pwm] = deal(zeros(n, 1)); 
+[r, y, e, u, pwm, saw, w, z] = deal(zeros(n, 1));
 ping = nan(n, 1);
 t0 = tic;
 
@@ -48,20 +52,33 @@ for k = 1:n
     %LEITURA
     time = tic;
     y(k) = read();
-
+    
     %REFERENCIA E ERRO
     if k < mvg
-        r(k) = y(k);
+        w(k) = y(k);
+        r(k) = w(k);
+        if k >= bo
+            z(k) =  bb*w(k:-1:k-bo+1) - ba(2:end)*z(k-1:-1:k-bo+1);
+        end
     else
-        r(k) = r(k-1) + (y(k) - r(k-1))/mvg;
+        w(k) = y(k)/mvg^2 + w(k-1)*(2 - 2/mvg) - w(k-2)*(1 - 1/mvg)^2;
+        z(k) =  bb*w(k:-1:k-bo+1) - ba(2:end)*z(k-1:-1:k-bo+1);
+        r(k) = w(k) - z(k);
     end
     e(k) = r(k) - y(k);
-
+    
+    if k < mvg
+    elseif mod(k, N) < N/2
+        saw(k) = N/2*sawtooth(2*k*pi/N);
+    else
+        saw(k) = N/2-N/2*sawtooth(2*k*pi/N);
+    end
+    
     %CONTROLE
     if k < mvg
         u(k) = set;
     else
-        u(k) = set + d*sin(2*k*pi/N);
+        u(k) = set - d*cos(2*k*pi/N);
     end
 
     %SATURACAO
@@ -88,6 +105,11 @@ fprintf('Duracao: %f seconds\n', toc(t0) - toc(time));
 if sum(ping(1:end-1)' > T)
     disp('In-loop latency is too high! Increase your sampling time.')
 end
+
+figure
+hold on
+plot(saw)
+plot(e)
 
 %% ANALYSIS
 

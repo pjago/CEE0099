@@ -1,6 +1,7 @@
 %plots the normalized fft removing the DC bias
 %[handle, maximum_frequency] = plot_fft(y, sampling_frequency)
 function [hf, fmax] = plot_fft(X, Fs, varargin)
+    % todo: Hamming window
     X = inpaint_nans(X);
     L = length(X);
     M = floor(L/2);

@@ -1,16 +1,15 @@
-%computes the normalized maximum frequency, AC
+%computes the maximum frequency using xcorr
 %maximum_frequency = maxfreq(y)
-function fmax = maxfreq(X)
-    X = inpaint_nans(X);
-    L = length(X);
-    M = floor(L/2);
-    Y = fft(X - repmat(mean(X), size(X, 1), 1));
-    P2 = abs(Y/L);
-    P1 = P2(1:M+1, :);
-    p = repmat(max(P1), size(P1, 1), 1);
-    P1 = P1./p;
-    P1(1, :) = [];
-    f = (1:M)/L;
-    [~, index] = max(P1);
-    fmax = f(index);
+function fmax = maxfreq(y)
+    x = diff(diff(xcorr(y)));
+    l = length(x);
+    m = ceil(l/2) + 1;
+%     % find max and then min
+%     [~, sup] = max(x(m:end));
+%     [~, loc] = min(x(m+sup:end));
+%     fmax = 2/(loc+sup);
+    % find second abs peak
+    x = abs(x/max(abs(x(x > 0))).*(x > 0) + x/max(abs(x(x < 0))).*(x < 0));
+    [~, pek] = findpeaks(x(m:end), 'NPeaks', 2, 'MinPeakHeight', 0.5);
+    fmax = 2/pek(2);
 end
