@@ -8,20 +8,21 @@ global t y r e u pwm k
 %% CONFIGURAÇÃO
 
 % Adicione o nome de variáveis que queira salvar
-toSave = {'t', 'y', 'r', 'e', 'u', 'pwm'};
+toSave = {'t', 'y', 'r', 'e', 'u', 'pwm', 'ping', 'T'};
+subfolder = 'relé_combi';
 
-T = 0.5;          %tempo de amostragem
-n =  21;          %número de amostras
+T = 0.114;          %tempo de amostragem
+n =  100;          %número de amostras
 t = (0:(n-1))*T;  %vetor de tempo
 
 %% I/O
 
 %caso não ache a planta, o programa simula pela função de transferência Gz
 z = tf('z', T, 'variable', 'z^-1');
-Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
+Gz = z^-1*(0.09142 + 0.2228*z^-1)/(1 - 0.6893*z^-1 - 0.108*z^-2);
 
 %ajuste a COM e o baud rate de 19200, em Gerenciador de Dispositivos
-[stop, read, write] = startcom('COM20', Gz);
+[stop, read, write] = startcom('COM5', Gz);
 
 %% ESTADO INCIAL
 
@@ -29,9 +30,19 @@ Gz = z^-1*(0.744 + 0.995*z^-1)/(1 - 0.5812*z^-1 - 0.02333*z^-2);
 ping = nan(n, 1);
 t0 = tic;
 
+kp=0.8;td=0.0;ti=1.1;
+
+%calculates controllers' numerator
+gd   = @(kp, td) [kp*td/T -kp*2*td/T kp*td/T];
+gpi  = @(kp, ti) [kp*(1 + T/(2*ti)) -kp*(1 - T/(2*ti))];
+gpid = @(kp, td, ti) [kp*(1 + T/(2*ti) + td/T) -kp*(1 + 2*td/T - T/(2*ti)) kp*td/T];
+
+ke = flip(gpid(kp,td,ti));
+ku = 1.0;
+
 %% LOOP DE CONTROLE
 
-for k = 1:n
+for k = 3:n
     %LEITURA
     time = tic;
     y(k) = read();
@@ -41,10 +52,17 @@ for k = 1:n
     e(k) = r(k) - y(k);
 
     %CONTROLE
-    if k == 1
-       u(k) = 100;
-    end
     
+    %PID
+    u(k) = ku*u(k-1) + ke*e(k-2:k);
+
+    %MQNR
+%     if k < n/2
+%         u(k) = 50 + 10*(2*rand() - 1);
+%     else
+%         u(k) = 80 + 10*(2*rand() - 1);
+%     end
+
     %SATURAÇÃO
     if u(k) > 100
         pwm(k) = 100;
@@ -75,13 +93,13 @@ end
 fig = plotudo(t, y, r, e, u, pwm, 0, 0);
 
 if isa(stop, 'function_handle')
-    folder = 'pratica';
+    folder = ['pratica/' subfolder];
 else
-    folder = 'teoria';
+    folder = ['teoria/' subfolder];
 end
 if ~exist(folder, 'dir')
     mkdir(folder);
-end   
+end
 date = datestr(datetime('now'));
 date(date == '-' | date == ':') = '_';
 path = [folder '/' date];
