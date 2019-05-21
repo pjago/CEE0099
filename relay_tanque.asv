@@ -59,13 +59,13 @@ ref  = 0.0;  % fixed reference
 tune_edge = 3; % non-mpc filters wait this many edges
 d = 2.5; % relay amplitude
 b = 5.0; % relay bias
-eps = 0.05; % important! there is a maximum value of valid eps! 3rd quad.
+eps = 0.1; % important! there is a maximum value of valid eps! 3rd quad.
 D = 1.0*d; % disturbance ratio (todo: solve saturation problem!)
 
 % dados calculados
 Gss = ss(Gz);
 % Gss = ss(0.004245/s); % assume a wrong but close model, then adapt
-% Gss = ss(0.016975/s); % it is better to adapt from a good model
+Gss = ss(0.016975/s); % it is better to adapt from a good model
 % Gss = ss(0.0028/s);
 % Gss = ss(0.025/s);
 K = Gss.c*Gss.b; %initial model
@@ -164,10 +164,12 @@ for k = o:n
     r3(k) = 2*rf*cos(3*fs)*r3(k-1) - rf^2*r3(k-2) + 1/2*(1-2*rf*cos(3*fs)+rf^2)/(1-cos(3*fs))*(r1(k) - 2*cos(3*fs)*r1(k-1) + r1(k-2));
     r5(k) = 2*rf*cos(5*fs)*r5(k-1) - rf^2*r5(k-2) + 1/2*(1-2*rf*cos(5*fs)+rf^2)/(1-cos(5*fs))*(r3(k) - 2*cos(5*fs)*r3(k-1) + r3(k-2));
 % type 1, but with MPC. we did it guys, we did it!
+    % I should probably watch out for saturation. look ur +/- d and get uf
+    % I need to calculate the effective d now.
     df = (min(ur(k-1) + d, umax) - max(ur(k-1) - d, umin))/2;
     uf = d*[(up + -~up)*ones(ns-saw, 1); (-up + ~up)*ones(ns, 1); (up + -~up)*ones(saw+1, 1)]; % + ur(k-1)
     yf = lsim(Gss, uf, (0:length(uf)-1)*T, y(k)/Gss.c); % if there is no integrator, there should be + ur(k-1)
-    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end));
+    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end)); %mudar a estrutura do filtro! usar QF
 
     if edge < tune_edge
        rm(k) = yr(k);
@@ -176,8 +178,10 @@ for k = o:n
     %ERRO
     e(k) = r(k) - y(k);
     er(k) = yr(k) - y(k);
+%     em(k) = peak2peak(y(k-nf:k))/2;
+%     es(k) = (2*em(k) + 3*em(k-ns) - ef(k))/4;
     em(k) = (yr(k) + y(k))/2;
-    es(k) = peak2peak(em(k-nf:k)); %TODO: still wrong! peak2peak is type 0!
+    es(k) = peak2peak(y(k-nf:k))/2;;
     ef(k) = peak2peak(yf)/2;
     ei(k) = ei(k-1) + T*(e(k) + e(k-1))/2;
     
@@ -241,7 +245,7 @@ for k = o:n
     if saw == 1 && ~tune % for now I am doing a latch
         % nice entrance condition!
         % this condition is veeeery specific for the model. simplify
-        tune = abs(yr(k)-r(k)) < d*ns*K*T && (e(k) <= 0 && up || e(k) > 0 && ~up);
+        tune = abs(yr(k)-r(k)) < d*ns*K*T && abs(yr(k) - yr(k-ns)) < 2*d*ns*K*T && (e(k) >= 0 && up || e(k) < 0 && ~up);
         edge = 0;
     end
     

@@ -7,8 +7,8 @@ global t y r e u pwm k
 
 %% CONFIGURAÇÃO
 % Adicione o nome de variáveis que queira salvar
-toSave = {'t', 'y', 'r', 'e', 'u', 'pwm', 'ping', 'T'};
-subfolder = 'relay_encubadora_umidade';
+toSave = {'t', 'y', 'r', 'e', 'u', 'pwm', 'rm', 'err', 'semik', 'ping', 'T'};
+subfolder = 'relay_ventilador_velocidade';
 
 T = 20;           %tempo  de amostragem
 o = 3;            %início de amostragem
@@ -20,11 +20,8 @@ s = tf('s');
 z = tf('z', T, 'variable', 'z^-1');
 Gz = (0.0287*z^-1 - 0.0012*z^-2)/(1 - 0.8430*z^-1 - 0.1211*z^-2);
 
-planta = 0; % variável deve chavear leitura e escrita da planta
-
-%todo: SUBSTITUIR FUNÇÕES PELA INTERFACE DA ENCUBADORA.
-%VER relay_tanque.m OU startcom.m COMO REFERÊNCIA
-[termina, leitura, escrita] = startcom('COM5', Gz, 0.00);
+[termina, leitura, escrita] = startcom('COM5', minreal(Gz));
+planta = isa(termina, 'function_handle');
 
 %% MISC
 umax = 100.0; % maximum actuation
@@ -37,7 +34,7 @@ d = 20; % relay amplitude
 off = 50; % relay offset
 a_max = 0.5*d; % should get from |G(jw)| : w -> min(imag(G(jw)))
 eps = 2.0; % important! there is a maximum value for eps!! 3rd quadrant!
-D = 1.0; % disturbance ratio at k > n/2
+D = 0.5; % disturbance ratio at k > n/2
 
 if D > 1/2*(a_max/eps - 1)
     disp('Disturbance too high, expect a retry!')
@@ -45,10 +42,12 @@ end
 % dados calculados
 edge = 0;
 semi = [0; 0];
+semik = nan(n, 2);
 nf = 1;
 ns = 1;
 up = 1;
 saw = 1;
+ass = 1;
 retry = 0;
 ymax = ref;
 ymin = ref;
@@ -59,7 +58,7 @@ rmin = ref;
 % higher quality: sensible to noise. lower quality: robust to disturbances
 % on low epsilon it may be useful to increase the quality (precise switch)
 % on higher epsilon it may be useful to reduce the quality (fast settling)
-QF = 8.0;  %^quality, ^settling time, ^precision
+QF = 1.0;  %^quality, ^settling time, ^precision
 
 % there is a maximum and minimum value required for QF!
 
@@ -90,6 +89,7 @@ ku = 1.0;
 
 %% LOOP DE CONTROLE
 [r, rm, r1, r3, r5, beta, y, e, ei, er, u, ur, pwm] = deal(zeros(n, 1)); 
+err = [];
 f = pi*ones(n, 1);
 ping = nan(n, 1);
 t0 = tic;
@@ -116,11 +116,10 @@ for k = o:n
 %     f(k) = max(0, min(pi, f(k)));
 %     fs = f(k);
     fs = pi/ns; % this is not smooth, should use gradient descent!
-    ks = k - ns;
 % F = 1/2*(1+af)*(1 + z^-ns)/(1 + af*z^-ns);
-    rm(k) = -af  * rm(ks) + (y(k) + y(ks)) * (1  + af) / 2;                            % type 0, ood
+    rm(k) = -af  * rm(k-ns) + (y(k) + y(k-ns)) * (1  + af) / 2;                            % type 0, ood
 % F = 1/4*((3+af) + 2*(1+af)*z^-ns + (af-1)*z^-nf)/(1 + af*z^-ns);
-%     rm(k) = -af  * rm(ks) + 1/4*((3 + af)*y(k) + 2*(1 + af)*y(ks) + (af - 1)*y(k-nf)); % type 1, odd
+%     rm(k) = -af  * rm(k-ns) + 1/4*((3 + af)*(y(k)*ass + (1 - ass)*y(k-nf)) + 2*(1 + af)*y(k-ns) + (af - 1)*y(k-nf)); % type 1, odd
 % F = @(m) 1/2*(1 - 2*rf*cos(m*fs) + rf^2)/(1 - cos(m*fs))*(1 - 2*cos(m*fs)*z^-1 + z^-2)/(1 - 2*rf*cos(m*fs)*z^-1 + rf^2*z^-2)
     r1(k) = 2*rf*cos(fs)*r1(k-1) - rf^2*r1(k-2) + 1/2*(1-2*rf*cos(fs)+rf^2)/(1-cos(fs))*(y(k) - 2*cos(fs)*y(k-1) + y(k-2));
     r3(k) = 2*rf*cos(3*fs)*r3(k-1) - rf^2*r3(k-2) + 1/2*(1-2*rf*cos(3*fs)+rf^2)/(1-cos(3*fs))*(r1(k) - 2*cos(3*fs)*r1(k-1) + r1(k-2));
@@ -133,6 +132,7 @@ for k = o:n
         rm(k) = ref;
         r(k) = ref;
     else
+        r(k) = ref;
         r(k) = rm(k);
 %         r(k) = r5(k);
     end
@@ -167,25 +167,26 @@ for k = o:n
       up = ~up;
     else
       saw = saw + 1;
-      if saw > ns
+      if saw > ns && edge >= edge_comb
           % attention: this retry mechanism is too complex to be on the
           % paper. in the future simplify it and test which frequencies
           % need it. it seems that for low eps there is no need.
           % this is in accordance with the < d/2*(a_max/eps - 1) hipothesis
           % so for the paper, assert retry = 0 !!!
-          if edge >= edge_comb
-              retry = retry + 1;
-          end
-          if nf > ns
-              nf = 0;
-          end
+          retry = retry + 1;
+          err = [err; k];
+          ass = semi(~up + 1)/semi(up + 1);
           ns = ns + 1; % up - ymin
           nf = nf + 1; % up - ymax
+      else
+          ass = 1.0;
       end
     end
     
+    semik(k,:) = semi;
+    
     %RELAY
-    u(k) = off + up*d - ~up*d + (k > n/2)*D*d;
+    u(k) = off + up*d - ~up*d + (k > n/4)*D*d - (k > 2*n/4)*2*D*d + (k > 3*n/4)*2*D*d;
     %PID
 %     u(k) = ku*u(k-1) + ke*e(k-2:k);
     %STEP
@@ -205,7 +206,9 @@ for k = o:n
         end
     end
 end
-termina();
+if planta
+    termina();
+end
 fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
 % assert(~retry, 'There was a retry! Dont use this for the paper!!!')
 if sum(ping(1:end-1)' > T)
@@ -213,10 +216,22 @@ if sum(ping(1:end-1)' > T)
 end
 
 %% PLOT & SAVE
-o = 36;
-k = 450+o;
-% o = 218;
-% k = 469;
+%%comb relay
+% o = 65;
+% k = 145;
+%%d = 2.5, eps = 0.099778, a = 0.11375,
+%%w = 0.3927 (14), Gjw = 0.035737 <-2.0717
+%%relay 
+% o = 180;
+% k = 260;
+%%d = 2.5, eps = 0.097049, a = 0.11864,
+%%w = 0.38371 (15), Gjw = 0.037271 <-2.1836
+
+% CONCLUSÃO: Não há muita diferença aqui. Mesmo sendo assimétrico, a
+% frequência de oscilação é muito próxima ao caso simétrico. Por ser um
+% integrador puro, o valor de histerese já é muito próximo ao de amplitude
+% logo, a única variável que poderia mudar, a frequência, não muda.
+
 fig = plotudo(t(o:k), y, r, e, u, pwm, 0, 0, 0);
 if planta
     folder = ['pratica/' subfolder];

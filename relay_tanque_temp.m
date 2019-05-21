@@ -5,36 +5,57 @@ addpath(genpath('src'))
 
 global t y r e u pwm k
 
+% time delay is a function of volume of water!
+
 %% CONFIGURAÇÃO
 % Adicione o nome de variáveis que queira salvar
-toSave = {'t', 'y', 'r', 'e', 'u', 'pwm', 'rm', 'err', 'semik', 'ping', 'T'};
-subfolder = 'relay_ventilador_velocidade';
+toSave = {'t', 'y', 'r', 'e', 'er', 'u', 'ur', 'pwm', 'rm', 'err', 'semik', 'ping', 'T'};
+subfolder = 'relay_tanque_temp';
 
-T = 0.25;            %tempo  de amostragem
-o = 3;            %início de amostragem
-n = 200 + o;      %número de amostras
+T = 1;            %tempo  de amostragem
+o = 73;            %início de amostragem
+n = floor(900/T) + o;    %número de amostras
 t = (0:(n-1));    %vetor  de tempo
 
 %% I/O
+L = 69/T; % time delay from step response
+ 
 s = tf('s');
 z = tf('z', T, 'variable', 'z^-1');
-Gz = filt([0 0 0.3104 0.0376 ], [1 -1.151 0.3052 0], T);
+% Gz = (0.00412*z^-70 + 0.003294*z^-71)/(1 - 0.2004*z^-1 - 0.8984*z^-2);
+Gz = (0.00412*z^-70 + 0.003294*z^-71)/(1 - 0.1470*z^-1 - 0.8530*z^-2);
 
-[termina, leitura, escrita] = startcom('COM7', minreal(Gz));
-planta = isa(termina, 'function_handle');
+planta = 0; % variável deve chavear leitura e escrita da planta
+
+if planta
+    start_easyport;
+    pause(3)
+    enable_pump(0);
+    leitura  = @() read_temperature();
+    escrita = @(duty) write_heat(~~duty);
+    termina = @() end_easyport;
+    leitura();
+else
+    leitura  = @() readsim(Gz);
+    escrita = @(duty) writesim(duty);
+    termina = 0;
+    k = 0;
+    escrita(0);
+    leitura();
+end
 
 %% MISC
-umax = 100.0; % maximum actuation
-umin = 0.0;  % minimum actuation
-ref  = 120.0;  % fixed reference
+umax = 1.0; % maximum actuation
+umin = 0.0; % minimum actuation
+ref  = 3.0; % fixed reference
 
 %% RELAY
 edge_comb = 3; % comb waits this many edges
-d = 25; % relay amplitude
-off = 50; % relay offset
+d = 0.5; % relay amplitude
+off = 0.5; % relay offset
 a_max = 0.5*d; % should get from |G(jw)| : w -> min(imag(G(jw)))
-eps = 5; % important! there is a maximum value for eps!! 3rd quadrant!
-D = 1.0; % disturbance ratio at k > n/2
+eps = 0.05; % important! there is a maximum value for eps!! 3rd quadrant!
+D = 0.0; % disturbance ratio at k > n/2
 
 if D > 1/2*(a_max/eps - 1)
     disp('Disturbance too high, expect a retry!')
@@ -77,18 +98,21 @@ mu = 1e-5; % gradient descent
 % af=-abs(af); % this will remove only the even frequencies
 
 %% PID
-kp=7.987*10^-4;td=0.3487;ti=0.0; % atualizar valores!!!
+kp=13.71;td=0;ti=12; % PI do leão
 
 %calculates controllers' numerator
 gd   = @(kp, td) [kp*td/T -kp*2*td/T kp*td/T];
 gpi  = @(kp, ti) [kp*(1 + T/(2*ti)) -kp*(1 - T/(2*ti))];
 gpid = @(kp, td, ti) [kp*(1 + T/(2*ti) + td/T) -kp*(1 + 2*td/T - T/(2*ti)) kp*td/T];
 %gains
-ke = flip(gd(kp,td));
+ke = flip(gpid(kp,td,ti));
+ky = flip(gpid(kp,td,ti));
+kr = flip(gpi(kp,ti));
 ku = 1.0;
 
 %% LOOP DE CONTROLE
-[r, rm, r1, r3, r5, beta, y, e, ei, er, u, ur, pwm] = deal(zeros(n, 1)); 
+[beta, e, ei, er, u, ur, pwm] = deal(zeros(n, 1));
+[r, rm, r1, r3, r5, y] = deal(2.8*ones(n,1));
 err = [];
 f = pi*ones(n, 1);
 ping = nan(n, 1);
@@ -117,9 +141,9 @@ for k = o:n
 %     fs = f(k);
     fs = pi/ns; % this is not smooth, should use gradient descent!
 % F = 1/2*(1+af)*(1 + z^-ns)/(1 + af*z^-ns);
-    rm(k) = -af  * rm(k-ns) + (y(k) + y(k-ns)) * (1  + af) / 2;                            % type 0, ood
+%     rm(k) = -af  * rm(k-ns) + (y(k) + y(k-ns)) * (1  + af) / 2;                            % type 0, ood
 % F = 1/4*((3+af) + 2*(1+af)*z^-ns + (af-1)*z^-nf)/(1 + af*z^-ns);
-%     rm(k) = -af  * rm(k-ns) + 1/4*((3 + af)*(y(k)*ass + (1 - ass)*y(k-nf)) + 2*(1 + af)*y(k-ns) + (af - 1)*y(k-nf)); % type 1, odd
+    rm(k) = -af  * rm(k-ns) + 1/4*((3 + af)*(y(k)*ass + (1 - ass)*y(k-ns)) + 2*(1 + af)*y(k-ns) + (af - 1)*y(k-nf)); % type 1, odd
 % F = @(m) 1/2*(1 - 2*rf*cos(m*fs) + rf^2)/(1 - cos(m*fs))*(1 - 2*cos(m*fs)*z^-1 + z^-2)/(1 - 2*rf*cos(m*fs)*z^-1 + rf^2*z^-2)
     r1(k) = 2*rf*cos(fs)*r1(k-1) - rf^2*r1(k-2) + 1/2*(1-2*rf*cos(fs)+rf^2)/(1-cos(fs))*(y(k) - 2*cos(fs)*y(k-1) + y(k-2));
     r3(k) = 2*rf*cos(3*fs)*r3(k-1) - rf^2*r3(k-2) + 1/2*(1-2*rf*cos(3*fs)+rf^2)/(1-cos(3*fs))*(r1(k) - 2*cos(3*fs)*r1(k-1) + r1(k-2));
@@ -145,6 +169,11 @@ for k = o:n
         rmin = min(r(k), rmin);
     end
     
+%     ref = 4.0 + 1.0*(k > n/3) - 2.0*(k > 2*n/3);
+    
+%     ref = 4.0 + 0.01*(k - 30 - n/3)*(k - 30 > n/3 && k - 30 < n/3 + 100/T) + 1.0*(k - 30 > n/3 + 100/T) ...
+%         + 0.01*(k - 30 - 2*n/3)*(k - 30 > 2*n/3 && k - 30 < 2*n/3 + 100/T) + 1.0*(k - 30 > 2*n/3 + 100/T);
+    
     %ERRO
     e(k) = r(k) - y(k);
     ei(k) = ei(k-1) + T*(e(k) + e(k-1))/2;
@@ -157,6 +186,7 @@ for k = o:n
       nf = semi(~up+1) + saw;
       edge = edge + 1;
       saw = 1;
+      ass = 1.0;
       if up
         ymax = y(k);
         rmax = r(k);
@@ -174,31 +204,45 @@ for k = o:n
           % this is in accordance with the < d/2*(a_max/eps - 1) hipothesis
           % so for the paper, assert retry = 0 !!!
           retry = retry + 1;
-%           err = [err; k];
-%           ass = semi(~up + 1)/semi(up + 1);
-%           ns = ns + 1; % up - ymin
-%           nf = nf + 1; % up - ymax
-      else
-          ass = 1.0;
+          err = [err; k];
+%           ass = saw/semi(~up + 1); % I should have a clear inside and
+%           outside concept! that way I could switch the assymetry. to
+%           recover from disturbances!
+          if up && y(k) > r(k) || ~up && y(k) < r(k) % should be "is in"
+             ass = 1 - (saw-semi(~up + 1))/semi(~up + 1);
+          else % should be "is out"
+             ass = (saw-semi(~up + 1))/semi(~up + 1);
+          end
+          ns = ns + 1; % up - ymin
+          nf = nf + 1; % up - ymax
       end
     end
     
     semik(k,:) = semi;
     
     %RELAY
-    u(k) = off + up*d - ~up*d + (k > n/4)*D*d - (k > 2*n/4)*2*D*d + (k > 3*n/4)*2*D*d;
+    u(k) = off + up*d - ~up*d + (k > n/2)*D*d;
     %PID
-%     u(k) = ku*u(k-1) + ke*e(k-2:k);
+%     u(k) = ku*u(k-1) + kr*r(k-1:k) - ky*y(k-2:k);
+%     u(k) = min(max(u(k), umin), umax);
+    %RELAY + PID
+%     ur(k) = ku*ur(k-1) + kr*[ref; ref] - ky*rm(k-2:k);
+%     ur(k) = (edge>edge_comb)*min(max(ur(k), -umax), umax);
+%     u(k) = ur(k) + off + up*d - ~up*d + (k > n/2)*D*d;
+
     %STEP
 %     u(k) = 70;
 
     %SATURAÇÃO
     pwm(k) = min(max(u(k), umin), umax);
-%     pwm(k) = u(k);
     
     %ESCRITA
     escrita(pwm(k));
     ping(k) = toc(time);
+    
+    if y(k) > 90.0
+        break;
+    end
     
     %DELAY
     if planta
@@ -207,7 +251,8 @@ for k = o:n
     end
 end
 if planta
-    termina();
+    escrita(0.0);
+    end_easyport; %termina();
 end
 fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
 % assert(~retry, 'There was a retry! Dont use this for the paper!!!')
@@ -232,7 +277,7 @@ end
 % integrador puro, o valor de histerese já é muito próximo ao de amplitude
 % logo, a única variável que poderia mudar, a frequência, não muda.
 
-fig = plotudo(t(o:k), y, r, e, u, pwm, 0, 0, 0);
+fig = plotudo(t(1:k), y, r, e, u, pwm, 0, 0, 0);
 if planta
     folder = ['pratica/' subfolder];
 else

@@ -25,7 +25,7 @@ function Gz = mqnr2(y, u, T)
 
         z = tf('z', T, 'variable', 'z^-1');
         j = at(uxi, i);
-        Gz(i, j) = (b1 + b2*z^-1)/(1 + a1*z^-1 + a2*z^-2);
-        Gz(i, j).ioDelay = 1;
+        Gz(i, j) = (b1*z^-1 + b2*z^-2)/(1 + a1*z^-1 + a2*z^-2);
+%         Gz(i, j).ioDelay = 1;
     end
 end

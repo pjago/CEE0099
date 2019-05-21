@@ -1,11 +1,3 @@
-src/astron.m
-src/zigler_nichols.m
-src/relay.m
-*.m~
-*.asv
-survey
-src/easylife.m
-sim/
-dc fan/
-web fan/
-backup/
+pratica/
+teorica/
+projeto/

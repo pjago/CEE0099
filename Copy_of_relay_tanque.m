@@ -81,13 +81,11 @@ tunek = zeros(n, 1);
 semik = nan(n, 2);
 upk = nan(n, 1);
 up = 1;
-eup = 1;
 saw = 1;
-yid = [0; 0];
-rid = [0; 0];
-ypk = [0; 0];
-rpk = [0; 0];
-epk = [0; 0];
+emmax = eps;
+emmin = eps;
+ermax = eps;
+ermin = eps;
 
 %% FILTER
 % higher quality: robust to noise. lower quality: robust to disturbances
@@ -125,7 +123,7 @@ kr = flip(gpi(kp,ti));
 ku = 1.0;
 
 %% LOOP DE CONTROLE
-[deps, e, ei, er, em, es, ef, u, ur, pwm] = deal(zeros(n, 1));
+[deps, e, ei, er, em, u, ur, pwm] = deal(zeros(n, 1));
 [r, rm, r1, r3, r5, y, yr] = deal(~planta*ref*ones(n, 1));
 
 deps(1:o) = (K*d*ns*T)/2 - eps;
@@ -141,16 +139,16 @@ for k = o:n
     
     %REFERÊNCIA
     %step
-    r(k) = 1.0 + 1.0*(k >= n/3) - 0.5*(k >= 2*n/3);
-    if k == n/3 || k == 2*n/3
-        edge = 0;
-        tune = 0;
-    end
+%     r(k) = 1.0 + 1.0*(k >= n/3) - 0.5*(k >= 2*n/3);
+%     if k == n/3 || k == 2*n/3
+%         edge = 0;
+%         tune = 0;
+%     end
     %ramp
 %     r(k) = 4.0 + 0.01*(k - n/3)*(k > n/3 && k < n/3 + 100/T) + 1.0*(k >= n/3 + 100/T) ...
 %          + 0.01*(k - 2*n/3)*(k > 2*n/3 && k < 2*n/3 + 100/T) + 1.0*(k >= 2*n/3 + 100/T);
     %this should be interesting. close the valve and try this ramp
-%     r(k) = 2.0 + 0.02*(k - o)*T;
+    r(k) = 2.0 + 0.02*(k - o)*T;
     
     fs = pi/ns; % this is not smooth, maybe use gradient descent!
 % F = 1/2*(1+af)*(1 + z^-ns)/(1 + af*z^-ns);
@@ -164,60 +162,50 @@ for k = o:n
     r3(k) = 2*rf*cos(3*fs)*r3(k-1) - rf^2*r3(k-2) + 1/2*(1-2*rf*cos(3*fs)+rf^2)/(1-cos(3*fs))*(r1(k) - 2*cos(3*fs)*r1(k-1) + r1(k-2));
     r5(k) = 2*rf*cos(5*fs)*r5(k-1) - rf^2*r5(k-2) + 1/2*(1-2*rf*cos(5*fs)+rf^2)/(1-cos(5*fs))*(r3(k) - 2*cos(5*fs)*r3(k-1) + r3(k-2));
 % type 1, but with MPC. we did it guys, we did it!
+    % I should probably watch out for saturation. look ur +/- d and get uf
+    % I need to calculate the effective d now.
     df = (min(ur(k-1) + d, umax) - max(ur(k-1) - d, umin))/2;
     uf = d*[(up + -~up)*ones(ns-saw, 1); (-up + ~up)*ones(ns, 1); (up + -~up)*ones(saw+1, 1)]; % + ur(k-1)
     yf = lsim(Gss, uf, (0:length(uf)-1)*T, y(k)/Gss.c); % if there is no integrator, there should be + ur(k-1)
-    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end));
+    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end)); %mudar a estrutura do filtro! usar QF
 
     if edge < tune_edge
-       rm(k) = yr(k);
+       rm(k) = yr(k); 
+    end
+    
+    if up
+        emmax = max(em(k), emmax);
+        ermax = max(er(k), ermax);
+    else
+        emmin = min(em(k), emmin);
+        ermin = min(er(k), ermin);
     end
     
     %ERRO
     e(k) = r(k) - y(k);
     er(k) = yr(k) - y(k);
-    em(k) = (yr(k) + y(k))/2;
-    es(k) = peak2peak(em(k-nf:k)); %TODO: still wrong! peak2peak is type 0!
-    ef(k) = peak2peak(yf)/2;
+    em(k) = rm(k) - y(k);
     ei(k) = ei(k-1) + T*(e(k) + e(k-1))/2;
-    
-    if up %TODO: simplify
-        if y(k) <= ypk(2)
-            ypk(2) = y(k);
-            yid(2) = saw + ns;
-        end
-        if yr(k) >= rpk(2)
-            rpk(2) = yr(k);
-            rid(2) = saw + ns;
-        end
-        epk(2) = max(em(k), epk(2));
-    else
-        if y(k) >= ypk(1)
-            ypk(1) = y(k);
-            yid(1) = saw;
-        end
-        if yr(k) <= rpk(1)
-            rpk(1) = yr(k);
-            rid(1) = saw;
-        end
-        epk(1) = min(em(k), epk(1));
-    end
-    
+       
     %CONTROLE
     if (er(k) >= eps && ~up) || (er(k) <= -eps && up)
-        if tune && edge >= tune_edge
-            ns = saw;
-            nf = semi(~up+1) + saw;
-        end
-        semi(up + 1) = saw;
-        edge = edge + 1;
-        up = ~up;
-        saw = 1;
-        ypk(up + 1) = y(k);
-        rpk(up + 1) = yr(k);
-        epk(up + 1) = em(k);
+      if tune && edge >= tune_edge
+          ns = saw;
+          nf = semi(~up+1) + saw;
+      end
+      semi(up + 1) = saw;
+      edge = edge + 1;
+      up = ~up;
+      saw = 1;
+      if up
+        emmax = em(k);
+        ermax = er(k);
+      else
+        emmin = em(k);
+        ermin = er(k);
+      end
     else
-        saw = saw + 1;
+      saw = saw + 1;
     end
     semik(k,:) = semi;
     tunek(k) = tune;
@@ -225,7 +213,8 @@ for k = o:n
     
     %MODEL 100% adaptation
     if tune && edge >= tune_edge
-        deps(k) = (K*d*ns*T)/2 - eps + 0.1*(es(k) - ef(k));
+        % this adaptation is just flat out wrong! do a gradient descent!
+        deps(k) = (K*d*ns*T)/2 - eps + 0.1*(abs(em(k)) - abs(er(k)) + emmax + emmin);
         deps(k) = min(max(deps(k), -0.6*eps), 1.1*eps);
         K = 2*(eps + deps(k))/(d*ns*T);
         Gss = ss(K/s); % this is the apparent system. the real K = K*d/df
@@ -238,7 +227,7 @@ for k = o:n
     ur(k) = min(max(ur(k), umin + tune*d), umax - tune*d);
     u(k) = ur(k) + tune*(up*d - ~up*d);
     
-    if saw == 1 && ~tune % for now I am doing a latch
+    if saw == ns && ~tune % for now I am doing a latch
         % nice entrance condition!
         % this condition is veeeery specific for the model. simplify
         tune = abs(yr(k)-r(k)) < d*ns*K*T && (e(k) <= 0 && up || e(k) > 0 && ~up);
@@ -281,6 +270,10 @@ Gss = ss(K/s);
 tunek = ~~tunek;
 
 %% TEMP
+d = 2.5;
+eps = 0.05;
+em = rm - y;
+
 ns = semik(tunek, :);
 nf = sum(ns, 2);
 idx = sub2ind(size(ns), 1:size(ns, 1), ~upk(tunek)'+1);
@@ -297,9 +290,9 @@ plot(deps)
 figure
 plot(e(tunek))
 hold on
-plot(es(tunek))
+plot(em(tunek))
 plot(er(tunek))
-plot(ef(tunek))
+plot(abs(em(tunek)) - abs(er(tunek)))
 
 %% PLOT & SAVE
 fig = plotudo(t(1:k), y, r, e, u, pwm, 0, 0, 0);
