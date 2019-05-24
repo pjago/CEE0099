@@ -17,7 +17,7 @@ global t y r e u pwm k
 
 %% CONFIGURAÇÃO
 % Adicione o nome de variáveis que queira salvar
-salvar = {'t', 'y', 'r', 'e', 'er', 'em', 'u', 'ur', 'pwm', 'rm', 'r5', 'yr', 'deps', 'semik', 'tunek', 'upk', 'ping', 'T'};
+salvar = {'t', 'y', 'd', 'eps', 'r', 'e', 'er', 'em', 'u', 'ur', 'pwm', 'rm', 'r5', 'yr', 'deps', 'semik', 'tunek', 'upk', 'ping', 'T'};
 salvar_em = 'relay_pi_nivel_valvula_semi';
 
 T = 1;                   %tempo  de amostragem
@@ -61,7 +61,6 @@ d = 2.5; % relay amplitude
 b = 5.0; % relay bias
 eps = 0.05; % important! there is a maximum value of valid eps! 3rd quad.
 D = 1.0*d; % disturbance ratio (todo: solve saturation problem!)
-
 % dados calculados
 Gss = ss(Gz);
 % Gss = ss(0.004245/s); % assume a wrong but close model, then adapt
@@ -69,6 +68,7 @@ Gss = ss(Gz);
 % Gss = ss(0.0028/s);
 % Gss = ss(0.025/s);
 K = Gss.c*Gss.b; %initial model
+Ko = K; %this is too lazy TODO cleanup
 ns = round((2*eps)/(K*d*T));
 nf = 2*ns;
 o = o + nf;
@@ -77,9 +77,10 @@ o = o + nf;
 tune = 0;
 edge = 0;
 semi = [0; 0];
-tunek = zeros(n, 1);
 semik = nan(n, 2);
+tunek = zeros(n, 1);
 upk = nan(n, 1);
+deps = nan(n, 1);
 up = 1;
 eup = 1;
 saw = 1;
@@ -93,7 +94,7 @@ epk = [0; 0];
 % higher quality: robust to noise. lower quality: robust to disturbances
 % on low epsilon it may be useful to increase the quality (precise switch)
 % on higher epsilon it may be useful to reduce the quality (fast settling)
-QF = 1.0;  %^quality, ^settling time, ^precision
+QF = 2.0;  %^quality, ^settling time, ^precision
 
 %for QF > 5.0, phase error < 50/QF° for a band the size of the frequency
 %for QF = 1.0, it is a fir filter, so prefer this when the noise is low
@@ -125,12 +126,10 @@ kr = flip(gpi(kp,ti));
 ku = 1.0;
 
 %% LOOP DE CONTROLE
-[deps, e, ei, er, em, es, ef, u, ur, pwm] = deal(zeros(n, 1));
+[e, ei, er, em, ai, am, u, ur, pwm] = deal(zeros(n, 1));
 [r, rm, r1, r3, r5, y, yr] = deal(~planta*ref*ones(n, 1));
-
-deps(1:o) = (K*d*ns*T)/2 - eps;
-
 ping = nan(n, 1);
+
 t0 = tic;
 
 %TODO: make this independent of the model. use of lsim exemplifies that
@@ -141,6 +140,7 @@ for k = o:n
     
     %REFERÊNCIA
     %step
+%     r(k) = 1.0;
     r(k) = 1.0 + 1.0*(k >= n/3) - 0.5*(k >= 2*n/3);
     if k == n/3 || k == 2*n/3
         edge = 0;
@@ -156,7 +156,7 @@ for k = o:n
 % F = 1/2*(1+af)*(1 + z^-ns)/(1 + af*z^-ns);
 %     rm(k) = -af  * rm(k-ns) + (y(k) + y(k-ns)) * (1  + af) / 2;                          % type 0
 % F = 1/4*((3+af) + 2*(1+af)*z^-ns + (af-1)*z^-nf)/(1 + af*z^-ns); 
-    rm(k) = -af  * rm(k-ns) + 1/4*((3 + af)*y(k) + 2*(1 + af)*y(k-ns) + (af - 1)*y(k-nf)); % type 1
+%     rm(k) = -af  * rm(k-ns) + 1/4*((3 + af)*y(k) + 2*(1 + af)*y(k-ns) + (af - 1)*y(k-nf)); % type 1
 % F = (1 + am)/(b0 + 1)*(b0 + z^-M)/(1 + am*z^-M)
 %     rm(k) = -am*rm(k-ns) + (1 + am)/(b0 + 1)*(b0*y(k) + y(k-ns));     % allpass
 % F = @(m) 1/2*(1 - 2*rf*cos(m*fs) + rf^2)/(1 - cos(m*fs))*(1 - 2*cos(m*fs)*z^-1 + z^-2)/(1 - 2*rf*cos(m*fs)*z^-1 + rf^2*z^-2)
@@ -167,20 +167,18 @@ for k = o:n
     df = (min(ur(k-1) + d, umax) - max(ur(k-1) - d, umin))/2;
     uf = d*[(up + -~up)*ones(ns-saw, 1); (-up + ~up)*ones(ns, 1); (up + -~up)*ones(saw+1, 1)]; % + ur(k-1)
     yf = lsim(Gss, uf, (0:length(uf)-1)*T, y(k)/Gss.c); % if there is no integrator, there should be + ur(k-1)
-    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end));
-
-    if edge < tune_edge
-       rm(k) = yr(k);
-    end
+    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end)); %sem erro de regime, com oscilação
+    rm(k) = 1/4*(3*y(k-ns) + 2*y(k) - yf(ns+1)); %noice
+    rm(k) = 1/2*(yr(k) + rm(k)); %erro de regime, oscilação precisa
     
     %ERRO
     e(k) = r(k) - y(k);
     er(k) = yr(k) - y(k);
-    em(k) = (yr(k) + y(k))/2;
-    es(k) = peak2peak(em(k-nf:k)); %TODO: still wrong! peak2peak is type 0!
-    ef(k) = peak2peak(yf)/2;
-    ei(k) = ei(k-1) + T*(e(k) + e(k-1))/2;
-    
+    ei(k) = rm(k) - y(k);
+    em(k) = yf(ns+1) - mean(yf(2:end)); % this is a fake er without noise!
+    ai(k) = peak2peak(ei(k-nf:k))/2; % this method of amp. estimation can be improved!
+    am(k) = peak2peak(em(k-nf:k))/2; % this method of amp. estimation can be improved!
+
     if up %TODO: simplify
         if y(k) <= ypk(2)
             ypk(2) = y(k);
@@ -205,7 +203,7 @@ for k = o:n
     
     %CONTROLE
     if (er(k) >= eps && ~up) || (er(k) <= -eps && up)
-        if tune && edge >= tune_edge
+        if tune
             ns = saw;
             nf = semi(~up+1) + saw;
         end
@@ -224,13 +222,11 @@ for k = o:n
     upk(k) = up;
     
     %MODEL 100% adaptation
+    deps(k) = (K*d*ns*T)/2 - eps + 0.1*(ai(k) - am(k)); %0.1 | 0.15 
+    deps(k) = min(max(deps(k), -0.6*eps), 1.1*eps);
     if tune && edge >= tune_edge
-        deps(k) = (K*d*ns*T)/2 - eps + 0.1*(es(k) - ef(k));
-        deps(k) = min(max(deps(k), -0.6*eps), 1.1*eps);
         K = 2*(eps + deps(k))/(d*ns*T);
         Gss = ss(K/s); % this is the apparent system. the real K = K*d/df
-    else
-        deps(k) = deps(k-1);
     end
     
     %RELAY + PID
@@ -240,7 +236,7 @@ for k = o:n
     
     if saw == 1 && ~tune % for now I am doing a latch
         % nice entrance condition!
-        % this condition is veeeery specific for the model. simplify
+        % this condition is specific for this model. simplify
         tune = abs(yr(k)-r(k)) < d*ns*K*T && (e(k) <= 0 && up || e(k) > 0 && ~up);
         edge = 0;
     end
@@ -297,12 +293,20 @@ plot(deps)
 figure
 plot(e(tunek))
 hold on
-plot(es(tunek))
 plot(er(tunek))
-plot(ef(tunek))
+plot(ai(tunek))
+plot(ei(tunek))
+plot(am(tunek))
+plot(em(tunek))
 
 %% PLOT & SAVE
-fig = plotudo(t(1:k), y, r, e, u, pwm, 0, 0, 0);
+[fig, ax1, ax2] = plotudo(t(1:k), y, r, e, u, pwm, 0, 0, 0);
+% axes(ax2)
+% hold on
+% plot(ur, 'k')
+% axes(ax1)
+% hold on
+% plot(yr)
 if planta
     pasta = ['pratica/' salvar_em];
 else

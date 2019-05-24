@@ -3,7 +3,7 @@
 %plotudo(t, y, r, e, u, pwm, ~, 1) plota fft
 %plotudo(t, y, r, e, u, pwm, ~, ~, 1) plota yyaxis
 %plotudo(t, y, r, e, u, pwm, ~, ~, ~, t0) tempo zero ? em t0
-function [hf, hfu] = plotudo(t, y, r, e, u, pwm, varargin)
+function [hf, ax1, ax2, hfu] = plotudo(t, y, r, e, u, pwm, varargin)
     opt = {0.0};
     subplot = @(m,n,p) subtightplot(m,n,p,opt{:}); 
     
