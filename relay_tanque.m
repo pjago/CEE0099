@@ -15,23 +15,22 @@ global t y r e u pwm k
 % another use case is for integrator plants with asymetric inputs
 % a challenge may be plants with very long dead time (temperature)
 
-%% CONFIGURAÇÃO
-% Adicione o nome de variáveis que queira salvar
-salvar = {'t', 'y', 'd', 'eps', 'r', 'e', 'er', 'em', 'u', 'ur', 'pwm', 'rm', 'r5', 'yr', 'deps', 'semik', 'tunek', 'upk', 'ping', 'T'};
+%% CONFIGURAÃ‡ÃƒO
+% Adicione o nome de variÃ¡veis que queira salvar
 salvar_em = 'relay_pi_nivel_valvula_semi';
 
 T = 1;                   %tempo  de amostragem
-o = 3;                   %início de amostragem
-n = floor(300/T) + o;    %número de amostras
+o = 3;                   %inÃ­cio de amostragem
+n = floor(600/T) + o;    %nÃºmero de amostras
 t = (0:(n-1));           %vetor  de tempo
 
 %% I/O
 s = tf('s');
 z = tf('z', T, 'variable', 'z^-1');
-Gz = 0.0083116*T/(z-1);  % relé com histerese (1° artigo)
-% Gz = 0.013411*T/(z-1); % relé pic (2° artigo valor final)
+Gz = 0.0083116*T/(z-1);  % relÃ© com histerese (1Â° artigo)
+% Gz = 0.013411*T/(z-1); % relÃ© pic (2Â° artigo valor final)
 
-planta = 0; % variável deve chavear leitura e escrita da planta
+planta = 0; % variÃ¡vel deve chavear leitura e escrita da planta
 
 if planta
     start_easyport;
@@ -52,15 +51,15 @@ end
 
 %% MISC
 umax = 9.5; % maximum actuation
-umin = 0.0;  % minimum actuation
+umin = 2.0;  % minimum actuation
 ref  = 0.0;  % fixed reference
 
 %% RELAY
 tune_edge = 3; % non-mpc filters wait this many edges
-d = 2.5; % relay amplitude
+d = 2.0; % relay amplitude
 b = 5.0; % relay bias
 eps = 0.05; % important! there is a maximum value of valid eps! 3rd quad.
-D = 1.0*d; % disturbance ratio (todo: solve saturation problem!)
+D = 0.0*d; % disturbance ratio (todo: solve saturation problem!)
 % dados calculados
 Gss = ss(Gz);
 % Gss = ss(0.004245/s); % assume a wrong but close model, then adapt
@@ -96,7 +95,7 @@ epk = [0; 0];
 % on higher epsilon it may be useful to reduce the quality (fast settling)
 QF = 2.0;  %^quality, ^settling time, ^precision
 
-%for QF > 5.0, phase error < 50/QF° for a band the size of the frequency
+%for QF > 5.0, phase error < 50/QFÂ° for a band the size of the frequency
 %for QF = 1.0, it is a fir filter, so prefer this when the noise is low
 
 %calculates comb filter coefficient based on filter quality
@@ -113,7 +112,7 @@ b0 = 0.5;
 am = 0.5;
 
 %% PID
-kp=13.71;td=0;ti=12; % PI do leão
+kp=13.71;td=0;ti=12; % PI do leÃ£o
 
 %calculates controllers' numerator
 gd   = @(kp, td) [kp*td/T -kp*2*td/T kp*td/T];
@@ -124,6 +123,27 @@ ke = flip(gpid(kp,td,ti));
 ky = flip(gpid(kp,td,ti));
 kr = flip(gpi(kp,ti));
 ku = 1.0;
+
+%% VLMMS
+lambda = 0.5; % [0, 1] step update
+beta = 0.5; % [0, 1] exponential weighting
+pho = 10.0; % [0, 1] leakage update
+
+A = nan(n, 3); % vector of unknown parameters
+H = nan(n, 3); % 1st, 3rd, 5th harmonics
+mu = zeros(n, 1); % parameters step
+gama = zeros(n, 1); % variable leakage factor
+ylmms = zeros(n, 1); % model of the signal
+elmms = zeros(n, 1); % error signal
+Rlmms = zeros(n, 1); % autocorrelation of elmms(k) and elmms(k-1)
+
+% which initial values do I use???
+
+for k = 1:o-1
+    mu(k) = -1;
+    gama(k) = 0.0;
+    A(k, :) = [bode(Gss, pi/(ns*T)) bode(Gss, 3*pi/(ns*T))/3 bode(Gss, 5*pi/(ns*T))/5]*4/pi*d;
+end
 
 %% LOOP DE CONTROLE
 [e, ei, er, em, ai, am, u, ur, pwm] = deal(zeros(n, 1));
@@ -138,11 +158,15 @@ for k = o:n
     time = tic;
     y(k) = leitura();
     
-    %REFERÊNCIA
+    %REFERÃŠNCIA
     %step
 %     r(k) = 1.0;
-    r(k) = 1.0 + 1.0*(k >= n/3) - 0.5*(k >= 2*n/3);
-    if k == n/3 || k == 2*n/3
+    r(k) = 6.0 ...
+    + 1.0*(k >= n/3) ... 
+    - 1.0*(k >= n/2) ...
+    + 0.01*(k - 2*n/3)*(k >= 2*n/3 && k < 5*n/6) ... 
+    + (0.995 - 0.01*(k - 5*n/6))*(k >= 5*n/6);
+    if k == ceil(n/3) || k == ceil(n/2)
         edge = 0;
         tune = 0;
     end
@@ -167,17 +191,30 @@ for k = o:n
     df = (min(ur(k-1) + d, umax) - max(ur(k-1) - d, umin))/2;
     uf = d*[(up + -~up)*ones(ns-saw, 1); (-up + ~up)*ones(ns, 1); (up + -~up)*ones(saw+1, 1)]; % + ur(k-1)
     yf = lsim(Gss, uf, (0:length(uf)-1)*T, y(k)/Gss.c); % if there is no integrator, there should be + ur(k-1)
-    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end)); %sem erro de regime, com oscilação
+    yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end)); %sem erro de regime, com oscilaÃ§Ã£o
     rm(k) = 1/4*(3*y(k-ns) + 2*y(k) - yf(ns+1)); %noice
-    rm(k) = 1/2*(yr(k) + rm(k)); %erro de regime, oscilação precisa
+    rm(k) = 1/2*(yr(k) + rm(k)); %erro de regime, oscilaÃ§Ã£o precisa
     
     %ERRO
     e(k) = r(k) - y(k);
     er(k) = yr(k) - y(k);
-    ei(k) = rm(k) - y(k);
+    ei(k) = (rm(k) - rm(k-ns) - y(k) + y(k-ns))/2;
     em(k) = yf(ns+1) - mean(yf(2:end)); % this is a fake er without noise!
+        
+    H(k, :) = (up - ~up)*[cos(saw*pi/ns) cos(3*saw*pi/ns) cos(5*saw*pi/ns)]; % cos since phase = 90Â°
+    ylmms(k) = H(k, :)*A(k-1, :)';
+    elmms(k) = ei(k) - ylmms(k); % point of access
+    Rlmms(k) = beta*Rlmms(k-1) + (1 - beta)*elmms(k)*elmms(k-1);
+%     mu(k) = lambda*mu(k-1) + gama(k-1)*Rlmms(k-1)^2; % step size
+%     gama(k) = gama(k-1) - 2*mu(k-1)*pho*elmms(k-1)*ylmms(k-1); % leakage factor
+    gama(k) = 0.0;
+    mu(k) = -0.01;
+    A(k, :) = (1 - 2*mu(k)*gama(k))*A(k-1, :) + 2*mu(k)*elmms(k)*ylmms(k); % weight vector
+    % how does A updates when mu = 0??? leave this out for now
+    
     ai(k) = peak2peak(ei(k-nf:k))/2; % this method of amp. estimation can be improved!
     am(k) = peak2peak(em(k-nf:k))/2; % this method of amp. estimation can be improved!
+%     am(k) = sqrt(bode(Gss, pi/(ns*T))^2 + bode(Gss, 3*pi/(ns*T))^2 + bode(Gss, 5*pi/(ns*T))^2)*d*4/pi;
 
     if up %TODO: simplify
         if y(k) <= ypk(2)
@@ -241,11 +278,11 @@ for k = o:n
         edge = 0;
     end
     
-    %SATURAÇÃO
+    %SATURAÃ‡ÃƒO
     if planta
         pwm(k) = min(max(u(k), umin), umax);
     else
-        pwm(k) = min(max(u(k), umin), umax) - 4.0 + (k > 2*n/3)*D;
+        pwm(k) = min(max(u(k), umin), umax) - 5.0 + (k > 2*n/3)*D;
     end
     
     %ESCRITA
@@ -267,7 +304,7 @@ if planta
     escrita(0.0);
     end_easyport; %termina();
 end
-fprintf('Duração: %f seconds\n', toc(t0) - toc(time));
+fprintf('DuraÃ§Ã£o: %f seconds\n', toc(t0) - toc(time));
 if sum(ping(1:end-1)' > T)
     disp('In-loop latency is too high! Increase your sampling time.')
 end
@@ -318,6 +355,6 @@ end
 date = datestr(datetime('now'));
 date(date == '-' | date == ':') = '_';
 path = [pasta '/' date];
-save([path '.mat'], salvar{:})
+save([path '.mat'], '-regexp', '^(?!(fig|ax1|ax2)$).')
 saveas(fig, [path '.fig'])
 disp(['Plant: ' pasta ' Saved at: ' path])
