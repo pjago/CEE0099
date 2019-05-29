@@ -20,8 +20,8 @@ global t y r e u pwm k
 salvar_em = 'relay_pi_nivel_valvula_semi';
 
 T = 1;                   %tempo  de amostragem
-o = 3;                   %início de amostragem
-n = floor(600/T) + o;    %número de amostras
+o = 3;                   %inÃ­cio de amostragem
+n = floor(900/T) + o;    %nÃºmero de amostras
 t = (0:(n-1));           %vetor  de tempo
 
 %% I/O
@@ -68,7 +68,7 @@ Gss = ss(Gz);
 % Gss = ss(0.025/s);
 K = Gss.c*Gss.b; %initial model
 Ko = K; %this is too lazy TODO cleanup
-ns = round((2*eps)/(K*d*T));
+ns = ceil((2*eps)/(K*d*T));
 nf = 2*ns;
 o = o + nf;
 
@@ -109,10 +109,10 @@ af = (af - sqrt(af^2 - 4)) / 2;
 % similar filters
 rf = 0.95;
 b0 = 0.5;
-am = 0.5;
+a0 = 0.5;
 
 %% PID
-kp=13.71;td=0;ti=12; % PI do leão
+kp=13.71;td=0;ti=12; % PI
 
 %calculates controllers' numerator
 gd   = @(kp, td) [kp*td/T -kp*2*td/T kp*td/T];
@@ -125,13 +125,16 @@ kr = flip(gpi(kp,ti));
 ku = 1.0;
 
 %% VLMMS
-lambda = 0.5; % [0, 1] step update
-beta = 0.5; % [0, 1] exponential weighting
-pho = 10.0; % [0, 1] leakage update
+lambda = 1 - 1/ns; % [0, 1] step update
+beta = 1 - 1/ns; % [0, 1] exponential weighting
+pho = 2000; % [0, 1] leakage update
+klmms = 5; % weight on elmms
 
-A = nan(n, 3); % vector of unknown parameters
-H = nan(n, 3); % 1st, 3rd, 5th harmonics
-mu = zeros(n, 1); % parameters step
+A = nan(n, 4); % vector of unknown parameters
+H = nan(n, 4); % 1st, 3rd, 5th, 7th harmonics
+mu = zeros(n, 1); % unknown parameters step
+mumax = 0.1; % maximum step
+mumin = 0.01; % minimum step
 gama = zeros(n, 1); % variable leakage factor
 ylmms = zeros(n, 1); % model of the signal
 elmms = zeros(n, 1); % error signal
@@ -139,16 +142,18 @@ Rlmms = zeros(n, 1); % autocorrelation of elmms(k) and elmms(k-1)
 
 % which initial values do I use???
 
-for k = 1:o-1
-    mu(k) = -1;
-    gama(k) = 0.0;
-    A(k, :) = [bode(Gss, pi/(ns*T)) bode(Gss, 3*pi/(ns*T))/3 bode(Gss, 5*pi/(ns*T))/5]*4/pi*d;
-end
-
 %% LOOP DE CONTROLE
 [e, ei, er, em, ai, am, u, ur, pwm] = deal(zeros(n, 1));
 [r, rm, r1, r3, r5, y, yr] = deal(~planta*ref*ones(n, 1));
 ping = nan(n, 1);
+
+for k = 1:o-1
+    am(k) = 4*d*ns*T*K/pi^2;
+    deps(k) = (K*d*ns*T)/2 - eps;
+    mu(k) = 0.0;
+    gama(k) = 0.0;
+    A(k, :) = [bode(Gss, pi/(ns*T)) bode(Gss, 3*pi/(ns*T))/3 bode(Gss, 5*pi/(ns*T))/5 bode(Gss, 7*pi/(ns*T))/7]*4/pi*d;
+end
 
 t0 = tic;
 
@@ -159,13 +164,13 @@ for k = o:n
     y(k) = leitura();
     
     %REFERÊNCIA
+%     r(k) = 6.0;
     %step
-%     r(k) = 1.0;
     r(k) = 6.0 ...
     + 1.0*(k >= n/3) ... 
     - 1.0*(k >= n/2) ...
     + 0.01*(k - 2*n/3)*(k >= 2*n/3 && k < 5*n/6) ... 
-    + (0.995 - 0.01*(k - 5*n/6))*(k >= 5*n/6);
+    + (1.495 - 0.01*(k - 5*n/6))*(k >= 5*n/6);
     if k == ceil(n/3) || k == ceil(n/2)
         edge = 0;
         tune = 0;
@@ -176,67 +181,42 @@ for k = o:n
     %this should be interesting. close the valve and try this ramp
 %     r(k) = 2.0 + 0.02*(k - o)*T;
     
-    fs = pi/ns; % this is not smooth, maybe use gradient descent!
-% F = 1/2*(1+af)*(1 + z^-ns)/(1 + af*z^-ns);
-%     rm(k) = -af  * rm(k-ns) + (y(k) + y(k-ns)) * (1  + af) / 2;                          % type 0
-% F = 1/4*((3+af) + 2*(1+af)*z^-ns + (af-1)*z^-nf)/(1 + af*z^-ns); 
-%     rm(k) = -af  * rm(k-ns) + 1/4*((3 + af)*y(k) + 2*(1 + af)*y(k-ns) + (af - 1)*y(k-nf)); % type 1
-% F = (1 + am)/(b0 + 1)*(b0 + z^-M)/(1 + am*z^-M)
-%     rm(k) = -am*rm(k-ns) + (1 + am)/(b0 + 1)*(b0*y(k) + y(k-ns));     % allpass
-% F = @(m) 1/2*(1 - 2*rf*cos(m*fs) + rf^2)/(1 - cos(m*fs))*(1 - 2*cos(m*fs)*z^-1 + z^-2)/(1 - 2*rf*cos(m*fs)*z^-1 + rf^2*z^-2)
-    r1(k) = 2*rf*cos(fs)*r1(k-1) - rf^2*r1(k-2) + 1/2*(1-2*rf*cos(fs)+rf^2)/(1-cos(fs))*(y(k) - 2*cos(fs)*y(k-1) + y(k-2));
-    r3(k) = 2*rf*cos(3*fs)*r3(k-1) - rf^2*r3(k-2) + 1/2*(1-2*rf*cos(3*fs)+rf^2)/(1-cos(3*fs))*(r1(k) - 2*cos(3*fs)*r1(k-1) + r1(k-2));
-    r5(k) = 2*rf*cos(5*fs)*r5(k-1) - rf^2*r5(k-2) + 1/2*(1-2*rf*cos(5*fs)+rf^2)/(1-cos(5*fs))*(r3(k) - 2*cos(5*fs)*r3(k-1) + r3(k-2));
 % type 1, but with MPC. we did it guys, we did it!
-    df = (min(ur(k-1) + d, umax) - max(ur(k-1) - d, umin))/2;
+    df = (min(ur(k-1) + d, umax) - max(ur(k-1) - d, umin))/2; %avoid saturation
     uf = d*[(up + -~up)*ones(ns-saw, 1); (-up + ~up)*ones(ns, 1); (up + -~up)*ones(saw+1, 1)]; % + ur(k-1)
-    yf = lsim(Gss, uf, (0:length(uf)-1)*T, y(k)/Gss.c); % if there is no integrator, there should be + ur(k-1)
+    yf = lsim(Gss, uf, (0:length(uf)-1)*T, y(k)/Gss.c); %if there is no integrator, there should be + ur(k-1)
     yr(k) = 1/4*(3*y(k) + 2*yf(ns+1) - yf(end)); %sem erro de regime, com oscilação
-    rm(k) = 1/4*(3*y(k-ns) + 2*y(k) - yf(ns+1)); %noice
-    rm(k) = 1/2*(yr(k) + rm(k)); %erro de regime, oscilação precisa
+    rm(k) = 1/2*yr(k) + 1/8*(3*y(k-ns) + 2*y(k) - yf(ns+1)); %noice
     
     %ERRO
     e(k) = r(k) - y(k);
     er(k) = yr(k) - y(k);
     ei(k) = (rm(k) - rm(k-ns) - y(k) + y(k-ns))/2;
-    em(k) = yf(ns+1) - mean(yf(2:end)); % this is a fake er without noise!
-        
-    H(k, :) = (up - ~up)*[cos(saw*pi/ns) cos(3*saw*pi/ns) cos(5*saw*pi/ns)]; % cos since phase = 90°
-    ylmms(k) = H(k, :)*A(k-1, :)';
-    elmms(k) = ei(k) - ylmms(k); % point of access
-    Rlmms(k) = beta*Rlmms(k-1) + (1 - beta)*elmms(k)*elmms(k-1);
-%     mu(k) = lambda*mu(k-1) + gama(k-1)*Rlmms(k-1)^2; % step size
-%     gama(k) = gama(k-1) - 2*mu(k-1)*pho*elmms(k-1)*ylmms(k-1); % leakage factor
-    gama(k) = 0.0;
-    mu(k) = -0.01;
-    A(k, :) = (1 - 2*mu(k)*gama(k))*A(k-1, :) + 2*mu(k)*elmms(k)*ylmms(k); % weight vector
-    % how does A updates when mu = 0??? leave this out for now
+    em(k) = yf(ns+1) - mean(yf(2:end));
     
-    ai(k) = peak2peak(ei(k-nf:k))/2; % this method of amp. estimation can be improved!
-    am(k) = peak2peak(em(k-nf:k))/2; % this method of amp. estimation can be improved!
-%     am(k) = sqrt(bode(Gss, pi/(ns*T))^2 + bode(Gss, 3*pi/(ns*T))^2 + bode(Gss, 5*pi/(ns*T))^2)*d*4/pi;
-
-    if up %TODO: simplify
-        if y(k) <= ypk(2)
-            ypk(2) = y(k);
-            yid(2) = saw + ns;
-        end
-        if yr(k) >= rpk(2)
-            rpk(2) = yr(k);
-            rid(2) = saw + ns;
-        end
-        epk(2) = max(em(k), epk(2));
+%%VLMMS (WIP)
+    lambda = 1 - 1/ns; %neat
+    beta = 1 - 1/ns; %neat
+    H(k, :) = (up - ~up)*[cos(saw*pi/ns) cos(3*saw*pi/ns) cos(5*saw*pi/ns) cos(7*saw*pi/ns)]; % cos since phase = 90°
+    ylmms(k) = H(k, :)*A(k-1, :)';
+    elmms(k) = klmms*(ei(k) - ylmms(k));
+    Rlmms(k) = beta*Rlmms(k-1) + (1 - beta)*elmms(k)*elmms(k-1);
+    if tune && edge >= tune_edge
+        mu(k) = lambda*mu(k-1) + gama(k-1)*Rlmms(k-1); % step size
+        mu(k) = min(max(mu(k), mumin), mumax);
+        gama(k) = gama(k-1) - 2*mu(k-1)*pho*elmms(k-1)*ylmms(k-1); % leakage factor
+        gama(k) = min(max(gama(k), 0.0), 1.0);
+        A(k, :) = (1 - 2*mu(k)*gama(k))*A(k-1, :) + 2*mu(k)*elmms(k)*H(k, :); % this is similar to kalman filter
+        A(k, :) = max(A(k, :), 0);
+    elseif tune && edge == tune_edge - 1
+        mu(k) = 0.05;
+        gama(k) = 0.0;
+        A(k, :) = A(k-1, :);
     else
-        if y(k) >= ypk(1)
-            ypk(1) = y(k);
-            yid(1) = saw;
-        end
-        if yr(k) <= rpk(1)
-            rpk(1) = yr(k);
-            rid(1) = saw;
-        end
-        epk(1) = min(em(k), epk(1));
+        A(k, :) = A(k-1, :);
     end
+    ai(k) = sum(A(k, :));
+    am(k) = peak2peak(em(k-nf:k))/2;
     
     %CONTROLE
     if (er(k) >= eps && ~up) || (er(k) <= -eps && up)
@@ -248,9 +228,6 @@ for k = o:n
         edge = edge + 1;
         up = ~up;
         saw = 1;
-        ypk(up + 1) = y(k);
-        rpk(up + 1) = yr(k);
-        epk(up + 1) = em(k);
     else
         saw = saw + 1;
     end
@@ -259,11 +236,15 @@ for k = o:n
     upk(k) = up;
     
     %MODEL 100% adaptation
-    deps(k) = (K*d*ns*T)/2 - eps + 0.1*(ai(k) - am(k)); %0.1 | 0.15 
-    deps(k) = min(max(deps(k), -0.6*eps), 1.1*eps);
     if tune && edge >= tune_edge
+%         deps(k) = (K*d*ns*T)/2 - eps + 0.1*gama(k)*(ai(k)-am(k));
+%         deps(k) = (K*d*ns*T)/2 - eps + (ai(k)-am(k));
+        deps(k) = deps(k-1)*lambda + (1-lambda)*(ai(k) - eps);
+        deps(k) = min(max(deps(k), -0.6*eps), 1.1*eps);
         K = 2*(eps + deps(k))/(d*ns*T);
         Gss = ss(K/s); % this is the apparent system. the real K = K*d/df
+    else
+        deps(k) = deps(k-1);
     end
     
     %RELAY + PID
@@ -271,8 +252,7 @@ for k = o:n
     ur(k) = min(max(ur(k), umin + tune*d), umax - tune*d);
     u(k) = ur(k) + tune*(up*d - ~up*d);
     
-    if saw == 1 && ~tune % for now I am doing a latch
-        % nice entrance condition!
+    if saw == 1 && ~tune
         % this condition is specific for this model. simplify
         tune = abs(yr(k)-r(k)) < d*ns*K*T && (e(k) <= 0 && up || e(k) > 0 && ~up);
         edge = 0;
@@ -321,12 +301,12 @@ ns = ns(idx)';
 de = deps(tunek);
 Ks = 2*(eps + de)./(d*ns*T);
 
-figure
-plot(ns)
+% figure
+% plot(ns)
 figure
 plot(Ks)
-figure
-plot(deps)
+% figure
+% plot(deps)
 figure
 plot(e(tunek))
 hold on
@@ -335,6 +315,9 @@ plot(ai(tunek))
 plot(ei(tunek))
 plot(am(tunek))
 plot(em(tunek))
+plot(ylmms(tunek))
+figure
+plot(A)
 
 %% PLOT & SAVE
 [fig, ax1, ax2] = plotudo(t(1:k), y, r, e, u, pwm, 0, 0, 0);
